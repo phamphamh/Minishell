@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/14 14:43:59 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/19 20:50:33 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 # include "../libft/libft.h"
 # include "exec.h"
+# include "parsing.h"
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -58,7 +59,8 @@ typedef struct s_minishell
 {
 	t_env		*env;
 	t_gc_node	*gc_head;
-	t_token		*tokens;
+	t_token		*tokens; // legacy
+	t_cmd		*commands;
 	int			exit_nb;
 }	t_minishell;
 

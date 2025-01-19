@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:33:16 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/14 14:47:25 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/19 21:16:54 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,9 @@ int	main(int argc, char **argv, char **envp)
 		if (input[0] != '\0')
 			add_history(input);
 		ft_gc_add(&minishell.gc_head, input);
-		minishell.tokens = ft_tokenize(input, &minishell);
+		//minishell.tokens = ft_tokenize(input, &minishell);
+		ft_parse(input, &minishell);
+		print_commands(minishell.commands);
 		if (!minishell.tokens)
 			continue ;
 		ft_execute(&minishell);

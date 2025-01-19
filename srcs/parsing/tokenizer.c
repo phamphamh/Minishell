@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/15 00:40:54 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/19 21:00:02 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,12 +70,12 @@ int	ft_determine_token_type(char *token, char *prev_token)
 		return (CMD);
 	if (ft_strcmp(token, "|") == 0)
 		return (PIPE);
+	if (ft_strlen(token) == 2 && ft_strcmp(token, ">>") == 0)
+		return (REDIR_APPEND);
+	if (ft_strlen(token) == 1 && ft_strcmp(token, ">") == 0)
+		return (REDIR_OUT);
 	if (ft_strcmp(token, "<") == 0)
 		return (REDIR_IN);
-	if (ft_strcmp(token, ">") == 0)
-		return (REDIR_OUT);
-	if (ft_strcmp(token, ">>") == 0)
-		return (REDIR_APPEND);
 	if (ft_strcmp(token, "<<") == 0)
 		return (HERE_DOC);
 	if ((prev_token && ft_strcmp(prev_token, "<") == 0)
@@ -86,6 +86,8 @@ int	ft_determine_token_type(char *token, char *prev_token)
 		return (LIM);
 	return (ARG);
 }
+
+
 
 t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 {
@@ -105,7 +107,7 @@ t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	*/
 	ft_gc_add(&minishell->gc_head, new_token->value);
 	new_token->type = type;
-	printf("value: %d\n", new_token->type);
+	printf("value: %s | type: %d\n", new_token->value, new_token->type);
 	new_token->next = NULL;
 	return (new_token);
 }
