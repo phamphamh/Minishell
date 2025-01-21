@@ -50,4 +50,10 @@ t_token	*ft_create_token(char *value, int type, t_minishell *minishell);
 void	ft_parse(char *input, t_minishell *minishell);
 void 	print_commands(t_cmd *cmd_list);
 
+
+t_cmd *init_cmd(t_minishell *minishell);
+void add_arg_to_cmd(t_cmd *cmd, char *arg, t_minishell *minishell);
+
+
+void add_redirection(t_redirection **redir_list, t_token *token, t_minishell *minishell);
 #endif
