@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/21 20:17:27 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/24 11:03:30 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,19 @@ void append_cmd(t_cmd **cmd_list, t_cmd *cmd)
     }
 }
 
-static void	process_token(t_cmd **current_cmd, t_token *token, t_minishell *minishell)
+static int	process_token(t_cmd **current_cmd, t_token *token, t_minishell *minishell)
 {
 	if (token->type == CMD || token->type == ARG)
 		add_arg_to_cmd(*current_cmd, token->value, minishell);
 	else if (token->type == REDIR_IN || token->type == HERE_DOC)
-		add_redirection(&(*current_cmd)->input_redir, token, minishell);
+    {
+		if (add_redirection(&(*current_cmd)->input_redir, token, minishell))
+            return (1);
+    }
 	else if (token->type == REDIR_OUT || token->type == REDIR_APPEND)
-		add_redirection(&(*current_cmd)->output_redir, token, minishell);
+		if (add_redirection(&(*current_cmd)->output_redir, token, minishell))
+            return (1);
+    return (0);
 }
 
 static void	handle_pipe(t_cmd **cmd_list, t_cmd **current_cmd)
@@ -91,12 +96,22 @@ t_cmd	*tokens_to_cmds(t_token *tokens, t_minishell *minishell)
 	current_cmd = NULL;
 	while (tokens)
 	{
-		if (!current_cmd)
-			current_cmd = init_cmd(minishell);
 		if (tokens->type == PIPE)
+		{
+			if (!tokens->next || tokens->next->type == PIPE)
+			{
+				ft_putstr_fd("Syntax error: unexpected token '|'\n", 2);
+				return (NULL);
+			}
 			handle_pipe(&cmd_list, &current_cmd);
+		}
 		else
-			process_token(&current_cmd, tokens, minishell);
+		{
+			if (!current_cmd)
+				current_cmd = init_cmd(minishell);
+			if (process_token(&current_cmd, tokens, minishell))
+				return (NULL);
+		}
 		tokens = tokens->next;
 	}
 	if (current_cmd)
@@ -104,17 +119,20 @@ t_cmd	*tokens_to_cmds(t_token *tokens, t_minishell *minishell)
 	return (cmd_list);
 }
 
-void    ft_parse(char *input, t_minishell *minishell)
+int    ft_parse(char *input, t_minishell *minishell)
 {
     t_token *tokens;
 
     tokens = ft_tokenize(input, minishell);
+    if (tokens->type == PIPE)
+    {
+        ft_putstr_fd("Syntax error: unexpected token '|'\n", 2);
+        return (1);
+    }
     minishell->commands = tokens_to_cmds(tokens, minishell);
     if (!minishell->commands)
-    {
-        ft_putstr_fd("Error: Failed to create command structures\n", 2);
-        return;
-    }    printf("\n--- Parsed Commands ---\n");
+        return (1);
+    return (0);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/19 21:00:02 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/24 11:09:34 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,19 @@ t_token	*ft_tokenize(char *input, t_minishell *minishell)
 	return (token_list);
 }
 
-int	ft_determine_token_type(char *token, char *prev_token)
+static bool	is_command(char *token, char *prev_token)
 {
 	if (!prev_token || ft_strcmp(prev_token, "|") == 0)
+	{
+		if (ft_strcmp(token, "|") != 0 && ft_strcmp(token, ">") != 0 && ft_strcmp(token, "<") != 0)
+			return (true);
+	}
+	return (false);
+}
+
+int	ft_determine_token_type(char *token, char *prev_token)
+{
+	if (is_command(token, prev_token))
 		return (CMD);
 	if (ft_strcmp(token, "|") == 0)
 		return (PIPE);
@@ -107,7 +117,7 @@ t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	*/
 	ft_gc_add(&minishell->gc_head, new_token->value);
 	new_token->type = type;
-	printf("value: %s | type: %d\n", new_token->value, new_token->type);
+	//printf("value: %s | type: %d\n", new_token->value, new_token->type);
 	new_token->next = NULL;
 	return (new_token);
 }
