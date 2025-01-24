@@ -24,6 +24,7 @@ SRC_DIR = srcs
 SRCS =	$(SRC_DIR)/main.c $(SRC_DIR)/garbage_collector.c $(SRC_DIR)/parsing/tokenizer.c \
 		$(SRC_DIR)/exec/exec.c $(SRC_DIR)/builtins/builtins.c $(SRC_DIR)/builtins/builtins_utils.c \
 		$(SRC_DIR)/parsing/parsing.c $(SRC_DIR)/parsing/cmd_utils.c $(SRC_DIR)/parsing/redir_utils.c \
+		$(SRC_DIR)/parsing/split_utils.c $(SRC_DIR)/parsing/split_with_quotes.c \
 
 OBJS = $(SRCS:.c=.o)
 

@@ -51,9 +51,18 @@ int		ft_parse(char *input, t_minishell *minishell);
 void 	print_commands(t_cmd *cmd_list);
 
 
-t_cmd *init_cmd(t_minishell *minishell);
-void add_arg_to_cmd(t_cmd *cmd, char *arg, t_minishell *minishell);
+t_cmd 	*init_cmd(t_minishell *minishell);
+void	add_arg_to_cmd(t_cmd *cmd, char *arg, t_minishell *minishell);
 
 
-int	add_redirection(t_redirection **redir_list, t_token *token, t_minishell *minishell);
+int		add_redirection(t_redirection **redir_list, t_token *token, t_minishell *minishell);
+
+
+// split
+bool	is_quote(char c);
+int		skip_quotes(const char *s, int i, char *quote);
+char	*allocate_token(const char *start, int token_len, char **tokens, int token_count);
+int		handle_token(const char *s, int i, char delimiter, char **tokens, int *token_count);
+char	**ft_split_with_quotes(const char *s, char delimiter);
+
 #endif

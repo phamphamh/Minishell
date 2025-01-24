@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/24 11:09:34 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/24 20:22:27 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_token	*ft_tokenize(char *input, t_minishell *minishell)
 	token_list = NULL;
 	i = 0;
 	type = 0;
-	split_input = ft_split(input, ' ');
+	split_input = ft_split_with_quotes(input, ' ');
 	if (!split_input)
 		return (NULL);
 	while (split_input[i])
