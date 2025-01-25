@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/24 19:47:56 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/25 14:09:04 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,20 +65,32 @@ void append_cmd(t_cmd **cmd_list, t_cmd *cmd)
     }
 }
 
-static int	process_token(t_cmd **current_cmd, t_token *token, t_minishell *minishell)
+static int process_token(t_cmd **current_cmd, t_token *token, t_minishell *minishell)
 {
-	if (token->type == CMD || token->type == ARG)
-		add_arg_to_cmd(*current_cmd, token->value, minishell);
-	else if (token->type == REDIR_IN || token->type == HERE_DOC)
+    if (token->type == CMD || token->type == ARG)
     {
-		if (add_redirection(&(*current_cmd)->input_redir, token, minishell))
+        if (!(token->prev && (token->prev->type == REDIR_OUT ||
+                              token->prev->type == REDIR_APPEND ||
+                              token->prev->type == REDIR_IN)))
+        {
+            add_arg_to_cmd(*current_cmd, token->value, minishell);
+        }
+    }
+    else if (token->type == REDIR_IN || token->type == HERE_DOC)
+    {
+        if (add_redirection(&(*current_cmd)->input_redir, token, minishell))
             return (1);
     }
-	else if (token->type == REDIR_OUT || token->type == REDIR_APPEND)
-		if (add_redirection(&(*current_cmd)->output_redir, token, minishell))
+    else if (token->type == REDIR_OUT || token->type == REDIR_APPEND)
+    {
+        if (add_redirection(&(*current_cmd)->output_redir, token, minishell))
             return (1);
+    }
     return (0);
 }
+
+
+
 
 static void	handle_pipe(t_cmd **cmd_list, t_cmd **current_cmd)
 {

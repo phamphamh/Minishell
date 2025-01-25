@@ -18,10 +18,12 @@ typedef enum e_token_type
 
 typedef struct s_token
 {
-	char			*value;
-	t_token_type	type;
-	struct s_token	*next;
-}				t_token;
+    char            *value;
+    t_token_type    type;
+    struct s_token  *next;
+    struct s_token  *prev;
+}               t_token;
+
 
 typedef struct s_redirection
 {
@@ -43,8 +45,10 @@ typedef struct s_cmd
 // tokenizer.c
 bool	ft_integrate_token(char *value, int type, t_token **token_list, t_minishell *minishell);
 t_token	*ft_tokenize(char *input, t_minishell *minishell);
-int		ft_determine_token_type(char *token, char *prev_token);
+int 	ft_determine_token_type(char *token, t_token *prev_token);
 t_token	*ft_create_token(char *value, int type, t_minishell *minishell);
+int	ft_determine_token_type(char *token, t_token *prev_token);
+bool	is_command(char *token, char *prev_token);
 
 // parser.c
 int		ft_parse(char *input, t_minishell *minishell);
