@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/14 14:43:59 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/25 12:12:24 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,23 @@ bool	ft_gc_add(t_gc_node **gc_head, void *ptr);
 bool	ft_gc_remove(t_gc_node **gc_head, void *ptr);
 void	ft_gc_clear(t_gc_node **gc_head);
 void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens);
+
+/* Fonctions de validation pour export/unset */
+int		ft_is_valid_identifier(const char *str);
+int		ft_is_valid_identifier_before_equal(const char *str);
+
+/* Fonctions de gestion des variables d'environnement */
+int		ft_env_var_match(const char *env_var, const char *var_name);
+t_env	*ft_find_env_var(t_env *env, const char *var);
+void	ft_add_env_var(t_minishell *minishell, const char *var);
+int		ft_env_list_size(t_env *env);
+t_env	**ft_sort_env_list(t_env *env, int size);
+void	ft_bubble_sort_env(t_env **arr, int size);
+void	ft_print_export_var(t_env *env_var);
+void	ft_print_export_list(t_env *env);
+void	ft_handle_export_var(t_minishell *minishell, char *var);
+void	ft_handle_unset_var(t_minishell *minishell, char *var_name);
+void	ft_export_error(char *var, t_minishell *minishell);
+void	ft_unset_error(char *var, t_minishell *minishell);
 
 #endif

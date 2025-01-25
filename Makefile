@@ -23,6 +23,7 @@ SRC_DIR = srcs
 
 SRCS =	$(SRC_DIR)/main.c $(SRC_DIR)/garbage_collector.c $(SRC_DIR)/tokenizer.c \
 		$(SRC_DIR)/exec/exec.c $(SRC_DIR)/builtins/builtins.c $(SRC_DIR)/builtins/builtins_utils.c \
+		$(SRC_DIR)/builtins/builtins_utils2.c \
 
 OBJS = $(SRCS:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/15 00:40:54 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/25 11:04:49 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	*/
 	ft_gc_add(&minishell->gc_head, new_token->value);
 	new_token->type = type;
-	printf("value: %d\n", new_token->type);
 	new_token->next = NULL;
 	return (new_token);
 }

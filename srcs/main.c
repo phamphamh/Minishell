@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:33:16 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/14 14:47:25 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/25 11:00:39 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void	ft_initialize(char **envp, t_minishell *minishell)
 	minishell->gc_head = NULL;
 	minishell->exit_nb = 0;
 	minishell->env = ft_env_to_list(envp, minishell);
+	// a gérer différemment, voir ce qu'il faut faire avec les env
 	if (!minishell->env)
 	{
 		ft_putstr_fd("Error initializing environment\n", 2);

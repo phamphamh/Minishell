@@ -6,18 +6,13 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 21:14:55 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/15 00:40:11 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/01/25 12:07:58 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
-
-/* je verifie si le l'arg d'exit est un nombre et si il y a trop d'arguments,
-puis j'exit avec le bon code
-s'execute quand meme si l'arg est pas numerique
-s'execute pas si l'arg est numerique mais qu'il y a trop d'arguments
-*/
+/* Execute la commande exit avec gestion des arguments numériques et des erreurs */
 void	ft_exit_cmd(t_minishell *minishell)
 {
 	ft_putstr_fd("exit\n", 1);
@@ -42,6 +37,7 @@ void	ft_exit_cmd(t_minishell *minishell)
 		ft_clean_exit(minishell, -1);
 }
 
+/* Affiche les arguments avec gestion de l'option -n pour supprimer le retour à la ligne */
 void	ft_echo_cmd(t_minishell *minishell)
 {
 	t_token	*current;
@@ -81,6 +77,7 @@ void	ft_echo_cmd(t_minishell *minishell)
 		ft_putchar_fd('\n', 1);
 }
 
+/* Affiche le répertoire de travail actuel */
 void	ft_pwd(t_minishell *minishell)
 {
 	char	*pwd;
@@ -102,128 +99,114 @@ void	ft_pwd(t_minishell *minishell)
 	free(pwd);
 }
 
+/* Change le répertoire courant avec gestion de ~, - et des chemins absolus/relatifs */
 void	ft_cd(t_minishell *minishell)
 {
-	if (minishell->tokens->next && minishell->tokens->next->next)
+	if (minishell->tokens->next && minishell->tokens->next->type == ARG
+	&& minishell->tokens->next->next && minishell->tokens->next->next->type == ARG)
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 1);
-		// exit_nb = 1;
 		return;
 	}
-	if (!minishell->tokens->next || ft_strcmp_trim(minishell->tokens->next->value, "~") == 0)
+	else if (!minishell->tokens->next || ft_strcmp_trim(minishell->tokens->next->value, "~") == 0)
 	{
 		if (chdir(getenv("HOME")) != 0)
 		{
 			ft_putstr_fd("minishell: cd: ", 1);
 			ft_putstr_fd(strerror(errno), 1);
 			ft_putchar_fd('\n', 1);
-			// exit_nb = 1;
-			//revoir les exits
 		}
-		return;
 	}
-	if (ft_strcmp_trim(minishell->tokens->next->value, "-") == 0)
+	else if (ft_strcmp_trim(minishell->tokens->next->value, "-") == 0)
 	{
 		if (chdir(getenv("OLDPWD")) != 0)
 		{
 			ft_putstr_fd("minishell: cd: ", 1);
 			ft_putstr_fd(strerror(errno), 1);
 			ft_putchar_fd('\n', 1);
-			// exit_nb = 1;
 		}
 		else
 			ft_putstr_fd(getenv("OLDPWD"), 1);
-		return;
 	}
-	if (chdir(minishell->tokens->next->value) != 0)
+	else if (chdir(minishell->tokens->next->value) != 0)
 	{
 		ft_putstr_fd("minishell: cd: '", 1);
 		ft_putstr_fd(minishell->tokens->next->value, 1);
 		ft_putstr_fd("': ", 1);
 		ft_putstr_fd(strerror(errno), 1);
 		ft_putchar_fd('\n', 1);
-		return;
 	}
-	setenv("OLDPWD", getenv("PWD"), 1);
-	setenv("PWD", getcwd(NULL, 0), 1);
+	update_pwd_and_oldpwd(minishell);
 }
 
+/* Supprime une ou plusieurs variables d'environnement */
 void	ft_unset(t_minishell *minishell)
 {
-	t_env	*current;
-	t_env	*prev;
+	t_token	*current_token;
 
 	if (!minishell->tokens->next)
+		return ;
+	current_token = minishell->tokens->next;
+	while (current_token && current_token->type == ARG)
 	{
-		ft_putstr_fd("minishell: unset: missing argument\n", 1);
-		return;
-	}
-	current = minishell->env;
-	prev = NULL;
-	while (current)
-	{
-		if (ft_strcmp_trim(current->var, minishell->tokens->next->value) == 0)
+		if (!ft_is_valid_identifier(current_token->value))
 		{
-			if (prev)
-				prev->next = current->next;
-			else
-				minishell->env = current->next;
-			free(current->var);
-			free(current);
-			return;
+			ft_unset_error(current_token->value, minishell);
+			current_token = current_token->next;
+			continue ;
 		}
-		prev = current;
-		current = current->next;
+		ft_handle_unset_var(minishell, current_token->value);
+		current_token = current_token->next;
 	}
 }
-// faire marcher
+
+/* Affiche toutes les variables d'environnement */
 void	ft_env(t_minishell *minishell)
 {
-    t_env *temp;
+	t_env *temp;
 
+	if (minishell->tokens->next && minishell->tokens->next->type == ARG)
+	{
+		ft_putstr_fd("env : Too many arguments\n", 1);
+		return;
+	}
 	if (!minishell->env)
-    {
-        ft_putstr_fd("minishell: env: No environment variables\n", 1);
-        return;
-    }
-    temp = minishell->env;
-    while (temp)
-    {
-        ft_putstr_fd("env\n", 1);
-        ft_putstr_fd(temp->var, 1);
-        ft_putchar_fd('\n', 1);
-        temp = temp->next;
-    }
+	{
+		ft_putstr_fd("minishell: env: No environment variables\n", 1);
+		return;
+	}
+	temp = minishell->env;
+	while (temp)
+	{
+		ft_putstr_fd("env\n", 1);
+		ft_putstr_fd(temp->var, 1);
+		ft_putchar_fd('\n', 1);
+		temp = temp->next;
+	}
 }
 
+/* Ajoute ou modifie des variables d'environnement, ou affiche la liste triée si sans arguments */
 void	ft_export(t_minishell *minishell)
 {
-	t_env	*new_node;
-	t_env	*current;
+	t_token	*current_token;
 
-	if (!minishell->tokens->next)
+	if (!minishell->tokens->next || minishell->tokens->next->type != ARG)
 	{
-		ft_putstr_fd("minishell: export: missing argument\n", 1);
-		return;
+		ft_print_export_list(minishell->env);
+		return ;
 	}
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return;
-	new_node->var = ft_strdup(minishell->tokens->next->value);
-	new_node->next = NULL;
-	if (!minishell->env)
-		minishell->env = new_node;
-	else
+	current_token = minishell->tokens->next;
+	while (current_token && current_token->type == ARG)
 	{
-		current = minishell->env;
-		while (current->next)
-			current = current->next;
-		current->next = new_node;
+		if (!ft_is_valid_identifier_before_equal(current_token->value))
+			ft_export_error(current_token->value, minishell);
+		else
+			ft_handle_export_var(minishell, current_token->value);
+		current_token = current_token->next;
 	}
 }
 
-// les index sont set de sorte que seul 1 commande est dans l'input, changer plus tard
-// changer les retours d'erreurs, et vérifier si y'a tous les retours d'erreurs.
+/* Exécute la commande builtin appropriée en fonction du token */
 void	ft_builtins(t_minishell *minishell)
 {
 	if (!ft_strcmp_trim("exit", minishell->tokens->value))
