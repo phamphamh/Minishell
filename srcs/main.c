@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:33:16 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/24 11:11:54 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/26 20:55:43 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ void	ft_initialize(char **envp, t_minishell *minishell)
 #include <string.h>
 int	main(int argc, char **argv, char **envp)
 {
-	char		buffer[1024];
 	char		*input;
 	t_minishell minishell = {0};
 
@@ -88,27 +87,23 @@ int	main(int argc, char **argv, char **envp)
 	ft_initialize(envp, &minishell);
 	while (1)
 	{
-		// just to test without readline leaks
-		printf("minishell> ");
-		if (!fgets(buffer, sizeof(buffer), stdin))
-			break;
-		buffer[strcspn(buffer, "\n")] = '\0';
-		if (buffer[0] != '\0')
+		input = readline("minishell> ");
+		if (!input)
+			break ;
+		if (input[0] != '\0')
+			add_history(input);
+		ft_gc_add(&minishell.gc_head, input);
+		if (ft_parse(input, &minishell))
 		{
-			input = strdup(buffer);
-			ft_gc_add(&minishell.gc_head, input);
-			if (ft_parse(input, &minishell))
-			{
-				ft_gc_remove(&minishell.gc_head, input);
-				continue;
-			}
-			print_commands(minishell.commands);
-			if (!minishell.tokens)
-				continue;
-			ft_execute(&minishell);
-			ft_gc_remove_list(&minishell.gc_head, minishell.tokens);
 			ft_gc_remove(&minishell.gc_head, input);
+			continue;
 		}
+		print_commands(minishell.commands);
+		if (!minishell.tokens)
+			continue;
+		ft_execute(&minishell);
+		ft_gc_remove_list(&minishell.gc_head, minishell.tokens);
+		ft_gc_remove(&minishell.gc_head, input);
 	}
 
 	ft_gc_clear(&minishell.gc_head);
