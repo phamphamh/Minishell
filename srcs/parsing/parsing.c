@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/25 14:09:04 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/30 14:57:26 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void append_cmd(t_cmd **cmd_list, t_cmd *cmd)
     }
 }
 
-static int process_token(t_cmd **current_cmd, t_token *token, t_minishell *minishell)
+static int parse_command_token(t_cmd **current_cmd, t_token *token, t_minishell *minishell)
 {
     if (token->type == CMD || token->type == ARG)
     {
@@ -112,7 +112,7 @@ t_cmd	*tokens_to_cmds(t_token *tokens, t_minishell *minishell)
 		{
 			if (!tokens->next || tokens->next->type == PIPE)
 			{
-				ft_putstr_fd("Syntax error: unexpected token '|'\n", 2);
+				//ft_putstr_fd("Syntax error: unexpected token '|'\n", 2);
 				return (NULL);
 			}
 			handle_pipe(&cmd_list, &current_cmd);
@@ -121,7 +121,7 @@ t_cmd	*tokens_to_cmds(t_token *tokens, t_minishell *minishell)
 		{
 			if (!current_cmd)
 				current_cmd = init_cmd(minishell);
-			if (process_token(&current_cmd, tokens, minishell))
+			if (parse_command_token(&current_cmd, tokens, minishell))
 				return (NULL);
 		}
 		tokens = tokens->next;
@@ -136,6 +136,8 @@ int    ft_parse(char *input, t_minishell *minishell)
     t_token *tokens;
 
     tokens = ft_tokenize(input, minishell);
+    if (!tokens)
+        return (1);
     if (tokens->type == PIPE)
     {
         ft_putstr_fd("Syntax error: unexpected token '|'\n", 2);

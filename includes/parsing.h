@@ -49,6 +49,7 @@ int 	ft_determine_token_type(char *token, t_token *prev_token);
 t_token	*ft_create_token(char *value, int type, t_minishell *minishell);
 int	ft_determine_token_type(char *token, t_token *prev_token);
 bool	is_command(char *token, char *prev_token);
+char    *ft_expand_operators(const char *input);
 
 // parser.c
 int		ft_parse(char *input, t_minishell *minishell);
