@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/26 21:00:39 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/31 13:34:30 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,12 @@ static int	check_token_types(char *token)
 		return (PIPE);
 	if (ft_strlen(token) == 2 && ft_strcmp(token, ">>") == 0)
 		return (REDIR_APPEND);
+	if (ft_strlen(token) == 2 && ft_strcmp(token, "<<") == 0)
+		return (HERE_DOC);
 	if (ft_strlen(token) == 1 && ft_strcmp(token, ">") == 0)
 		return (REDIR_OUT);
-	if (ft_strcmp(token, "<") == 0)
+	if (ft_strlen(token) == 1 && ft_strcmp(token, "<") == 0)
 		return (REDIR_IN);
-	if (ft_strcmp(token, "<<") == 0)
-		return (HERE_DOC);
 	return (-1);
 }
 

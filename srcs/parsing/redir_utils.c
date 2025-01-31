@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/25 14:11:23 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/31 13:28:21 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	add_redirection(t_redirection **redir_list, t_token *token, t_minishell *min
 {
 	t_redirection	*redir;
 
-	if (!token->next || token->next->type != FILENAME)
+	if (!token->next || !(token->next->type == FILENAME || token->next->type == LIM))
 	{
 		print_errors(token);
 		return (1);

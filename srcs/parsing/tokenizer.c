@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/30 14:57:01 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/01/31 13:30:22 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,29 +73,6 @@ bool ft_integrate_token(char *value, int type, t_token **token_list, t_minishell
     return (true);
 }
 
-bool is_invalid_token_structure(char *token)
-{
-    int i;
-
-    if (!token || !token[0])
-        return (false);
-    if (token[0] == '|' || token[0] == '<' || token[0] == '>')
-    {
-        i = 1;
-        while (token[i])
-        {
-            if (!(token[i] != '>' && token[i] != '<' && token[i] != '|'))
-            {
-                ft_putstr_fd("bash: syntax error near unexpected token '", 2);
-                ft_putstr_fd(token, 2);
-                ft_putstr_fd("'\n", 2);
-                return (true);
-            }
-            i++;
-        }
-    }
-    return (false);
-}
 
 t_token *add_token(char *value, int type, t_token **token_list, t_minishell *minishell)
 {

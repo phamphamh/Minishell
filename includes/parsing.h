@@ -55,6 +55,16 @@ char    *ft_expand_operators(const char *input);
 int		ft_parse(char *input, t_minishell *minishell);
 void 	print_commands(t_cmd *cmd_list);
 
+// parsing utils
+
+// remove this after test
+void    print_commands(t_cmd *cmd_list);
+
+void	append_cmd(t_cmd **cmd_list, t_cmd *cmd);
+int	    handle_redirections(t_cmd *cmd, t_token *token, t_minishell *minishell);
+int	    process_command_token(t_cmd *cmd, t_token *token, t_minishell *minishell);
+void	handle_pipe(t_cmd **cmd_list, t_cmd **current_cmd);
+int	    process_tokens(t_cmd **cmd_list, t_cmd **current_cmd, t_token *tokens, t_minishell *minishell);
 
 t_cmd 	*init_cmd(t_minishell *minishell);
 void	add_arg_to_cmd(t_cmd *cmd, char *arg, t_minishell *minishell);
