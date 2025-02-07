@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:33:16 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/25 11:00:39 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/07 12:32:45 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,13 @@ void	ft_initialize(char **envp, t_minishell *minishell)
 	}
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
-	t_minishell	minishell;
+	t_minishell minishell = {0};
 
 	(void)argv;
 	(void)argc;
@@ -91,15 +94,22 @@ int	main(int argc, char **argv, char **envp)
 		if (input[0] != '\0')
 			add_history(input);
 		ft_gc_add(&minishell.gc_head, input);
-		minishell.tokens = ft_tokenize(input, &minishell);
+		if (ft_parse(input, &minishell))
+		{
+			ft_gc_remove(&minishell.gc_head, input);
+			continue;
+		}
+		print_commands(minishell.commands);
 		if (!minishell.tokens)
-			continue ;
+			continue;
 		ft_execute(&minishell);
-		// stocker l'exit status
-		// toujours des indirectly lost
 		ft_gc_remove_list(&minishell.gc_head, minishell.tokens);
 		ft_gc_remove(&minishell.gc_head, input);
 	}
+
 	ft_gc_clear(&minishell.gc_head);
 	return (0);
 }
+
+
+

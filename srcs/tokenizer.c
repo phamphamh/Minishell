@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:44:11 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/25 11:04:49 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/07 12:32:55 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,3 +108,4 @@ t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	new_token->next = NULL;
 	return (new_token);
 }
+
