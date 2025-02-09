@@ -49,10 +49,10 @@ int 	ft_determine_token_type(char *token, t_token *prev_token);
 t_token	*ft_create_token(char *value, int type, t_minishell *minishell);
 int	ft_determine_token_type(char *token, t_token *prev_token);
 bool	is_command(char *token, char *prev_token);
-char    *ft_expand_operators(const char *input);
+char    *ft_expand_operators(t_minishell *minishell, const char *input);
 
 // expand env var
-char	*extract_var_name(char *token, int i);
+char	*extract_var_name(t_minishell *minishell, char *token, int i);
 int	replace_variable(char *token, char *new_str, int *i, int *j, t_minishell *minishell);
 void	expand_variables(t_token *tokens, t_minishell *minishell);
 
@@ -81,8 +81,8 @@ int		add_redirection(t_redirection **redir_list, t_token *token, t_minishell *mi
 // split
 bool	is_quote(char c);
 int		skip_quotes(const char *s, int i, char *quote);
-char	*allocate_token(const char *start, int token_len, char **tokens, int token_count);
-int		handle_token(const char *s, int i, char delimiter, char **tokens, int *token_count);
-char	**ft_split_with_quotes(const char *s, char delimiter);
+char	*allocate_token(t_minishell *minishell, const char *start, int token_len, char **tokens, int token_count);
+int		handle_token(t_minishell *minishell, const char *s, int i, char delimiter, char **tokens, int *token_count);
+char	**ft_split_with_quotes(t_minishell *minishell, char *s, char delimiter);
 
 #endif

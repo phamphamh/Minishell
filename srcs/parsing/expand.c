@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/31 13:33:34 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 13:38:23 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	add_operator_spaces(char *new_input, int *j, char current, char next
 		new_input[(*j)++] = ' ';
 }
 
-char	*ft_expand_operators(const char *input)
+char	*ft_expand_operators(t_minishell *minishell, const char *input)
 {
 	int		i;
 	int		j;
@@ -53,6 +53,7 @@ char	*ft_expand_operators(const char *input)
 	new_input = malloc(ft_strlen(input) * 3 + 1);
 	if (!new_input)
 		return (NULL);
+	ft_gc_add(&minishell->gc_head, new_input);
 	i = -1;
 	j = 0;
 	while (input[++i])

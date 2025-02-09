@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/30 14:58:27 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 13:23:50 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	skip_delimiters(const char *s, int i, char delimiter)
 	return (i);
 }
 
-static int	handle_quoted_token(const char *s, int i, char **tokens, int *token_count)
+static int	handle_quoted_token(t_minishell *minishell, const char *s, int i, char **tokens, int *token_count)
 {
 	char		quote;
 	const char	*start;
@@ -36,14 +36,14 @@ static int	handle_quoted_token(const char *s, int i, char **tokens, int *token_c
 	if (i == -1) // Erreur si la quote fermante est manquante
 		return (-1);
 	token_len = &s[i - 1] - start; // Calcul de la longueur du token sans quotes
-	tokens[*token_count] = allocate_token(start, token_len, tokens, *token_count);
+	tokens[*token_count] = allocate_token(minishell, start, token_len, tokens, *token_count);
 	if (!tokens[*token_count])
 		return (-1);
 	(*token_count)++;
 	return (i);
 }
 
-static int	handle_unquoted_token(const char *s, int i, char delimiter, char **tokens, int *token_count)
+static int	handle_unquoted_token(t_minishell *minishell, const char *s, int i, char delimiter, char **tokens, int *token_count)
 {
 	const char	*start;
 	int			token_len;
@@ -52,25 +52,25 @@ static int	handle_unquoted_token(const char *s, int i, char delimiter, char **to
 	while (s[i] && s[i] != delimiter)
 		i++;
 	token_len = &s[i] - start;
-	tokens[*token_count] = allocate_token(start, token_len, tokens, *token_count);
+	tokens[*token_count] = allocate_token(minishell, start, token_len, tokens, *token_count);
 	if (!tokens[*token_count])
 		return (-1);
 	(*token_count)++;
 	return (i);
 }
 
-static int	handle_token_split(const char *s, int i, char delimiter, char **tokens, int *token_count)
+static int	handle_token_split(t_minishell *minishell, const char *s, int i, char delimiter, char **tokens, int *token_count)
 {
 	if (is_quote(s[i]))
-		return (handle_quoted_token(s, i, tokens, token_count));
+		return (handle_quoted_token(minishell, s, i, tokens, token_count));
 	else
-		return (handle_unquoted_token(s, i, delimiter, tokens, token_count));
+		return (handle_unquoted_token(minishell, s, i, delimiter, tokens, token_count));
 }
 
-int	handle_token(const char *s, int i, char delimiter, char **tokens, int *token_count)
+int	handle_token(t_minishell *minishell, const char *s, int i, char delimiter, char **tokens, int *token_count)
 {
 	i = skip_delimiters(s, i, delimiter);
 	if (!s[i]) // Fin de la chaîne
 		return (-1);
-	return (handle_token_split(s, i, delimiter, tokens, token_count));
+	return (handle_token_split(minishell, s, i, delimiter, tokens, token_count));
 }

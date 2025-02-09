@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/24 20:20:29 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 13:59:16 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool	is_quote(char c)
 	return (c == '\'' || c == '"');
 }
 
-char	*allocate_token(const char *start, int token_len, char **tokens, int token_count)
+char	*allocate_token(t_minishell *minishell, const char *start, int token_len, char **tokens, int token_count)
 {
 	char	*token;
 
@@ -25,8 +25,9 @@ char	*allocate_token(const char *start, int token_len, char **tokens, int token_
 	if (!token)
 	{
 		while (--token_count >= 0)
-			free(tokens[token_count]);
-		free(tokens);
+    		ft_gc_remove(&minishell->gc_head, tokens[token_count]); // Retire du GC proprement
+		ft_gc_remove(&minishell->gc_head, tokens);
+
 		return (NULL);
 	}
 	strncpy(token, start, token_len);
@@ -47,7 +48,7 @@ int	skip_quotes(const char *s, int i, char *quote)
 	return (i + 1); // Passe après la quote fermante
 }
 
-char	**ft_split_with_quotes(const char *s, char delimiter)
+char	**ft_split_with_quotes(t_minishell *minishell, char *s, char delimiter)
 {
 	char	**tokens;
 	int		token_count;
@@ -58,19 +59,26 @@ char	**ft_split_with_quotes(const char *s, char delimiter)
 	tokens = malloc(sizeof(char *) * (strlen(s) + 1));
 	if (!tokens)
 		return (NULL);
+	ft_gc_add(&minishell->gc_head, tokens);  // ✅ Ajout au GC
+
 	token_count = 0;
 	i = 0;
 	while (s[i])
 	{
 		int prev_i = i;
-		i = handle_token(s, i, delimiter, tokens, &token_count);
+		i = handle_token(minishell, s, i, delimiter, tokens, &token_count);
 		if (i == -1)
 			break ;
-		// Ensure progress in the loop
 		if (i <= prev_i)
 			break ;
 	}
+
+	// ✅ Ajout de chaque token au GC
+	for (int j = 0; j < token_count; j++)
+		ft_gc_add(&minishell->gc_head, tokens[j]);
+
 	tokens[token_count] = NULL;
 	return (tokens);
 }
+
 

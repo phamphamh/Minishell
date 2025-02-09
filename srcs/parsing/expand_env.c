@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/02/07 18:06:46 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 15:25:19 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ char	*expand_single_token(char *token, t_minishell *minishell)
 	new_str = malloc(ft_strlen(token) * 2);
 	if (!new_str)
 		return (NULL);
+	ft_gc_add(&minishell->gc_head, new_str);
 	i = 0;
 	j = 0;
 	while (token[i])
@@ -28,7 +29,7 @@ char	*expand_single_token(char *token, t_minishell *minishell)
 		if (token[i] == '$' && (ft_isalpha(token[i + 1]) || token[i + 1] == '?' || token[i + 1] == '$'))
 		{
 			if (replace_variable(token, new_str, &i, &j, minishell) == -1)
-				return (free(new_str), NULL);
+				return (ft_gc_remove(&minishell->gc_head, new_str), NULL);
 		}
 		else
 			new_str[j++] = token[i++];
@@ -47,7 +48,6 @@ void	expand_variables(t_token *tokens, t_minishell *minishell)
 		if (tokens->type != HERE_DOC)
 		{
 			expanded_value = expand_single_token(tokens->value, minishell);
-			free(tokens->value);
 			tokens->value = expanded_value;
 		}
 		tokens = tokens->next;

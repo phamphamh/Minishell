@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/31 13:28:21 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 15:40:59 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,10 @@ void print_errors(t_token *token)
         ft_putstr_fd("syntax error near unexpected token `unknown'\n", 2);
 }
 
-static int	handle_existing_redirection(t_redirection **redir_list, t_minishell *minishell)
+static int	handle_existing_redirection(t_redirection **redir_list)
 {
 	if (*redir_list)
-	{
-		ft_gc_remove(&minishell->gc_head, (*redir_list)->file);
-		ft_gc_remove(&minishell->gc_head, *redir_list);
 		*redir_list = NULL;
-	}
 	return (0);
 }
 
@@ -50,6 +46,7 @@ static int	allocate_redirection(t_redirection **redir, t_token *token, t_minishe
 	if (!*redir)
 		return (1);
 	ft_gc_add(&minishell->gc_head, *redir);
+
 	(*redir)->file = ft_strdup(token->next->value);
 	if (!(*redir)->file)
 		return (1);
@@ -58,6 +55,7 @@ static int	allocate_redirection(t_redirection **redir, t_token *token, t_minishe
 	(*redir)->next = NULL;
 	return (0);
 }
+
 
 int	add_redirection(t_redirection **redir_list, t_token *token, t_minishell *minishell)
 {
@@ -68,13 +66,20 @@ int	add_redirection(t_redirection **redir_list, t_token *token, t_minishell *min
 		print_errors(token);
 		return (1);
 	}
-	if (token->type == REDIR_OUT || token->type == REDIR_APPEND)
-		handle_existing_redirection(redir_list, minishell);
+
+	if (*redir_list && (token->type == REDIR_OUT || token->type == REDIR_APPEND))
+		handle_existing_redirection(redir_list);
+
 	if (allocate_redirection(&redir, token, minishell))
 		return (1);
+
+	// ✅ Ajout propre de la nouvelle redirection
+	redir->next = *redir_list;
 	*redir_list = redir;
+
 	return (0);
 }
+
 
 
 

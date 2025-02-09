@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/24 11:20:45 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 15:20:08 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,6 @@ void add_arg_to_cmd(t_cmd *cmd, char *arg, t_minishell *minishell)
 
     cmd->args = new_args;
 }
+
+
 

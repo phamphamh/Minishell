@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 17:04:23 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/23 17:54:45 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/09 14:47:56 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,22 +90,17 @@ void	ft_gc_clear(t_gc_node **gc_head)
 	*gc_head = NULL;
 }
 
-void ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
+void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 {
-    t_token *current;
-    t_token *next;
+	t_token	*current;
+	t_token	*next;
 
-    current = tokens;
-    while (current)
-    {
-        next = current->next;
-
-        // Vérifiez si `current->value` est dans gc_head avant suppression
-        if (current->value)
-            ft_gc_remove(gc_head, current->value);
-
-        ft_gc_remove(gc_head, current);
-        current = next;
-    }
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		ft_gc_remove(gc_head, current->value);
+		ft_gc_remove(gc_head, current);
+		current = next;
+	}
 }
-
