@@ -51,6 +51,11 @@ int	ft_determine_token_type(char *token, t_token *prev_token);
 bool	is_command(char *token, char *prev_token);
 char    *ft_expand_operators(const char *input);
 
+// expand env var
+char	*extract_var_name(char *token, int i);
+int	replace_variable(char *token, char *new_str, int *i, int *j, t_minishell *minishell);
+void	expand_variables(t_token *tokens, t_minishell *minishell);
+
 // parser.c
 int		ft_parse(char *input, t_minishell *minishell);
 void 	print_commands(t_cmd *cmd_list);

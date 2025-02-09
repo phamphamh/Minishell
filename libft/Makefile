@@ -6,7 +6,7 @@ SRC 		= ft_atoi.c ft_bzero.c ft_calloc.c ft_isalnum.c ft_isalpha.c ft_isascii.c 
 			  ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstadd_back.c ft_lstdelone.c ft_lstlast.c \
 			  ft_lstclear.c ft_lstiter.c ft_lstmap.c ft_pointer.c ft_print_hexa.c ft_fdprintf.c \
 			  ft_printf.c ft_putchar.c ft_putnbr_unsigned.c ft_putnbr.c ft_putstr.c \
-			  get_next_line.c ft_strcmp.c ft_free_arrays.c ft_strcmp_trim.c \
+			  get_next_line.c ft_strcmp.c ft_free_arrays.c ft_strcmp_trim.c ft_strcspn.c ft_strcpy.c \
 
 
 SRCS 		= ${addprefix ${PREROOT}, ${SRC}}

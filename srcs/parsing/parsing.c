@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/31 13:40:04 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/07 11:36:34 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	ft_parse(char *input, t_minishell *minishell)
 		ft_putstr_fd("Syntax error: unexpected token '|'\n", 2);
 		return (1);
 	}
+	expand_variables(tokens, minishell);
 	minishell->commands = tokens_to_cmds(tokens, minishell);
 	return (!minishell->commands);
 }

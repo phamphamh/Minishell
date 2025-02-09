@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 06:22:24 by jspitz            #+#    #+#             */
-/*   Updated: 2025/01/13 16:03:57 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:29:15 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	*ft_strrchr(const char *s, int c);
 char	*ft_strtrim(char const *s1, char const *set);
+size_t	ft_strcspn(const char *s, const char *reject);
+char	*ft_strcpy(char *dest, const char *src);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
