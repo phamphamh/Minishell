@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/12 17:04:23 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/23 17:54:45 by tcousin          ###   ########.fr       */
+/*   Created: 2025/02/07 13:25:45 by yboumanz          #+#    #+#             */
+/*   Updated: 2025/02/12 16:51:59 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,18 @@ return: true if succed | false if error
 bool	ft_gc_add(t_gc_node **gc_head, void *ptr)
 {
 	t_gc_node	*new_node;
+	t_gc_node	*current;
 
 	if (!ptr)
 		return (false);
+	// Vérifier si le pointeur existe déjà
+	current = *gc_head;
+	while (current)
+	{
+		if (current->ptr == ptr)
+			return (true);
+		current = current->next;
+	}
 	new_node = malloc(sizeof(t_gc_node));
 	if (!new_node)
 		return (false);
@@ -48,7 +57,7 @@ bool	ft_gc_remove(t_gc_node **gc_head, void *ptr)
 	t_gc_node	*current;
 	t_gc_node	*prev;
 
-	if (!ptr)
+	if (!gc_head || !*gc_head || !ptr)
 		return (false);
 	current = *gc_head;
 	prev = NULL;
@@ -60,6 +69,7 @@ bool	ft_gc_remove(t_gc_node **gc_head, void *ptr)
 				prev->next = current->next;
 			else
 				*gc_head = current->next;
+			free(current->ptr);
 			free(current);
 			return (true);
 		}
@@ -77,35 +87,37 @@ arg: the list to be free.
 void	ft_gc_clear(t_gc_node **gc_head)
 {
 	t_gc_node	*current;
-	t_gc_node	*temp;
+	t_gc_node	*next;
 
+	if (!gc_head || !*gc_head)
+		return ;
 	current = *gc_head;
 	while (current)
 	{
-		free(current->ptr);
-		temp = current;
-		current = current->next;
-		free(temp);
+		next = current->next;
+		if (current->ptr)
+			free(current->ptr);
+		free(current);
+		current = next;
 	}
 	*gc_head = NULL;
 }
 
-void ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
+void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 {
-    t_token *current;
-    t_token *next;
+	t_token	*current;
+	t_token	*next;
 
-    current = tokens;
-    while (current)
-    {
-        next = current->next;
-
-        // Vérifiez si `current->value` est dans gc_head avant suppression
-        if (current->value)
-            ft_gc_remove(gc_head, current->value);
-
-        ft_gc_remove(gc_head, current);
-        current = next;
-    }
+	if (!gc_head || !*gc_head || !tokens)
+		return ;
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		if (current->value)
+			ft_gc_remove(gc_head, current->value);
+		ft_gc_remove(gc_head, current);
+		current = next;
+	}
 }
 

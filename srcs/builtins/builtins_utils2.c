@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 12:00:24 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/25 12:12:58 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/08 00:22:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,19 +195,31 @@ void	ft_handle_export_var(t_minishell *minishell, char *var)
 {
 	t_env	*env_entry;
 	char	*equal_pos;
+	char	*var_name;
+	int		name_len;
 
 	equal_pos = ft_strchr(var, '=');
-	if (equal_pos)
+	if (!equal_pos)
+		return;
+	name_len = equal_pos - var;
+	var_name = ft_substr(var, 0, name_len);
+	if (!var_name)
+		return;
+	if (!ft_is_valid_identifier(var_name))
 	{
-		env_entry = ft_find_env_var(minishell->env, var);
-		if (env_entry)
-		{
-			free(env_entry->var);
-			env_entry->var = ft_strdup(var);
-		}
-		else
-			ft_add_env_var(minishell, var);
+		ft_export_error(var_name, minishell);
+		free(var_name);
+		return;
 	}
+	env_entry = ft_find_env_var(minishell->env, var_name);
+	if (env_entry)
+	{
+		free(env_entry->var);
+		env_entry->var = ft_strdup(var);
+	}
+	else
+		ft_add_env_var(minishell, var);
+	free(var_name);
 }
 
 /* Affiche un message d'erreur pour export */

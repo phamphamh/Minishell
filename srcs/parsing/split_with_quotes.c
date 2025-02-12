@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split_with_quotes.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/01/24 20:20:29 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/10 16:12:23 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,12 @@ int	skip_quotes(const char *s, int i, char *quote)
 	return (i + 1); // Passe après la quote fermante
 }
 
-char	**ft_split_with_quotes(const char *s, char delimiter)
+char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *minishell)
 {
 	char	**tokens;
 	int		token_count;
 	int		i;
+	int		prev_i;
 
 	if (!s)
 		return (NULL);
@@ -62,15 +63,23 @@ char	**ft_split_with_quotes(const char *s, char delimiter)
 	i = 0;
 	while (s[i])
 	{
-		int prev_i = i;
-		i = handle_token(s, i, delimiter, tokens, &token_count);
+		prev_i = i;
+		i = handle_token(s, i, delimiter, tokens, &token_count, minishell);
 		if (i == -1)
-			break ;
-		// Ensure progress in the loop
+		{
+			while (--token_count >= 0)
+			{
+				ft_gc_remove(&minishell->gc_head, tokens[token_count]);
+				free(tokens[token_count]);
+			}
+			free(tokens);
+			return (NULL);
+		}
 		if (i <= prev_i)
-			break ;
+			break;
 	}
 	tokens[token_count] = NULL;
+	ft_gc_add(&minishell->gc_head, tokens);
 	return (tokens);
 }
 
