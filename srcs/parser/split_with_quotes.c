@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split_with_quotes.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/02/10 16:12:23 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/15 14:04:34 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,69 +17,66 @@ bool	is_quote(char c)
 	return (c == '\'' || c == '"');
 }
 
-char	*allocate_token(const char *start, int token_len, char **tokens, int token_count)
+int	skip_quotes(const char *s, int i, char *quote)
 {
-	char	*token;
-
-	token = malloc(token_len + 1);
-	if (!token)
+	*quote = s[i++];
+	while (s[i] && s[i] != *quote)
+		i++;
+	if (s[i] != *quote)
 	{
-		while (--token_count >= 0)
-			free(tokens[token_count]);
+		fprintf(stderr, "Syntax error: missing closing quote %c\n", *quote);
+		return (-1);
+	}
+	return (i + 1);
+}
+
+static char	**manage_tokens(const char *s, int free_flag, char **tokens, int *token_count)
+{
+	if (free_flag)
+	{
+		while (--(*token_count) >= 0)
+			free(tokens[*token_count]);
 		free(tokens);
 		return (NULL);
 	}
-	strncpy(token, start, token_len);
-	token[token_len] = '\0';
-	return (token);
-}
-
-int	skip_quotes(const char *s, int i, char *quote)
-{
-	*quote = s[i++]; // Stocke la quote d'ouverture
-	while (s[i] && s[i] != *quote) // Parcourt jusqu'à la quote fermante ou la fin
-		i++;
-	if (s[i] != *quote) // Si la quote fermante est manquante
-	{
-		fprintf(stderr, "Syntax error: missing closing quote `%c`\n", *quote);
-		return (-1); // Retourne une erreur
-	}
-	return (i + 1); // Passe après la quote fermante
-}
-
-char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *minishell)
-{
-	char	**tokens;
-	int		token_count;
-	int		i;
-	int		prev_i;
-
-	if (!s)
-		return (NULL);
 	tokens = malloc(sizeof(char *) * (strlen(s) + 1));
 	if (!tokens)
 		return (NULL);
-	token_count = 0;
+	return (tokens);
+}
+
+static int	process_tokens(const char *s, char delimiter, char **tokens, int *token_count, t_minishell *ms)
+{
+	int	i;
+	int	prev_i;
+
 	i = 0;
 	while (s[i])
 	{
 		prev_i = i;
-		i = handle_token(s, i, delimiter, tokens, &token_count, minishell);
+		i = handle_token(s, i, delimiter, tokens, token_count, ms);
 		if (i == -1)
-		{
-			while (--token_count >= 0)
-			{
-				ft_gc_remove(&minishell->gc_head, tokens[token_count]);
-				free(tokens[token_count]);
-			}
-			free(tokens);
-			return (NULL);
-		}
+			return ((int)(long)manage_tokens(NULL, 1, tokens, token_count));
 		if (i <= prev_i)
 			break;
 	}
-	tokens[token_count] = NULL;
-	ft_gc_add(&minishell->gc_head, tokens);
-	return (tokens);
+	return (i);
 }
 
+char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms)
+{
+	char	**tokens;
+	int		token_count;
+
+	if (!s)
+		return (NULL);
+	tokens = manage_tokens(s, 0, NULL, &token_count);
+	if (!tokens)
+		return (NULL);
+	token_count = 0;
+	if (process_tokens(s, delimiter, tokens, &token_count, ms) == -1)
+		return (NULL);
+	tokens[token_count] = NULL;
+	ft_gc_add(&ms->gc_head, tokens);
+	return (tokens);
+}
