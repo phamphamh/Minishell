@@ -34,7 +34,7 @@ all:		${NAME}
 make:		make all
 
 .c.o:
-			${GCC} ${CFLAGS} -c -I ${HEAD} $< -o ${<:.c=.o}
+			${GCC} ${CFLAGS} -c -I. $< -o $@
 
 
 

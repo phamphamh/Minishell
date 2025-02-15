@@ -13,36 +13,49 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
+
+SRCS = srcs/main.c \
+       srcs/garbage_collector.c \
+       srcs/signal_handler.c \
+       srcs/builtins/builtins.c \
+       srcs/builtins/builtins_utils.c \
+       srcs/exec/exec.c \
+       srcs/exec/pipe_handler.c \
+       srcs/exec/redirection.c \
+       srcs/parser/tokenizer.c \
+       srcs/parser/tokenizer_utils.c \
+       srcs/parser/cmd_parser.c \
+       srcs/parser/parser_utils.c \
+       srcs/parser/split_with_quotes.c \
+       srcs/parser/split_utils.c \
+       srcs/parser/check_syntax.c \
+       srcs/parser/expand_env.c \
+       srcs/utils.c
+
+OBJS = $(SRCS:.c=.o)
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRC_DIR = srcs
-
-SRCS =	$(SRC_DIR)/main.c $(SRC_DIR)/garbage_collector.c $(SRC_DIR)/tokenizer.c \
-		$(SRC_DIR)/exec/exec.c $(SRC_DIR)/builtins/builtins.c $(SRC_DIR)/builtins/builtins_utils.c \
-
-OBJS = $(SRCS:.c=.o)
-
 INCLUDES = -I./includes -I./$(LIBFT_DIR)
 
-LDFLAGS = -lreadline
+LIBS = -L$(LIBFT_DIR) -lft -L/usr/local/lib -lreadline
 
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes $(V_FLAG)
 VALGRIND_OTHER = valgrind --vgdb=yes
 V_FLAG = --suppressions="data/ignore_valgrind"
 HELLGRIND = valgrind --tool=helgrind -g3
 
-all: $(NAME)
+all: $(LIBFT) $(NAME)
 	@echo "Build completed successfully."
-
-$(NAME): $(LIBFT) $(OBJS)
-	@$(CC) $(OBJS) -L$(LIBFT_DIR) -lft -o $(NAME) $(LDFLAGS)
 
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
+
+$(NAME): $(OBJS)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBS) -o $(NAME)
 
 %.o: %.c
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

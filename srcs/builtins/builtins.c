@@ -5,240 +5,184 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/12 21:14:55 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/01/15 00:40:11 by yboumanz         ###   ########.fr       */
+/*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
+/*   Updated: 2025/02/10 15:40:04 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
-
-/* je verifie si le l'arg d'exit est un nombre et si il y a trop d'arguments,
-puis j'exit avec le bon code
-s'execute quand meme si l'arg est pas numerique
-s'execute pas si l'arg est numerique mais qu'il y a trop d'arguments
-*/
-void	ft_exit_cmd(t_minishell *minishell)
+static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 {
-	ft_putstr_fd("exit\n", 1);
-	if (minishell->tokens->next && minishell->tokens->next->type == ARG)
+	char	*path;
+	char	*old_pwd;
+	char	*new_pwd;
+	t_env	*pwd_var;
+
+	if (!cmd->args[1])
 	{
-		if (!ft_is_all_nb(minishell->tokens->next->value))
+		pwd_var = ft_find_env_var(minishell->env, "HOME");
+		if (!pwd_var || !pwd_var->var)
 		{
-			ft_error_msg("minishell: exit: ", minishell->tokens->next->value,
-			": numeric argument required\n", 2);
-			ft_clean_exit(minishell, 2);
+			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+			return (1);
 		}
-		if (minishell->tokens->next->next && minishell->tokens->next->next->type == ARG)
-		{
-			ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-			minishell->exit_nb = 1;
-			return ;
-		}
-		else
-			handle_exit_nmb(minishell, ft_atoi(minishell->tokens->next->value));
+		path = strchr(pwd_var->var, '=') + 1;
+	}
+	else if (cmd->args[2])
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
+		return (1);
 	}
 	else
-		ft_clean_exit(minishell, -1);
+		path = cmd->args[1];
+
+	old_pwd = getcwd(NULL, 0);
+	if (!old_pwd)
+	{
+		ft_putstr_fd("minishell: cd: error retrieving current directory\n", 2);
+		return (1);
+	}
+
+	if (chdir(path) == -1)
+	{
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(old_pwd);
+		return (1);
+	}
+
+	new_pwd = getcwd(NULL, 0);
+	if (!new_pwd)
+	{
+		ft_putstr_fd("minishell: cd: error retrieving current directory\n", 2);
+		free(old_pwd);
+		return (1);
+	}
+
+	pwd_var = ft_find_env_var(minishell->env, "PWD");
+	if (pwd_var)
+		update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
+	update_env_var(minishell->env, "PWD", new_pwd, minishell);
+
+	free(old_pwd);
+	free(new_pwd);
+	return (0);
 }
 
-void	ft_echo_cmd(t_minishell *minishell)
+static int	ft_echo(t_cmd *cmd)
 {
-	t_token	*current;
-	bool	newline;
-	bool	first_arg;
+	int	i;
+	int	j;
+	int	n_option;
+	int	first_arg;
 
-	if (!minishell->tokens->next || minishell->tokens->next->type != ARG)
+	i = 1;
+	n_option = 0;
+	first_arg = 1;
+	while (cmd->args[i])
 	{
-		ft_putchar_fd('\n', 1);
-		return;
-	}
-	first_arg = true;
-	newline = true;
-	current = minishell->tokens->next;
-	while (current && current->type == ARG)
-	{
-		if (!ft_strcmp(current->value, "-n") && first_arg)
+		if (ft_strncmp(cmd->args[i], "-n", 2) == 0)
 		{
-			while (!ft_strcmp(current->value, "-n"))
-			{
-				if (!current->next)
-					return ;
-				newline = false;
-				current = current->next;
-			}
+			j = 2;
+			while (cmd->args[i][j] == 'n')
+				j++;
+			if (cmd->args[i][j] != '\0')
+				break;
+			n_option = 1;
+			i++;
 		}
-		if (ft_strcmp_trim(current->value, "$?") == 0)
-			ft_putnbr_fd(minishell->exit_nb, 1);
 		else
-			ft_putstr_fd(current->value, 1);
-		if (current->next && current->next->type == ARG)
-			ft_putchar_fd(' ', 1);
-		current = current->next;
-		first_arg = false;
+			break;
 	}
-	if (newline)
+	while (cmd->args[i])
+	{
+		if (!first_arg)
+			ft_putchar_fd(' ', 1);
+		ft_putstr_fd(cmd->args[i], 1);
+		first_arg = 0;
+		i++;
+	}
+	if (!n_option)
 		ft_putchar_fd('\n', 1);
+	return (0);
 }
 
-void	ft_pwd(t_minishell *minishell)
+static int	ft_pwd(void)
 {
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
-		ft_putstr_fd("minishell: pwd: ", 1);
-		ft_putstr_fd(strerror(errno), 1);
-		ft_putchar_fd('\n', 1);
+		ft_putstr_fd("minishell: pwd: error retrieving current directory\n", 2);
+		return (1);
 	}
-	else if (minishell->tokens->next)
-		ft_putstr_fd("minishell: pwd: too many arguments\n", 1);
-	else
-	{
-		ft_putstr_fd(pwd, 1);
-		ft_putchar_fd('\n', 1);
-	}
+	ft_putendl_fd(pwd, 1);
 	free(pwd);
+	return (0);
 }
 
-void	ft_cd(t_minishell *minishell)
+static int	ft_exit(t_cmd *cmd, t_minishell *minishell)
 {
-	if (minishell->tokens->next && minishell->tokens->next->next)
+	int	exit_code;
+
+	ft_putendl_fd("exit", 2);
+	if (!cmd->args[1])
+		exit_code = minishell->exit_nb;
+	else
 	{
-		ft_putstr_fd("minishell: cd: too many arguments\n", 1);
-		// exit_nb = 1;
-		return;
-	}
-	if (!minishell->tokens->next || ft_strcmp_trim(minishell->tokens->next->value, "~") == 0)
-	{
-		if (chdir(getenv("HOME")) != 0)
+		if (!ft_is_all_nb(cmd->args[1]))
 		{
-			ft_putstr_fd("minishell: cd: ", 1);
-			ft_putstr_fd(strerror(errno), 1);
-			ft_putchar_fd('\n', 1);
-			// exit_nb = 1;
-			//revoir les exits
-		}
-		return;
-	}
-	if (ft_strcmp_trim(minishell->tokens->next->value, "-") == 0)
-	{
-		if (chdir(getenv("OLDPWD")) != 0)
-		{
-			ft_putstr_fd("minishell: cd: ", 1);
-			ft_putstr_fd(strerror(errno), 1);
-			ft_putchar_fd('\n', 1);
-			// exit_nb = 1;
+			ft_putstr_fd("minishell: exit: ", 2);
+			ft_putstr_fd(cmd->args[1], 2);
+			ft_putstr_fd(": numeric argument required\n", 2);
+			exit_code = 2;
 		}
 		else
-			ft_putstr_fd(getenv("OLDPWD"), 1);
-		return;
-	}
-	if (chdir(minishell->tokens->next->value) != 0)
-	{
-		ft_putstr_fd("minishell: cd: '", 1);
-		ft_putstr_fd(minishell->tokens->next->value, 1);
-		ft_putstr_fd("': ", 1);
-		ft_putstr_fd(strerror(errno), 1);
-		ft_putchar_fd('\n', 1);
-		return;
-	}
-	setenv("OLDPWD", getenv("PWD"), 1);
-	setenv("PWD", getcwd(NULL, 0), 1);
-}
-
-void	ft_unset(t_minishell *minishell)
-{
-	t_env	*current;
-	t_env	*prev;
-
-	if (!minishell->tokens->next)
-	{
-		ft_putstr_fd("minishell: unset: missing argument\n", 1);
-		return;
-	}
-	current = minishell->env;
-	prev = NULL;
-	while (current)
-	{
-		if (ft_strcmp_trim(current->var, minishell->tokens->next->value) == 0)
 		{
-			if (prev)
-				prev->next = current->next;
-			else
-				minishell->env = current->next;
-			free(current->var);
-			free(current);
-			return;
+			exit_code = ft_atoi(cmd->args[1]);
+			if (cmd->args[2])
+			{
+				ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+				return (1);
+			}
 		}
-		prev = current;
-		current = current->next;
 	}
-}
-// faire marcher
-void	ft_env(t_minishell *minishell)
-{
-    t_env *temp;
-
-	if (!minishell->env)
-    {
-        ft_putstr_fd("minishell: env: No environment variables\n", 1);
-        return;
-    }
-    temp = minishell->env;
-    while (temp)
-    {
-        ft_putstr_fd("env\n", 1);
-        ft_putstr_fd(temp->var, 1);
-        ft_putchar_fd('\n', 1);
-        temp = temp->next;
-    }
+	ft_clean_exit(minishell, exit_code);
+	return (0);
 }
 
-void	ft_export(t_minishell *minishell)
+int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 {
-	t_env	*new_node;
-	t_env	*current;
-
-	if (!minishell->tokens->next)
+	if (ft_strcmp(cmd->name, "cd") == 0)
+		return (ft_cd(cmd, minishell));
+	else if (ft_strcmp(cmd->name, "echo") == 0)
+		return (ft_echo(cmd));
+	else if (ft_strcmp(cmd->name, "pwd") == 0)
+		return (ft_pwd());
+	else if (ft_strcmp(cmd->name, "export") == 0)
 	{
-		ft_putstr_fd("minishell: export: missing argument\n", 1);
-		return;
+		if (!cmd->args[1])
+			ft_print_export_list(minishell->env);
+		else
+			ft_handle_export_var(minishell, cmd->args[1]);
+		return (0);
 	}
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return;
-	new_node->var = ft_strdup(minishell->tokens->next->value);
-	new_node->next = NULL;
-	if (!minishell->env)
-		minishell->env = new_node;
-	else
+	else if (ft_strcmp(cmd->name, "unset") == 0)
 	{
-		current = minishell->env;
-		while (current->next)
-			current = current->next;
-		current->next = new_node;
+		if (cmd->args[1])
+			ft_handle_unset_var(minishell, cmd->args[1]);
+		return (0);
 	}
-}
-
-// les index sont set de sorte que seul 1 commande est dans l'input, changer plus tard
-// changer les retours d'erreurs, et vérifier si y'a tous les retours d'erreurs.
-void	ft_builtins(t_minishell *minishell)
-{
-	if (!ft_strcmp_trim("exit", minishell->tokens->value))
-		ft_exit_cmd(minishell);
-	if (!ft_strcmp_trim("echo", minishell->tokens->value))
-		ft_echo_cmd(minishell);
-	if (!ft_strcmp_trim("pwd", minishell->tokens->value))
-		ft_pwd(minishell);
-	if (!ft_strcmp_trim("env", minishell->tokens->value))
-		ft_env(minishell);
-	if (!ft_strcmp_trim("cd", minishell->tokens->value))
-		ft_cd(minishell);
-	if (!ft_strcmp_trim("unset", minishell->tokens->value))
-		ft_unset(minishell);
-	if (!ft_strcmp_trim("export", minishell->tokens->value))
-		ft_export(minishell);
+	else if (ft_strcmp(cmd->name, "env") == 0)
+	{
+		ft_print_env(minishell->env);
+		return (0);
+	}
+	else if (ft_strcmp(cmd->name, "exit") == 0)
+		return (ft_exit(cmd, minishell));
+	return (0);
 }
 
