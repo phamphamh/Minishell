@@ -60,10 +60,14 @@ static void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	char	**env_array;
 
 	ft_setup_pipes(cmd);
+
+	// Appliquer les redirections avant execve()
 	if (!ft_handle_redirection(cmd->redirs))
 		exit(1);
+
 	if (!cmd->name || !*cmd->name)
 		exit(0);
+
 	cmd_path = ft_find_executable(cmd->name, minishell->env);
 	if (!cmd_path)
 	{
@@ -74,9 +78,12 @@ static void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	}
 	env_array = ft_env_to_array(minishell->env);
 	execve(cmd_path, cmd->args, env_array);
+
+	// En cas d'échec de execve
 	ft_putstr_fd("minishell: execve error\n", 2);
 	exit(126);
 }
+
 
 void	ft_execute_command(t_cmd *cmd, t_minishell *minishell)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/02/10 15:29:00 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/15 13:35:34 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,8 +148,16 @@ int		ft_handle_redirection(t_redirection *redir);
 void	ft_restore_fds(int saved_stdin, int saved_stdout);
 
 // tokenizer.c
+int ft_is_operator(char c);
+char *ft_allocate_expanded(char *input);
+void ft_fill_expanded(char *input, char *expanded);
+char *ft_expand_operators(char *input);
+int ft_determine_token_type(char *token);
 t_token	*ft_tokenize(char *input, t_minishell *minishell);
-int		ft_determine_token_type(char *token);
+//int		ft_determine_token_type(char *token);
+
+// expand env variables
+char *expand_env_vars(const char *str, t_minishell *minishell);
 
 // split_with_quotes.c
 char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *minishell);
@@ -161,6 +169,10 @@ int		skip_quotes(const char *s, int i, char *quote);
 int		handle_token(const char *s, int i, char delimiter, char **tokens, int *token_count, t_minishell *minishell);
 
 // cmd_parser.c
+int 	ft_count_args(t_token *start);
+t_redirection *ft_create_redirection(t_token *token, t_token *next, t_minishell *minishell);
+void 	ft_process_redirection(t_token **current, t_cmd *cmd, t_minishell *minishell);
+int		ft_check_syntax_errors(t_token *tokens);
 t_cmd	*tokens_to_cmds(t_token *tokens, t_minishell *minishell);
 
 // utils.c

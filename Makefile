@@ -24,10 +24,14 @@ SRCS = srcs/main.c \
        srcs/exec/exec.c \
        srcs/exec/pipe_handler.c \
        srcs/exec/redirection.c \
-       srcs/parsing/tokenizer.c \
-       srcs/parsing/cmd_parser.c \
-       srcs/parsing/split_with_quotes.c \
-       srcs/parsing/split_utils.c \
+       srcs/parser/tokenizer.c \
+       srcs/parser/tokenizer_utils.c \
+       srcs/parser/cmd_parser.c \
+       srcs/parser/parser_utils.c \
+       srcs/parser/split_with_quotes.c \
+       srcs/parser/split_utils.c \
+       srcs/parser/check_syntax.c \
+       srcs/parser/expand_env.c \
        srcs/utils.c
 
 OBJS = $(SRCS:.c=.o)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/10 15:28:56 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/15 12:38:30 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ static void	ft_process_line(char *line, t_minishell *minishell)
 	tokens = ft_tokenize(line, minishell);
 	if (!tokens)
 		return ;
+	if (ft_check_syntax_errors(tokens))
+		return;
 	cmd = tokens_to_cmds(tokens, minishell);
 	if (!cmd)
 		return ;
@@ -121,7 +123,3 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (0);
 }
-
-
-
-
