@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/10 15:28:56 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/13 12:59:40 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,15 +90,6 @@ static void	ft_process_line(char *line, t_minishell *minishell)
 	}
 }
 
-static void	ft_initialize_shell(t_minishell *minishell)
-{
-	minishell->env = NULL;
-	minishell->gc_head = NULL;
-	minishell->tokens = NULL;
-	minishell->commands = NULL;
-	minishell->exit_nb = 0;
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
@@ -106,16 +97,13 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	ft_initialize_shell(&minishell);
 	ft_initialize(&minishell, envp);
 	ft_setup_signals();
 	while (1)
 	{
 		line = readline("minishell$ ");
 		if (!line)
-		{
 			ft_clean_exit(&minishell, minishell.exit_nb);
-		}
 		ft_process_line(line, &minishell);
 		free(line);
 	}

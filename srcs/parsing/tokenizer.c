@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/10 15:51:53 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/13 13:40:36 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,47 +91,34 @@ static t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	return (new_token);
 }
 
-t_token	*ft_tokenize(char *input, t_minishell *minishell)
+t_token	*ft_tokenize(char *input, t_env *env)
 {
-	char	**split_input;
-	char	*expanded_input;
-	t_token	*token_list;
-	t_token	*current;
-	t_token	*new_token;
-	int		i;
+	t_token	*tokens;
+	char	*expanded;
+	
+	expanded = ft_expand_var(input, env);
+	tokens = ft_split_tokens(expanded);
+	free(expanded);
+	return (tokens);
+}
 
-	expanded_input = ft_expand_operators(input);
-	if (!expanded_input)
-		return (NULL);
-	ft_gc_add(&minishell->gc_head, expanded_input);
-	split_input = ft_split_with_quotes(expanded_input, ' ', minishell);
-	ft_gc_remove(&minishell->gc_head, expanded_input);
-	free(expanded_input);
-	if (!split_input)
-		return (NULL);
-	token_list = NULL;
+t_token	*ft_split_tokens(char *str)
+{
+	t_token	*tokens;
+	int		i;
+	
+	tokens = NULL;
 	i = 0;
-	while (split_input[i])
+	while (str[i])
 	{
-		new_token = ft_create_token(split_input[i],
-				ft_determine_token_type(split_input[i]), minishell);
-		if (!new_token)
-		{
-			ft_free_arrays(split_input);
-			return (NULL);
-		}
-		if (!token_list)
-			token_list = new_token;
+		if (ft_isspace(str[i]))
+			i++;
+		else if (ft_is_operator(&str[i]))
+			tokens = ft_add_operator_token(&tokens, &str[i], &i);
+		else if (str[i] == '\'' || str[i] == '\"')
+			tokens = ft_add_quoted_token(&tokens, &str[i], &i);
 		else
-		{
-			current = token_list;
-			while (current->next)
-				current = current->next;
-			current->next = new_token;
-			new_token->prev = current;
-		}
-		i++;
+			tokens = ft_add_word_token(&tokens, &str[i], &i);
 	}
-	ft_free_arrays(split_input);
-	return (token_list);
+	return (tokens);
 }

@@ -54,16 +54,68 @@ char	*ft_find_executable(char *cmd_name, t_env *env)
 	return (NULL);
 }
 
+static char *ft_expand_variables(char *str, t_env *env)
+{
+	char    *result;
+	char    *temp;
+	int     i;
+	int     j;
+
+	if (!str)
+		return (NULL);
+	result = ft_strdup("");
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$' && str[i + 1] && str[i + 1] != ' ')
+		{
+			i++;
+			j = i;
+			while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
+				j++;
+			temp = ft_substr(str, i, j - i);
+			t_env *var = ft_find_env_var(env, temp);
+			free(temp);
+			if (var)
+			{
+				temp = result;
+				result = ft_strjoin(result, var->var + ft_strlen(var->name) + 1);
+				free(temp);
+			}
+			i = j;
+		}
+		else
+		{
+			temp = result;
+			result = ft_strjoin_char(result, str[i]);
+			free(temp);
+			i++;
+		}
+	}
+	return (result);
+}
+
 static void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 {
 	char	*cmd_path;
 	char	**env_array;
+	int		i;
 
 	ft_setup_pipes(cmd);
 	if (!ft_handle_redirection(cmd->redirs))
 		exit(1);
 	if (!cmd->name || !*cmd->name)
 		exit(0);
+	
+	// Expansion des variables dans le nom de la commande et les arguments
+	cmd->name = ft_expand_variables(cmd->name, minishell->env);
+	i = 0;
+	while (cmd->args[i])
+	{
+		cmd->args[i] = ft_expand_variables(cmd->args[i], minishell->env);
+		i++;
+	}
+
 	cmd_path = ft_find_executable(cmd->name, minishell->env);
 	if (!cmd_path)
 	{

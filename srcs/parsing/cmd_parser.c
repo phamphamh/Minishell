@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/07 13:23:29 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/13 13:38:01 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,4 +136,29 @@ t_cmd	*tokens_to_cmds(t_token *tokens, t_minishell *minishell)
 		current_token = current_token->next;
 	}
 	return (first_cmd);
+}
+
+t_cmd	*ft_parse_cmd(t_token *tokens, t_env *env)
+{
+	t_cmd	*cmd;
+	
+	cmd = ft_init_cmd();
+	while (tokens)
+	{
+		if (tokens->type == WORD)
+		{
+			if (!cmd->name)
+				cmd->name = ft_strdup(tokens->value);
+			ft_add_arg(cmd, tokens->value);
+		}
+		else if (tokens->type == REDIR)
+			ft_add_redir(cmd, tokens);
+		else if (tokens->type == PIPE)
+		{
+			cmd->next = ft_init_cmd();
+			cmd = cmd->next;
+		}
+		tokens = tokens->next;
+	}
+	return (cmd);
 } 

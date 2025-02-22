@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/02/10 15:29:00 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/13 13:40:36 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ typedef struct s_gc_node
 // Structure pour les variables d'environnement
 typedef struct s_env
 {
+	char			*name;
 	char			*var;
 	struct s_env	*next;
 } t_env;
@@ -171,5 +172,9 @@ int		ft_env_var_match(const char *env_var, const char *var_name);
 t_env	*ft_find_env_var(t_env *env, const char *var);
 void	ft_add_env_var(t_minishell *minishell, const char *var);
 bool	ft_is_all_nb(char *str);
+
+// Ajouter ces prototypes
+char	*ft_strjoin_char(char *str, char c);
+char	*ft_expand_variables(char *str, t_env *env);
 
 #endif
