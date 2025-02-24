@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/15 12:28:16 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/24 11:28:25 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,17 +87,8 @@ int	ft_handle_redirection(t_redirection *redir)
 		close(fd);
 	}
 
-	// Fermer les copies des FDs si inutiles
-	if (saved_stdout != -1)
-		close(saved_stdout);
-	if (saved_stdin != -1)
-		close(saved_stdin);
-
 	return (1);
 }
-
-
-
 
 void	ft_restore_fds(int saved_stdin, int saved_stdout)
 {

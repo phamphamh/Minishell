@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/10 15:40:04 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/24 11:28:43 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,41 +71,45 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 	return (0);
 }
 
-static int	ft_echo(t_cmd *cmd)
+static int ft_echo(t_cmd *cmd)
 {
-	int	i;
-	int	j;
-	int	n_option;
-	int	first_arg;
+	int i;
+	int n_option;
+	int first_output;
+	int fd;
 
 	i = 1;
 	n_option = 0;
-	first_arg = 1;
+	first_output = 1;
+	fd = STDOUT_FILENO;
+
+	// Si on a un pipe de sortie, on l'utilise
+	if (cmd->pipe_out != -1)
+		fd = cmd->pipe_out;
+
+	// Vérification des options -n valides en début de commande
 	while (cmd->args[i])
 	{
-		if (ft_strncmp(cmd->args[i], "-n", 2) == 0)
-		{
-			j = 2;
-			while (cmd->args[i][j] == 'n')
-				j++;
-			if (cmd->args[i][j] != '\0')
-				break;
+		if (ft_strcmp(cmd->args[i], "-n") == 0)
 			n_option = 1;
-			i++;
-		}
 		else
 			break;
-	}
-	while (cmd->args[i])
-	{
-		if (!first_arg)
-			ft_putchar_fd(' ', 1);
-		ft_putstr_fd(cmd->args[i], 1);
-		first_arg = 0;
 		i++;
 	}
+
+	// Affichage des arguments
+	while (cmd->args[i])
+	{
+		if (!first_output)
+			ft_putchar_fd(' ', fd);
+		ft_putstr_fd(cmd->args[i], fd);
+		first_output = 0;
+		i++;
+	}
+
 	if (!n_option)
-		ft_putchar_fd('\n', 1);
+		ft_putchar_fd('\n', fd);
+
 	return (0);
 }
 
