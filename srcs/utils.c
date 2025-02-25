@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:31:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:28:12 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,37 @@
 
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
-	ft_putstr_fd("\n[LOG] ft_clean_exit: Nettoyage final et sortie\n", 2);
-	ft_gc_clear(&minishell->gc_head);
-	if (exit_num != -1)
-		exit(exit_num);
-	else
-		exit(minishell->exit_nb);
+	if (minishell)
+	{
+		ft_putstr_fd("[LOG] Nettoyage avant sortie\n", 2);
+		// Nettoyer explicitement les tokens si présents
+		if (minishell->tokens)
+		{
+			ft_putstr_fd("[LOG] Nettoyage des tokens\n", 2);
+			ft_gc_remove_list(&minishell->gc_head, minishell->tokens);
+			minishell->tokens = NULL;
+		}
+
+		// Nettoyer explicitement les commandes si présentes
+		if (minishell->commands)
+		{
+			ft_putstr_fd("[LOG] Nettoyage des commandes\n", 2);
+			ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
+			minishell->commands = NULL;
+		}
+
+		// Nettoyer explicitement les variables d'environnement
+		if (minishell->env)
+		{
+			ft_putstr_fd("[LOG] Nettoyage des variables d'environnement\n", 2);
+			ft_gc_remove_env(&minishell->gc_head, minishell->env);
+			minishell->env = NULL;
+		}
+
+		// Nettoyer le garbage collector
+		ft_gc_clear(&minishell->gc_head);
+	}
+	exit(exit_num);
 }
 
 bool	ft_is_valid_identifier(const char *str)

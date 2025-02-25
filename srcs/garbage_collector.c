@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:25:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:47:24 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,89 @@ void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 
 		if (current->value)
 			free(current->value);
+		free(current);
+
+		current = next;
+	}
+}
+
+/*
+bref: remove commands from the garbage collector list and free them
+
+arg1: the garbage collector list
+arg2: the command list to remove and free
+*/
+void	ft_gc_remove_cmds(t_gc_node **gc_head, t_cmd *cmds)
+{
+	t_cmd	*current;
+	t_cmd	*next;
+	t_redirection *redir;
+	t_redirection *next_redir;
+	int i;
+
+	if (!gc_head || !*gc_head || !cmds)
+		return ;
+	current = cmds;
+	while (current)
+	{
+		next = current->next;
+
+		// Libérer les arguments
+		i = 0;
+		if (current->args)
+		{
+			while (current->args[i])
+			{
+				ft_gc_remove(gc_head, current->args[i]);
+				i++;
+			}
+			ft_gc_remove(gc_head, current->args);
+		}
+
+		// Libérer les redirections
+		redir = current->redirs;
+		while (redir)
+		{
+			next_redir = redir->next;
+			if (redir->file)
+				ft_gc_remove(gc_head, redir->file);
+			ft_gc_remove(gc_head, redir);
+			redir = next_redir;
+		}
+
+		// Libérer la commande
+		ft_gc_remove(gc_head, current);
+		current = next;
+	}
+}
+
+/*
+bref: remove environment variables from the garbage collector list
+
+arg1: the garbage collector list
+arg2: the environment variable list to remove
+*/
+void	ft_gc_remove_env(t_gc_node **gc_head, t_env *env)
+{
+	t_env	*current;
+	t_env	*next;
+
+	if (!gc_head || !*gc_head || !env)
+		return ;
+	current = env;
+	while (current)
+	{
+		next = current->next;
+
+		// Libérer la variable
+		if (current->var)
+		{
+			ft_gc_remove(gc_head, current->var);
+			free(current->var);
+		}
+
+		// Libérer le noeud
+		ft_gc_remove(gc_head, current);
 		free(current);
 
 		current = next;

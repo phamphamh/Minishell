@@ -49,6 +49,7 @@ t_redirection *ft_create_redirection(t_token *token, t_token *next, t_minishell 
     if (!redir->file)
     {
         ft_gc_remove(&minishell->gc_head, redir);
+        free(redir);
         return (NULL);
     }
     ft_gc_add(&minishell->gc_head, redir->file);

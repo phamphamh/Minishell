@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:46:39 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,13 @@ t_env	*ft_env_to_list(char **envp, t_minishell *minishell)
 {
 	t_env	*env;
 	t_env	*new;
+	t_env	*last;
 	char	*var;
 	int		i;
 
 	ft_putstr_fd("\n[LOG] Début ft_env_to_list\n", 2);
 	env = NULL;
+	last = NULL;
 	i = 0;
 	while (envp[i])
 	{
@@ -52,8 +54,14 @@ t_env	*ft_env_to_list(char **envp, t_minishell *minishell)
 			return (NULL);
 		}
 		new->var = var;
-		new->next = env;
-		env = new;
+		new->next = NULL;
+
+		// Ajouter à la fin de la liste plutôt qu'au début
+		if (!env)
+			env = new;
+		else
+			last->next = new;
+		last = new;
 		i++;
 	}
 	ft_putstr_fd("[LOG] Fin ft_env_to_list\n", 2);
@@ -85,15 +93,23 @@ static void	ft_process_line(char *line, t_minishell *minishell)
 	if (!line || !*line)
 		return ;
 	add_history(line);
+	// Réinitialiser les tokens et commandes pour la nouvelle ligne
+	minishell->tokens = NULL;
+	minishell->commands = NULL;
+
 	tokens = ft_tokenize(line, minishell);
 	if (!tokens)
 		return ;
+	// Stocker les tokens dans la structure minishell
+	minishell->tokens = tokens;
 	ft_putstr_fd("[LOG] Tokens créés\n", 2);
 	if (ft_check_syntax_errors(tokens))
 		return;
 	cmd = tokens_to_cmds(tokens, minishell);
 	if (!cmd)
 		return ;
+	// Stocker les commandes dans la structure minishell
+	minishell->commands = cmd;
 	ft_putstr_fd("[LOG] Commandes créées\n", 2);
 	while (cmd)
 	{

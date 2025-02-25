@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:11:45 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ t_token *ft_tokenize(char *input, t_minishell *minishell)
     expanded_input = ft_expand_operators(input);
     if (!expanded_input)
         return (NULL);
-    ft_gc_add(&minishell->gc_head, expanded_input);
     split_input = ft_split_with_quotes(expanded_input, ' ', minishell);
     free(expanded_input);
     if (!split_input)

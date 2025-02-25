@@ -1,0 +1,7 @@
+minishell$ echo "'$HO''ME'"
+
+minishell$ echo "'$HO''ME'"
+minishell$ echo "'$HO''ME'"
+minishell$ echo "'$HO''ME'"
+minishell$ echo "'$HO''ME'"
+minishell$ echo "'$HO''ME'"

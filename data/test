@@ -1,8 +1,19 @@
+# TESTS DE CARACTÈRES ET SÉQUENCES SPÉCIALES
+# ---------------------------------------------
 \n (touche entrée)
 [que des espaces]
 [que des tabulations]
 :
 !
+*
+*/*
+*/*
+.
+..
+~
+
+# TESTS DE REDIRECTIONS
+# ---------------------------------------------
 >
 <
 >>
@@ -15,6 +26,10 @@
 > > > >
 >> >> >> >>
 >>>> >> >> >>
+>>|><
+
+# TESTS DE CHEMINS
+# ---------------------------------------------
 /
 //
 /.
@@ -23,6 +38,9 @@
 \\
 \\\\
 \\\\\\\\
+
+# TESTS D'OPÉRATEURS
+# ---------------------------------------------
 -
 |
 | hola
@@ -30,13 +48,15 @@
 ||
 |||||
 |||||||||||||
->>|><
 &&
 &&&&&
 &&&&&&&&&&&&&&
 ;;
 ;;;;;
 ;;;;;;;;;;;;;;;
+
+# TESTS DE PARENTHÈSES ET QUOTES
+# ---------------------------------------------
 ()
 ( ( ) )
 ( ( ( ( ) ) ) )
@@ -44,9 +64,411 @@
 "hola"
 'hola'
 ''
-*
-*/*
-*/*
-.
-..
-~
+
+# TESTS DE COMMANDES DE BASE
+# ---------------------------------------------
+hola
+hola que tal
+Makefile
+echo
+echo Hola Que Tal
+echo         Hola
+echo    Hola     Que    Tal
+echo      \n hola
+echo "         " | cat -e
+echo           | cat -e
+""''echo hola""'''' que""'' tal""''
+echo -p
+/bin/echo
+/bin/echo Hola Que Tal
+pwd
+pwd hola
+pwd ./hola
+pwd hola que tal
+pwd -p
+pwd --p
+pwd ---p
+pwd -- p
+pwd pwd pwd
+pwd ls
+pwd ls env
+
+# TESTS DE VARIABLES D'ENVIRONNEMENT
+# ---------------------------------------------
+echo $
+echo $?
+echo $?$
+echo $? | echo $? | echo $?
+echo $:$= | cat -e
+echo " $ " | cat -e
+echo ' $ ' | cat -e
+echo $HOME
+echo \$HOME
+echo my shit terminal is [$TERM]
+echo my shit terminal is [$TERM4
+echo my shit terminal is [$TERM4]
+echo $UID
+echo $HOME9
+echo $9HOME
+echo $HOME%
+echo $UID$HOME
+echo Le path de mon HOME est $HOME
+echo $USER$var\$USER$USER\$USERtest$USER
+echo $hola*
+echo $""
+echo "$"""
+echo '$'''
+echo $"HOME"
+echo $''HOME
+echo $""HOME
+echo "$HO"ME
+echo '$HO'ME
+echo "$HO""ME"
+echo '$HO''ME'
+echo "'$HO''ME'"
+echo ""$HOME
+echo "" $HOME
+echo ''$HOME
+echo '' $HOME
+echo $"HO""ME"
+echo $'HO''ME'
+echo $'HOME'
+echo "$"HOME
+echo $=HOME
+echo $"HOLA"
+echo $'HOLA'
+echo $DONTEXIST Hola
+
+# TESTS DES COMMANDES ENV ET EXPORT
+# ---------------------------------------------
+env
+env hola
+env hola que tal
+env env
+env env env env env
+env ls
+env ./Makefile
+export
+export HOLA=bonjour
+env
+export       HOLA=bonjour
+env
+export Hola
+export
+export Hola9hey
+export
+export $DONTEXIST
+export | grep "HOME"
+export ""
+export =
+export %
+export $?
+export ?=2
+export 9HOLA=
+export HOLA9=bonjour
+env
+export _HOLA=bonjour
+env
+export ___HOLA=bonjour
+env
+export _HO_LA_=bonjour
+env
+export HOL@=bonjour
+export HOL\~A=bonjour
+export -HOLA=bonjour
+export --HOLA=bonjour
+export HOLA-=bonjour
+export HO-LA=bonjour
+export HOL.A=bonjour
+export HOL\\\$A=bonjour
+export HO\\\\LA=bonjour
+export HOL}A=bonjour
+export HOL{A=bonjour
+export HO*LA=bonjour
+export HO#LA=bonjour
+export HO@LA=bonjour
+export HO!LA=bonjour
+export HO$?LA=bonjour
+env
+export +HOLA=bonjour
+export HOL+A=bonjour
+export HOLA+=bonjour
+env
+export HOLA=bonjour
+export HOLA+=bonjour
+env
+export HOLA=bon jour
+env
+export HOLA= bonjour
+env
+export HOLA=bonsoir
+export HOLA=bonretour
+export HOLA=bonjour
+env
+export HOLA=$HOME
+env
+export HOLA=bonjour$HOME
+env
+export HOLA=$HOMEbonjour
+env
+export HOLA=bon$jour
+env
+export HOLA=bon\jour
+env
+export HOLA=bon\\jour
+env
+export HOLA=bon(jour
+export HOLA=bon()jour
+export HOLA=bon&jour
+export HOLA=bon@jour
+env
+export HOLA=bon;jour
+env
+export HOLA=bon!jour
+export HOLA=bon"jour"
+env
+export HOLA$USER=bonjour
+env
+
+# TESTS DE UNSET
+# ---------------------------------------------
+export HOLA=bonjour
+env
+unset HOLA
+env
+export HOLA=bonjour
+env
+unset HOLA
+unset HOLA
+env
+unset PATH
+echo $PATH
+unset PATH
+ls
+unset ""
+unset INEXISTANT
+unset PWD
+env | grep PWD
+pwd
+pwd
+unset PWD
+env | grep PWD
+cd $PWD
+pwd
+unset OLDPWD
+env | grep OLDPWD
+unset 9HOLA
+unset HOLA9
+unset HOL?A
+unset HOLA HOL?A
+unset HOL?A HOLA
+unset HOL?A HOL.A
+unset HOLA=
+unset HOL\\\\A
+unset HOL;A
+unset HOL.A
+unset HOL+A
+unset HOL=A
+unset HOL{A
+unset HOL}A
+unset HOL-A
+unset -HOLA
+unset _HOLA
+unset HOL_A
+unset HOLA_
+unset HOL*A
+unset HOL#A
+unset $HOLA
+unset $PWD
+unset HOL@
+unset HOL!A
+unset HOL^A
+unset HOL$?A
+unset HOL\~A
+unset "" HOLA
+env | grep HOLA
+unset PATH
+echo $PATH
+unset PATH
+cat Makefile
+unset =
+unset ======
+unset ++++++
+unset _______
+unset export
+unset echo
+unset pwd
+unset cd
+unset unset
+unset sudo
+export hola | unset hola | echo $?
+
+# TESTS DE CD
+# ---------------------------------------------
+cd
+cd .
+cd ./
+cd ./././.
+cd ././././
+cd ..
+cd ../
+cd ../..
+cd ../.
+cd .././././.
+cd srcs
+cd srcs objs
+cd 'srcs'
+cd "srcs"
+cd '/etc'
+cd /e'tc'
+cd /e"tc"
+cd sr
+cd Makefile
+cd ../minishell
+cd ../../../../../../..
+cd .././../.././../bin/ls
+cd /
+cd '/'
+cd //
+pwd
+cd '//'
+pwd
+cd ///
+pwd
+cd ////////
+pwd
+cd '////////'
+pwd
+cd /minishell
+cd /
+cd ..
+cd _
+cd -
+cd --
+cd ---
+cd $HOME
+cd $HOME $HOME
+cd $HOME/42_works
+cd "$PWD/srcs"
+cd '$PWD/srcs'
+unset HOME
+cd $HOME
+unset HOME
+export HOME=
+cd
+unset HOME
+export HOME
+cd
+cd minishell Docs crashtest.c
+cd / | echo $?
+pwd
+cd ~
+cd ~/
+cd ~/ | echo $?
+pwd
+cd *
+cd *
+cd *
+
+# TESTS DE COMMANDES ECHO
+# ---------------------------------------------
+echo
+echo Hola Que Tal
+echo         Hola
+echo    Hola     Que    Tal
+echo      \n hola
+echo "         " | cat -e
+echo           | cat -e
+""''echo hola""'''' que""'' tal""''
+echo -p
+
+# TESTS D'ECHO AVEC VARIABLES D'ENVIRONNEMENT
+# ---------------------------------------------
+echo $
+echo $?
+echo $?$
+echo $? | echo $? | echo $?
+echo $:$= | cat -e
+echo " $ " | cat -e
+echo ' $ ' | cat -e
+echo $HOME
+echo \$HOME
+echo my shit terminal is [$TERM]
+echo my shit terminal is [$TERM4
+echo my shit terminal is [$TERM4]
+echo $UID
+echo $HOME9
+echo $9HOME
+echo $HOME%
+echo $UID$HOME
+echo Le path de mon HOME est $HOME
+echo $USER$var\$USER$USER\$USERtest$USER
+echo $hola*
+echo $""
+echo "$"""
+echo '$'''
+echo $"HOME"
+echo $''HOME
+echo $""HOME
+echo "$HO"ME
+echo '$HO'ME
+echo "$HO""ME"
+echo '$HO''ME'
+echo "'$HO''ME'"
+echo ""$HOME
+echo "" $HOME
+echo ''$HOME
+echo '' $HOME
+echo $"HO""ME"
+echo $'HO''ME'
+echo $'HOME'
+echo "$"HOME
+echo $=HOME
+echo $"HOLA"
+echo $'HOLA'
+echo $DONTEXIST Hola
+
+# AUTRES TESTS ECHO
+# ---------------------------------------------
+echo > <
+echo | |
+echo *
+echo '*'
+echo D*
+echo *Z
+echo *t hola
+echo *t
+echo $*
+echo hola*hola *
+echo $HOME*
+echo "hola"
+echo 'hola'
+echo ''hola''
+echo ''h'o'la''
+echo "''h'o'la''"
+echo "'"h'o'la"'"
+echo"'hola'"
+echo "'hola'"
+echo '"hola"'
+echo '''ho"''''l"a'''
+echo hola""""""""""""
+echo hola"''''''''''"
+echo hola''''''''''''
+echo hola'""""""""""'
+e"cho hola"
+e'cho hola'
+echo "hola     " | cat -e
+echo ""hola
+echo "" hola
+echo ""             hola
+echo ""hola
+echo "" hola
+echo hola""bonjour
+echo "$DONTEXIST"Makefile
+echo "$DONTEXIST""Makefile"
+echo "$DONTEXIST" "Makefile"
+
+# TESTS UNSET AVEC ECHO
+# ---------------------------------------------
+unset PATH
+echo $PATH
