@@ -92,21 +92,38 @@ void	ft_execute_command(t_cmd *cmd, t_minishell *minishell)
 
 	if (!cmd->name || !*cmd->name)
 		return;
-	if (ft_is_builtin(cmd->name))
-	{
-		if (!ft_handle_redirection(cmd->redirs))
-		{
-			minishell->exit_nb = 1;
-			return;
-		}
-		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
-		return;
-	}
+
+	// Créer le pipe si nécessaire, même pour les builtins
 	if (cmd->next && !ft_create_pipe(cmd))
 	{
 		minishell->exit_nb = 1;
 		return;
 	}
+
+	if (ft_is_builtin(cmd->name))
+	{
+		// Sauvegarder les descripteurs de fichiers originaux
+		int saved_stdin = dup(STDIN_FILENO);
+		int saved_stdout = dup(STDOUT_FILENO);
+
+		// Configurer les pipes et redirections
+		ft_setup_pipes(cmd);
+		if (!ft_handle_redirection(cmd->redirs))
+		{
+			minishell->exit_nb = 1;
+			ft_restore_fds(saved_stdin, saved_stdout);
+			return;
+		}
+
+		// Exécuter le builtin
+		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
+
+		// Restaurer les descripteurs de fichiers
+		ft_restore_fds(saved_stdin, saved_stdout);
+		ft_close_pipes(cmd);
+		return;
+	}
+
 	pid = fork();
 	if (pid == -1)
 	{

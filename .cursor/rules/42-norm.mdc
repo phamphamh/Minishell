@@ -1,0 +1,32 @@
+---
+description: norm 42
+globs: 
+alwaysApply: false
+---
+
+📏 FORMATAGE
+├─ Indentation : Tab = 4 espaces
+├─ Max 80 caractères/ligne
+└─ Alignement vertical interdit
+
+📝 FONCTIONS
+├─ Max 25 lignes/fonction
+├─ Max 4 paramètres
+└─ Max 20 variables/fonction
+
+📁 STRUCTURE
+├─ 5 fonctions max par .c
+├─ Prototypes dans .h obligatoires
+└─ Pas de commentaires dans les .h
+
+🚫 INTERDITS
+├─ Variables globales
+├─ Typedef
+├─ Goto
+└─ Fonctions vides (void)
+
+⚙️ COMPILATION
+└─ Flags obligatoires : -Wall -Wextra -Werror
+
+🔤 CONVENTIONS
+└─ snake_case pour variables/fonctions

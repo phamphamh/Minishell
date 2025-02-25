@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:25:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/12 16:51:59 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,8 @@ bool	ft_gc_add(t_gc_node **gc_head, void *ptr)
 	t_gc_node	*new_node;
 	t_gc_node	*current;
 
-	if (!ptr)
+	if (!ptr || !gc_head)
 		return (false);
-	// Vérifier si le pointeur existe déjà
 	current = *gc_head;
 	while (current)
 	{
@@ -69,7 +68,6 @@ bool	ft_gc_remove(t_gc_node **gc_head, void *ptr)
 				prev->next = current->next;
 			else
 				*gc_head = current->next;
-			free(current->ptr);
 			free(current);
 			return (true);
 		}
@@ -103,6 +101,12 @@ void	ft_gc_clear(t_gc_node **gc_head)
 	*gc_head = NULL;
 }
 
+/*
+bref: remove tokens from the garbage collector list and free them
+
+arg1: the garbage collector list
+arg2: the token list to remove and free
+*/
 void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 {
 	t_token	*current;
@@ -115,8 +119,15 @@ void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 	{
 		next = current->next;
 		if (current->value)
+		{
 			ft_gc_remove(gc_head, current->value);
+		}
 		ft_gc_remove(gc_head, current);
+
+		if (current->value)
+			free(current->value);
+		free(current);
+
 		current = next;
 	}
 }

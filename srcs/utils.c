@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:31:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/10 15:32:49 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
+	ft_putstr_fd("\n[LOG] ft_clean_exit: Nettoyage final et sortie\n", 2);
 	ft_gc_clear(&minishell->gc_head);
 	if (exit_num != -1)
 		exit(exit_num);
@@ -112,4 +113,4 @@ void	ft_add_env_var(t_minishell *minishell, const char *var)
 			current = current->next;
 		current->next = new_var;
 	}
-} 
+}
