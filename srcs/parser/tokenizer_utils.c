@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/15 13:08:46 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/02/27 14:26:10 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,14 @@ char *ft_expand_operators(char *input)
 
 int ft_determine_token_type(char *token)
 {
+    if (!token || token[0] == '\0')
+        return (TOKEN_WORD); // if env var == ""
     if (!token)
         return (TOKEN_EOF);
     if (ft_strcmp(token, "|") == 0)
+    {
         return (TOKEN_PIPE);
+    }
     if (ft_strcmp(token, "<") == 0)
         return (TOKEN_REDIR_IN);
     if (ft_strcmp(token, ">") == 0)
