@@ -6,20 +6,19 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:25:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 01:40:27 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:24:11 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/header.h"
 
-/*
-bref: create and add a new nod to a list
-
-arg1: the list we'll attach the node to
-arg2: a pointer to the node to attach
-
-return: true if succed | false if error
-*/
+/**
+ * @brief Ajoute un pointeur au garbage collector
+ *
+ * @param gc_head Tête de la liste du garbage collector
+ * @param ptr Pointeur à ajouter
+ * @return true si réussi, false en cas d'erreur
+ */
 bool	ft_gc_add(t_gc_node **gc_head, void *ptr)
 {
 	t_gc_node	*new_node;
@@ -43,14 +42,13 @@ bool	ft_gc_add(t_gc_node **gc_head, void *ptr)
 	return (true);
 }
 
-/*
-bref: remove a specific given node of a given list
-
-arg1: the list containing the nod to free
-arg2: pointer to the node to free
-
-return: true if free succed | fallse if nod is not found
-*/
+/**
+ * @brief Retire un pointeur du garbage collector
+ *
+ * @param gc_head Tête de la liste du garbage collector
+ * @param ptr Pointeur à retirer
+ * @return true si réussi, false si le pointeur n'est pas trouvé
+ */
 bool	ft_gc_remove(t_gc_node **gc_head, void *ptr)
 {
 	t_gc_node	*current;
@@ -77,11 +75,11 @@ bool	ft_gc_remove(t_gc_node **gc_head, void *ptr)
 	return (false);
 }
 
-/*
-bref: free pointer + free a list
-
-arg: the list to be free.
-*/
+/**
+ * @brief Libère tous les pointeurs du garbage collector
+ *
+ * @param gc_head Tête de la liste du garbage collector
+ */
 void	ft_gc_clear(t_gc_node **gc_head)
 {
 	t_gc_node	*current;
@@ -101,12 +99,12 @@ void	ft_gc_clear(t_gc_node **gc_head)
 	*gc_head = NULL;
 }
 
-/*
-bref: remove tokens from the garbage collector list and free them
-
-arg1: the garbage collector list
-arg2: the token list to remove and free
-*/
+/**
+ * @brief Retire et libère une liste de tokens du garbage collector
+ *
+ * @param gc_head Tête de la liste du garbage collector
+ * @param tokens Liste de tokens à libérer
+ */
 void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 {
 	t_token	*current;
@@ -128,6 +126,78 @@ void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens)
 			free(current->value);
 		free(current);
 
+		current = next;
+	}
+}
+
+/**
+ * @brief Retire et libère une liste de commandes du garbage collector
+ *
+ * @param gc_head Tête de la liste du garbage collector
+ * @param cmds Liste de commandes à libérer
+ */
+void	ft_gc_remove_cmds(t_gc_node **gc_head, t_cmd *cmds)
+{
+	t_cmd			*current;
+	t_cmd			*next;
+	t_redirection	*redir;
+	t_redirection	*next_redir;
+	int				i;
+
+	if (!gc_head || !*gc_head || !cmds)
+		return ;
+	current = cmds;
+	while (current)
+	{
+		next = current->next;
+		i = 0;
+		if (current->args)
+		{
+			while (current->args[i])
+			{
+				ft_gc_remove(gc_head, current->args[i]);
+				i++;
+			}
+			ft_gc_remove(gc_head, current->args);
+		}
+		redir = current->redirs;
+		while (redir)
+		{
+			next_redir = redir->next;
+			if (redir->file)
+				ft_gc_remove(gc_head, redir->file);
+			ft_gc_remove(gc_head, redir);
+			redir = next_redir;
+		}
+		ft_gc_remove(gc_head, current);
+		current = next;
+	}
+}
+
+/**
+ * @brief Retire et libère une liste de variables d'environnement du garbage collector
+ *
+ * @param gc_head Tête de la liste du garbage collector
+ * @param env Liste de variables d'environnement à libérer
+ */
+void	ft_gc_remove_env(t_gc_node **gc_head, t_env *env)
+{
+	t_env	*current;
+	t_env	*next;
+
+	if (!gc_head || !*gc_head || !env)
+		return ;
+	current = env;
+	while (current)
+	{
+		next = current->next;
+		if (current->var)
+		{
+			ft_gc_remove(gc_head, current->var);
+			free(current->var);
+		}
+		ft_gc_remove(gc_head, current);
+		free(current);
 		current = next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 12:00:24 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/08 00:22:32 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:40:37 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,8 +181,8 @@ void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 				prev->next = current->next;
 			else
 				minishell->env = current->next;
-			free(current->var);
-			free(current);
+			ft_gc_remove(&minishell->gc_head, current->var);
+			ft_gc_remove(&minishell->gc_head, current);
 			return ;
 		}
 		prev = current;
@@ -214,8 +214,10 @@ void	ft_handle_export_var(t_minishell *minishell, char *var)
 	env_entry = ft_find_env_var(minishell->env, var_name);
 	if (env_entry)
 	{
-		free(env_entry->var);
+		ft_gc_remove(&minishell->gc_head, env_entry->var);
 		env_entry->var = ft_strdup(var);
+		if (env_entry->var)
+			ft_gc_add(&minishell->gc_head, env_entry->var);
 	}
 	else
 		ft_add_env_var(minishell, var);

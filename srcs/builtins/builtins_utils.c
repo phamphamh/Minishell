@@ -6,14 +6,22 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:59:09 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/10 15:44:54 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:24:16 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
-/* Met à jour une variable d'environnement existante avec une nouvelle valeur */
-void	update_env_var(t_env *env, const char *name, const char *new_value, t_minishell *minishell)
+/**
+ * @brief Met à jour une variable d'environnement existante avec une nouvelle valeur
+ *
+ * @param env Liste des variables d'environnement
+ * @param name Nom de la variable à mettre à jour
+ * @param new_value Nouvelle valeur
+ * @param minishell Structure principale du shell
+ */
+void	update_env_var(t_env *env, const char *name, const char *new_value,
+		t_minishell *minishell)
 {
 	t_env	*current;
 	size_t	name_len;
@@ -22,7 +30,8 @@ void	update_env_var(t_env *env, const char *name, const char *new_value, t_minis
 	current = env;
 	while (current)
 	{
-		if (strncmp(current->var, name, name_len) == 0 && current->var[name_len] == '=')
+		if (strncmp(current->var, name, name_len) == 0
+			&& current->var[name_len] == '=')
 		{
 			free(current->var);
 			current->var = malloc(strlen(name) + strlen(new_value) + 2);
@@ -33,39 +42,47 @@ void	update_env_var(t_env *env, const char *name, const char *new_value, t_minis
 				exit(EXIT_FAILURE);
 			}
 			sprintf(current->var, "%s=%s", name, new_value);
-			return;
+			return ;
 		}
 		current = current->next;
 	}
 }
 
-/* Met à jour les variables PWD et OLDPWD après un changement de répertoire */
+/**
+ * @brief Met à jour les variables PWD et OLDPWD après un changement de répertoire
+ *
+ * @param minishell Structure principale du shell
+ */
 void	update_pwd_and_oldpwd(t_minishell *minishell)
 {
 	char	cwd[PATH_MAX];
 	t_env	*pwd_var;
 	char	*pwd_value;
-	
+
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 	{
 		perror("getcwd");
-		return;
+		return ;
 	}
-
 	pwd_var = ft_find_env_var(minishell->env, "PWD");
 	if (pwd_var)
 	{
 		pwd_value = ft_strchr(pwd_var->var, '=');
 		if (pwd_value)
 		{
-			pwd_value++; // Skip the '='
+			pwd_value++;
 			update_env_var(minishell->env, "OLDPWD", pwd_value, minishell);
 		}
 	}
 	update_env_var(minishell->env, "PWD", cwd, minishell);
 }
 
-/* Gère la normalisation du code de sortie (modulo 256) */
+/**
+ * @brief Gère la normalisation du code de sortie (modulo 256)
+ *
+ * @param minishell Structure principale du shell
+ * @param exit_nmb Code de sortie
+ */
 void	handle_exit_nmb(t_minishell *minishell, int exit_nmb)
 {
 	if (exit_nmb > 255 || exit_nmb < 0)
@@ -74,7 +91,14 @@ void	handle_exit_nmb(t_minishell *minishell, int exit_nmb)
 		ft_clean_exit(minishell, exit_nmb);
 }
 
-/* Affiche un message d'erreur formaté sur le descripteur de fichier spécifié */
+/**
+ * @brief Affiche un message d'erreur formaté sur le descripteur de fichier spécifié
+ *
+ * @param prefix Préfixe du message
+ * @param arg Argument contenant l'erreur
+ * @param suffix Suffixe du message
+ * @param fd Descripteur de fichier pour l'affichage
+ */
 void	ft_error_msg(char *prefix, char *arg, char *suffix, int fd)
 {
 	if (prefix)
@@ -85,7 +109,12 @@ void	ft_error_msg(char *prefix, char *arg, char *suffix, int fd)
 		ft_putstr_fd(suffix, fd);
 }
 
-/* Vérifie si un caractère est un chiffre */
+/**
+ * @brief Vérifie si un caractère est un chiffre
+ *
+ * @param c Caractère à vérifier
+ * @return int 1 si c'est un chiffre, 0 sinon
+ */
 static int	ft_isnum(int c)
 {
 	if ((c >= '0' && c <= '9'))
@@ -93,7 +122,12 @@ static int	ft_isnum(int c)
 	return (0);
 }
 
-/* Vérifie si une chaîne ne contient que des chiffres et éventuellement un signe */
+/**
+ * @brief Vérifie si une chaîne ne contient que des chiffres et éventuellement un signe
+ *
+ * @param str Chaîne à vérifier
+ * @return bool true si la chaîne est un nombre, false sinon
+ */
 bool	ft_is_all_nb(char *str)
 {
 	int	i;
@@ -108,7 +142,12 @@ bool	ft_is_all_nb(char *str)
 	return (true);
 }
 
-/* Vérifie si une commande est un builtin */
+/**
+ * @brief Vérifie si une commande est un builtin
+ *
+ * @param value Nom de la commande
+ * @return bool true si c'est un builtin, false sinon
+ */
 bool	ft_is_builtin(char *value)
 {
 	if (!ft_strcmp_trim("exit", value))
@@ -129,6 +168,11 @@ bool	ft_is_builtin(char *value)
 		return (false);
 }
 
+/**
+ * @brief Affiche toutes les variables d'environnement
+ *
+ * @param env Liste des variables d'environnement
+ */
 void	ft_print_env(t_env *env)
 {
 	t_env	*current;
@@ -141,6 +185,12 @@ void	ft_print_env(t_env *env)
 	}
 }
 
+/**
+ * @brief Convertit la liste des variables d'environnement en tableau de chaînes
+ *
+ * @param env Liste des variables d'environnement
+ * @return char** Tableau de variables, NULL en cas d'erreur
+ */
 char	**ft_env_to_array(t_env *env)
 {
 	t_env	*current;
@@ -177,6 +227,11 @@ char	**ft_env_to_array(t_env *env)
 	return (env_array);
 }
 
+/**
+ * @brief Affiche les variables d'environnement au format export
+ *
+ * @param env Liste des variables d'environnement
+ */
 void	ft_print_export_list(t_env *env)
 {
 	t_env	*current;
@@ -201,6 +256,12 @@ void	ft_print_export_list(t_env *env)
 	}
 }
 
+/**
+ * @brief Gère la commande export pour une variable
+ *
+ * @param minishell Structure principale du shell
+ * @param var Variable à exporter
+ */
 void	ft_handle_export_var(t_minishell *minishell, char *var)
 {
 	t_env	*env_var;
@@ -238,6 +299,12 @@ void	ft_handle_export_var(t_minishell *minishell, char *var)
 	free(var_name);
 }
 
+/**
+ * @brief Gère la commande unset pour une variable
+ *
+ * @param minishell Structure principale du shell
+ * @param var_name Nom de la variable à supprimer
+ */
 void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 {
 	t_env	*current;
@@ -250,8 +317,8 @@ void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 		ft_putstr_fd("': not a valid identifier\n", 2);
 		return ;
 	}
-	current = minishell->env;
 	prev = NULL;
+	current = minishell->env;
 	while (current)
 	{
 		if (ft_env_var_match(current->var, var_name))
@@ -262,7 +329,9 @@ void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 				minishell->env = current->next;
 			ft_gc_remove(&minishell->gc_head, current->var);
 			ft_gc_remove(&minishell->gc_head, current);
-			return ;
+			free(current->var);
+			free(current);
+			break ;
 		}
 		prev = current;
 		current = current->next;

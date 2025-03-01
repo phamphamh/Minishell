@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/02/15 13:35:34 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/01 16:12:21 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@
 # include <stdbool.h>
 # include <unistd.h>
 # include <limits.h>
+
+// Variable globale pour gérer les signaux
+int g_signal_received;
 
 // Déclaration des fonctions de readline
 void	rl_clear_history(void);
@@ -114,6 +117,8 @@ bool	ft_gc_add(t_gc_node **gc_head, void *ptr);
 bool	ft_gc_remove(t_gc_node **gc_head, void *ptr);
 void	ft_gc_clear(t_gc_node **gc_head);
 void	ft_gc_remove_list(t_gc_node **gc_head, t_token *tokens);
+void	ft_gc_remove_cmds(t_gc_node **gc_head, t_cmd *cmds);
+void	ft_gc_remove_env(t_gc_node **gc_head, t_env *env);
 
 // signal_handler.c
 void	ft_setup_signals(void);
@@ -137,6 +142,7 @@ void	update_pwd_and_oldpwd(t_minishell *minishell);
 // exec.c
 void	ft_execute_command(t_cmd *cmd, t_minishell *minishell);
 char	*ft_find_executable(char *cmd_name, t_env *env);
+void	ft_execute_child(t_cmd *cmd, t_minishell *minishell);
 
 // pipe_handler.c
 int		ft_create_pipe(t_cmd *cmd);

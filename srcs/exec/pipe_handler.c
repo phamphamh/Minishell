@@ -6,12 +6,18 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:15:23 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/07 13:23:29 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:24:13 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
+/**
+ * @brief Crée un pipe entre deux commandes
+ *
+ * @param cmd Commande pour laquelle créer le pipe
+ * @return int 1 si réussi, 0 en cas d'erreur
+ */
 int	ft_create_pipe(t_cmd *cmd)
 {
 	int	pipefd[2];
@@ -27,6 +33,11 @@ int	ft_create_pipe(t_cmd *cmd)
 	return (1);
 }
 
+/**
+ * @brief Ferme les descripteurs de fichiers des pipes
+ *
+ * @param cmd Commande dont les pipes doivent être fermés
+ */
 void	ft_close_pipes(t_cmd *cmd)
 {
 	if (cmd->pipe_in != -1)
@@ -35,6 +46,11 @@ void	ft_close_pipes(t_cmd *cmd)
 		close(cmd->pipe_out);
 }
 
+/**
+ * @brief Configure les entrées/sorties standard pour utiliser les pipes
+ *
+ * @param cmd Commande pour laquelle configurer les pipes
+ */
 void	ft_setup_pipes(t_cmd *cmd)
 {
 	if (cmd->pipe_in != -1)
@@ -47,4 +63,4 @@ void	ft_setup_pipes(t_cmd *cmd)
 		dup2(cmd->pipe_out, STDOUT_FILENO);
 		close(cmd->pipe_out);
 	}
-} 
+}

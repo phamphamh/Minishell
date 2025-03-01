@@ -1,0 +1,314 @@
+# TESTS DES FONCTIONNALITÉS COMPLEXES
+# =====================================
+# Ce fichier contient des tests pour les fonctionnalités avancées comme
+# pipes, heredocs, redirections complexes, et combinaisons de builtins
+
+# ----- PIPES SIMPLES -----
+ls | cat
+ls | grep M
+ls -la | grep M
+ls | grep M | wc -l
+ls | grep M | sort
+ls | grep M | sort | uniq
+ls | grep M | sort | uniq | wc -l
+echo hello | cat
+echo hello | cat | cat | cat
+echo hello | cat | grep hello
+echo hello | cat | grep world
+echo hello | cat > output.txt
+cat output.txt
+rm output.txt
+ls | cat | grep M > output.txt
+cat output.txt
+rm output.txt
+
+# ----- BUILTINS AVEC PIPES -----
+echo hello | cat
+echo -n hello | cat
+echo hello | grep hello
+echo hello | grep world
+cd / | ls
+pwd | cat
+pwd | grep /
+export TEST=value | echo $TEST
+export | grep PATH
+export | grep PATH | wc -l
+env | grep PATH
+env | grep PATH | sort
+env | grep PATH | wc -l
+echo $HOME | cat
+echo $HOME | grep /
+echo $PWD | cat
+echo $OLDPWD | cat
+echo $PATH | tr ':' '\n' | wc -l
+echo $PATH | tr ':' '\n' | grep bin
+echo $PATH | tr ':' '\n' | sort
+cd /tmp | pwd
+cd .. | pwd
+echo hello > file.txt | cat file.txt
+cat file.txt
+rm file.txt
+echo hello | echo world
+echo hello | cd /
+pwd
+echo hello | pwd
+pwd
+export A=1 | export B=2 | env | grep A
+env | grep A
+env | grep B
+export | grep A
+export | grep B
+unset A | unset B | export | grep A
+export | grep A
+export | grep B
+
+# ----- HEREDOCS -----
+cat << EOF >>>
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF
+
+cat << 'LIMIT' >>>
+Ces $variables $ne $sont $pas $interprétées
+Ni ces caractères spéciaux : * ? []
+LIMIT
+
+cat << LIMIT >>>
+Ces $HOME variables $USER sont $PWD interprétées
+Ces caractères spéciaux aussi : * ? []
+LIMIT
+
+cat << EOF > output.txt >>>
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF
+cat output.txt
+rm output.txt
+
+cat << EOF | grep test >>>
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF
+
+cat << EOF | grep test | wc -l >>>
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF
+
+cat << EOF | grep inexistant | wc -l >>>
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF
+
+cat << EOF > file1.txt << LIMIT > file2.txt >>>
+Contenu pour file1.txt
+EOF
+Contenu pour file2.txt
+LIMIT
+cat file1.txt
+cat file2.txt
+rm file1.txt file2.txt
+
+cat << EOF | cat << LIMIT >>>
+Contenu pour premier heredoc
+EOF
+Contenu pour second heredoc
+LIMIT
+
+# ----- MULTI-PIPE AVEC BUILTINS ET HEREDOCS -----
+cat << EOF | grep test | wc -l >>>
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF
+
+echo $HOME | cat << EOF | grep home >>>
+Voici le home: $HOME
+Et encore $HOME
+EOF
+
+export TEST=valeur && cat << EOF | grep TEST | wc -l >>>
+$TEST
+une ligne sans TEST
+$TEST encore
+EOF
+
+cat << EOF | sort | uniq | wc -l >>>
+ligne 3
+ligne 1
+ligne 2
+ligne 1
+ligne 2
+ligne 3
+EOF
+
+# ----- REDIRECTIONS COMPLEXES -----
+cat < Makefile > output.txt
+cat output.txt
+rm output.txt
+
+cat < Makefile >> output.txt
+cat < Makefile >> output.txt
+cat output.txt
+rm output.txt
+
+cat < Makefile > output.txt 2> error.txt
+cat output.txt
+cat error.txt
+rm output.txt error.txt
+
+cat < inexistant > output.txt 2> error.txt
+cat output.txt
+cat error.txt
+rm output.txt error.txt
+
+cat < Makefile | grep NAME > output.txt
+cat output.txt
+rm output.txt
+
+cat < Makefile | grep NAME | wc -l > output.txt
+cat output.txt
+rm output.txt
+
+ls > file1 > file2 > file3
+cat file1
+cat file2
+cat file3
+rm file1 file2 file3
+
+ls > file1 >> file2 > file3
+ls >> file2
+cat file1
+cat file2
+cat file3
+rm file1 file2 file3
+
+cat < Makefile < data/test_complex | grep test
+cat < data/test_complex < Makefile | grep NAME
+
+cat < Makefile > output.txt | grep NAME
+cat output.txt
+rm output.txt
+
+ls -la > out_ls.txt && cat out_ls.txt | grep Makefile > out_grep.txt && cat out_grep.txt | wc -l > out_wc.txt && cat out_wc.txt
+rm out_ls.txt out_grep.txt out_wc.txt
+
+# ----- COMBINAISONS COMPLEXES -----
+echo test > file.txt && cat < file.txt | grep test > result.txt && cat result.txt
+rm file.txt result.txt
+
+cat << EOF | grep test > result.txt && cat result.txt >>>
+Ceci est un test
+Ce n'est pas un match
+Mais ceci est un test
+EOF
+rm result.txt
+
+ls -la | grep Makefile > result.txt && cat result.txt | wc -l && rm result.txt
+
+cat << EOF > script.sh >>>
+#!/bin/bash
+echo "Script exécuté avec succès !"
+echo "Arguments reçus : $@"
+EOF
+chmod +x script.sh
+./script.sh arg1 arg2
+./script.sh | cat
+./script.sh arg1 arg2 | grep succès
+./script.sh arg1 arg2 | grep succès | wc -l
+rm script.sh
+
+echo 'echo "Bonjour depuis une sous-commande"' > cmd.sh
+chmod +x cmd.sh
+cat cmd.sh | bash
+cat < cmd.sh | bash
+rm cmd.sh
+
+echo 'exit 42' > exit.sh
+chmod +x exit.sh
+./exit.sh
+echo $?
+./exit.sh || echo "Le script a échoué avec code: $?"
+./exit.sh && echo "Le script a réussi"
+rm exit.sh
+
+echo hello > file1.txt && echo world > file2.txt && cat file1.txt file2.txt > combined.txt && cat combined.txt
+rm file1.txt file2.txt combined.txt
+
+# ----- TESTS D'INTÉGRATION -----
+export TEST=valeur && echo $TEST | cat | grep valeur | wc -l
+
+cat << EOF | grep test > results.txt && cat results.txt && rm results.txt >>>
+Ceci est un test
+Pas un match
+Encore un test
+EOF
+
+export A=1 && export B=2 && echo $A$B | cat
+
+echo $HOME | tr -d '\n' > home.txt && cat home.txt && rm home.txt
+
+echo "PATH=$PATH" > env.txt && cat env.txt | grep bin && rm env.txt
+
+ls -la | grep Makefile | awk '{print $9}' | xargs cat | grep NAME
+
+export | grep PATH > path.txt && cat path.txt && rm path.txt
+
+cd / && pwd | cat && cd - && pwd
+
+cat << EOF | sort | uniq -c | sort -nr | head -n 3 >>>
+ligne1
+ligne2
+ligne1
+ligne3
+ligne2
+ligne1
+ligne4
+ligne3
+ligne2
+ligne1
+EOF
+
+# ----- TESTS DE GESTION D'ERREURS -----
+cat inexistant | grep test
+echo $?
+
+ls inexistant | grep test
+echo $?
+
+cat << EOF | grep inexistant >>>
+Contenu
+qui ne contient pas
+le mot recherché
+EOF
+echo $?
+
+ls inexistant 2> /dev/null | grep test
+echo $?
+
+cat << EOF | grep test | sort | inexistant_command >>>
+Ceci est un test
+Pas un match
+Encore un test
+EOF
+echo $?
+
+ls | grep Make | inexistant_command
+echo $?
+
+cat << EOF | exit 42 >>>
+Ceci n'aura pas d'importance
+car le exit va arrêter l'exécution
+EOF
+echo $?

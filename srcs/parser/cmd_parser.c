@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/15 12:55:33 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/01 16:19:36 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,11 @@ static t_cmd *ft_init_command(t_minishell *minishell, int argc)
     ft_gc_add(&minishell->gc_head, cmd);
     cmd->args = malloc(sizeof(char *) * (argc + 1));
     if (!cmd->args)
+    {
+        ft_gc_remove(&minishell->gc_head, cmd);
+        free(cmd);
         return (NULL);
+    }
     ft_gc_add(&minishell->gc_head, cmd->args);
     cmd->redirs = NULL;
     cmd->pipe_in = -1;
@@ -55,7 +59,8 @@ static t_cmd *ft_create_command(t_token *start, t_minishell *minishell)
     i = 0;
     while (current && current->type != TOKEN_PIPE)
     {
-        if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT || current->type == TOKEN_REDIR_APPEND)
+        if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT ||
+            current->type == TOKEN_REDIR_APPEND || current->type == TOKEN_HEREDOC)
             ft_process_redirection(&current, cmd, minishell);
         else
             ft_process_argument(&current, cmd, &i, minishell);
@@ -87,7 +92,10 @@ t_cmd *tokens_to_cmds(t_token *tokens, t_minishell *minishell)
                 break;
             current_cmd->next = ft_create_command(current_token->next, minishell);
             if (!current_cmd->next)
+            {
+                ft_gc_remove_cmds(&minishell->gc_head, first_cmd);
                 return (NULL);
+            }
             current_cmd = current_cmd->next;
         }
         current_token = current_token->next;
