@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handler.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 23:04:21 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/header.h"
-
-extern int g_signal_received;
 
 /**
  * @brief Gestionnaire pour le signal SIGINT (Ctrl+C)
