@@ -1,4 +1,0 @@
-cat << EOF
-Ce texte est une démonstration de heredoc
-Il devrait être affiché correctement
-EOF
