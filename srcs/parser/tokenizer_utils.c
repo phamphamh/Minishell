@@ -122,8 +122,6 @@ char	*ft_expand_operators(char *input)
  */
 int	ft_determine_token_type(char *token)
 {
-    if (!token || token[0] == '\0')
-        return (TOKEN_WORD); // if env var == ""
 	if (!token)
 		return (TOKEN_EOF);
 	if (ft_strcmp_trim(token, "|") == 0)
