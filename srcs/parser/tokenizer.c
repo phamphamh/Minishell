@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
 /*   Updated: 2025/03/01 16:24:08 by yboumanz         ###   ########.fr       */
@@ -11,6 +11,26 @@
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
+
+char *ft_remove_escape_chars(char *str)
+{
+    char *new_str;
+    int i = 0, j = 0;
+    int len = ft_strlen(str);
+
+    new_str = malloc(len + 1);
+    if (!new_str)
+        return (NULL);
+
+    while (str[i])
+    {
+        if (str[i] == '\\' && str[i + 1] && !ft_strchr("$\"\\", str[i + 1]))
+            i++;
+        new_str[j++] = str[i++];
+    }
+    new_str[j] = '\0';
+    return (new_str);
+}
 
 /*
  * brief: Crée un nouveau token avec la valeur et le type spécifiés
@@ -98,19 +118,29 @@ static t_token	*ft_process_tokens(char **split_input, t_minishell *minishell)
  */
 t_token	*ft_tokenize(char *input, t_minishell *minishell)
 {
-	char	**split_input;
-	char	*expanded_input;
-	t_token	*token_list;
+    char **split_input;
+    char *expanded_input;
+    char *cleaned_input;
+    t_token *token_list;
 
-	expanded_input = ft_expand_operators(input);
-	if (!expanded_input)
-		return (NULL);
-	split_input = ft_split_with_quotes(expanded_input, ' ', minishell);
-	free(expanded_input);
-	if (!split_input)
-		return (NULL);
-	token_list = ft_process_tokens(split_input, minishell);
-	return (token_list);
+    expanded_input = ft_expand_operators(input);
+    if (!expanded_input)
+        return (NULL);
+    ft_gc_add(&minishell->gc_head, expanded_input);
+
+    cleaned_input = ft_remove_escape_chars(expanded_input);
+    if (!cleaned_input)
+        return (NULL);
+    ft_gc_add(&minishell->gc_head, cleaned_input);
+    free(expanded_input);
+
+    split_input = ft_split_with_quotes(cleaned_input, ' ', minishell);
+    if (!split_input)
+        return (NULL);
+
+    token_list = ft_process_tokens(split_input, minishell);
+    return (token_list);
 }
+
 
 

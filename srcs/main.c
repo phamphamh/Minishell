@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
 /*   Updated: 2025/03/01 16:24:09 by yboumanz         ###   ########.fr       */
