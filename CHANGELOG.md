@@ -1,5 +1,39 @@
 # Historique des modifications - Projet 42
 
+### 2025-02-28 - srcs/signal_handler.c
+- [BUGFIX] Amélioration de la gestion des signaux pour corriger les problèmes avec Ctrl+C et Ctrl+D
+  ► Impact : Comportement plus stable et conforme aux attentes avec les combinaisons de touches
+  ► Modifications :
+    - Ajout d'une variable globale g_signal_received pour suivre l'état des signaux
+    - Réinitialisation correcte des gestionnaires de signaux après chaque commande
+    - Ajout du flag SA_RESTART pour éviter les interruptions inattendues
+
+### 2025-02-28 - srcs/main.c
+- [BUGFIX] Correction de la boucle principale pour une meilleure gestion des signaux
+  ► Impact : Évite les boucles infinies avec Ctrl+C et prévient la sortie inattendue après multiple Ctrl+C
+  ► Modifications :
+    - Réinitialisation de l'état des signaux à des moments stratégiques
+    - Ajout d'une vérification explicite après readline pour les signaux reçus
+    - Meilleure gestion des ressources en cas d'interruption par signal
+
+### 2025-02-27 - srcs/parser/check_syntax.c
+- [BUGFIX] Amélioration de la vérification syntaxique pour les opérateurs spéciaux
+  ► Impact : Gestion correcte des erreurs syntaxiques
+  ► Modification : Ajout de vérifications pour "&&", ";", et "()" qui renvoient maintenant "syntax error" au lieu de "command not found"
+
+### 2025-02-27 - srcs/exec/exec.c
+- [BUGFIX] Correction du traitement des commandes de type répertoire
+  ► Impact : Message d'erreur approprié "is a directory" avec code 126
+  ► Modification : Ajout de vérification stat() pour détecter les répertoires
+
+- [BUGFIX] Amélioration de la gestion des guillemets vides comme commandes
+  ► Impact : Message d'erreur plus cohérent "command not found" avec code 127
+  ► Modification : Détection spécifique de "" et '' comme commandes
+
+- [BUGFIX] Meilleure gestion des erreurs d'exécution
+  ► Impact : Messages d'erreur plus précis
+  ► Modification : Remplacement de l'erreur générique par utilisation de perror()
+
 ### 2025-02-25 - srcs/parser/tokenizer.c
 - [BUGFIX] Correction des problèmes de double free dans la fonction ft_tokenize
   ► Impact : Résolution de l'erreur "Invalid free() / delete / delete[] / realloc()" signalée par Valgrind
@@ -79,3 +113,32 @@
 - [BUGFIX] Correction de fuites mémoire dans la fonction ft_create_redirection
   ► Impact : Réduction des fuites mémoire signalées par Valgrind
   ► Modification : Ajout de la libération de mémoire en cas d'échec d'allocation dans ft_create_redirection
+
+### 2025-03-01 - srcs/signal_handler.c
+- [BUGFIX] Correction de la gestion des signaux pour Ctrl+C
+  ► Impact : Comportement plus stable du shell avec les signaux
+  ► Modification : Suppression de la référence à rl_replace_line qui n'est pas disponible
+
+### 2025-03-01 - srcs/exec/redirection.c
+- [BUGFIX] Ajout de la gestion des here-documents (<<)
+  ► Impact : Les here-documents fonctionnent maintenant correctement
+  ► Modification : Implémentation complète de la lecture des here-documents avec gestion des signaux
+
+### 2025-03-01 - srcs/parser/cmd_parser.c
+- [BUGFIX] Ajout de la prise en compte des here-documents dans le parser
+  ► Impact : Les here-documents sont correctement reconnus et traités
+  ► Modification : Ajout de TOKEN_HEREDOC dans les conditions de traitement des redirections
+
+### 2025-03-01 - srcs/parser/parser_utils.c
+- [BUGFIX] Correction de la fonction ft_process_redirection pour gérer toutes les redirections
+  ► Impact : Toutes les redirections sont maintenant correctement traitées
+  ► Modification : Ajout d'une gestion en liste chaînée pour conserver toutes les redirections
+
+- [BUGFIX] Correction de la fonction ft_count_args pour prendre en compte les here-documents
+  ► Impact : Le comptage des arguments est maintenant correct avec les here-documents
+  ► Modification : Ajout de TOKEN_HEREDOC dans les conditions de comptage
+
+### 2025-03-01 - srcs/parser/tokenizer_utils.c
+- [BUGFIX] Correction de la tokenisation pour les opérateurs à deux caractères (<< et >>)
+  ► Impact : Les heredocs (<<) et les redirections d'ajout (>>) fonctionnent maintenant correctement
+  ► Modification : Refactorisation des fonctions ft_expand_operators et ft_fill_expanded pour traiter les opérateurs à deux caractères comme des unités

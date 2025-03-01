@@ -1,0 +1,86 @@
+# TESTS D'EXÉCUTION DE COMMANDES EXTERNES
+# =====================================
+# Ce fichier contient des tests pour l'exécution de commandes externes
+
+# ----- COMMANDES DE BASE -----
+ls
+ls -l
+ls -la
+ls -la /
+ls -la /tmp
+ls -la $HOME
+ls -la "$HOME"
+ls -la '$HOME'
+ls -la inexistant
+cat Makefile
+cat -e Makefile
+cat inexistant
+cat Makefile inexistant
+grep NAME Makefile
+grep -i name Makefile
+grep inexistant Makefile
+grep NAME inexistant
+wc Makefile
+wc -l Makefile
+wc -c Makefile
+wc -w Makefile
+wc inexistant
+wc Makefile inexistant
+head Makefile
+head -n 5 Makefile
+head inexistant
+tail Makefile
+tail -n 5 Makefile
+tail inexistant
+touch testfile
+rm testfile
+mkdir testdir
+rmdir testdir
+sleep 1
+date
+whoami
+hostname
+uname
+uname -a
+id
+which ls
+which inexistant
+find . -name "*.c" -type f | wc -l
+find / -name "*.c" -type f 2>/dev/null | head
+ps
+ps aux | grep bash
+ps aux | grep zsh
+
+# ----- CHEMINS ABSOLUS ET RELATIFS -----
+/bin/ls
+/bin/ls -l
+./minishell -c "echo Bonjour"
+../Minishell/minishell -c "echo Bonjour"
+/bin/echo Bonjour
+/usr/bin/grep NAME Makefile
+./Makefile
+../Minishell
+../../
+/
+/etc/passwd
+/etc/hosts
+/dev/null
+/dev/random
+/dev/urandom
+/tmp
+ls -la | grep Make
+ls -la | grep inexistant
+ls -la | grep Make | wc -l
+ls -la | grep inexistant | wc -l
+ls -la | grep Make | sort
+ls -la | grep Make | sort | head -n 2
+ls -la | grep Make | sort | head -n 2 | wc -l
+cat Makefile | grep NAME | wc -l
+cat inexistant | grep NAME | wc -l
+(ls -la) | grep Make
+(ls -la | grep Make) | wc -l
+(ls -la) | (grep Make)
+((ls -la) | (grep Make)) | wc -l
+(ls -la | grep Make) | (wc -l)
+(ls -la) | (grep Make) | (wc -l)
+((ls -la) | (grep Make)) | ((wc -l))

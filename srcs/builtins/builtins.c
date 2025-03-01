@@ -6,12 +6,19 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/24 11:28:43 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:24:15 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
+/**
+ * @brief Implémentation de la commande cd
+ *
+ * @param cmd Structure de la commande avec ses arguments
+ * @param minishell Structure principale du shell
+ * @return int Code de retour (0 si succès, 1 si erreur)
+ */
 static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 {
 	char	*path;
@@ -71,12 +78,18 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 	return (0);
 }
 
-static int ft_echo(t_cmd *cmd)
+/**
+ * @brief Implémentation de la commande echo
+ *
+ * @param cmd Structure de la commande avec ses arguments
+ * @return int Code de retour (toujours 0)
+ */
+static int	ft_echo(t_cmd *cmd)
 {
-	int i;
-	int n_option;
-	int first_output;
-	int fd;
+	int	i;
+	int	n_option;
+	int	first_output;
+	int	fd;
 
 	i = 1;
 	n_option = 0;
@@ -113,6 +126,11 @@ static int ft_echo(t_cmd *cmd)
 	return (0);
 }
 
+/**
+ * @brief Implémentation de la commande pwd
+ *
+ * @return int Code de retour (0 si succès, 1 si erreur)
+ */
 static int	ft_pwd(void)
 {
 	char	*pwd;
@@ -128,6 +146,13 @@ static int	ft_pwd(void)
 	return (0);
 }
 
+/**
+ * @brief Implémentation de la commande exit
+ *
+ * @param cmd Structure de la commande avec ses arguments
+ * @param minishell Structure principale du shell
+ * @return int Code de retour (0 si succès, 1 si erreur syntaxique)
+ */
 static int	ft_exit(t_cmd *cmd, t_minishell *minishell)
 {
 	int	exit_code;
@@ -158,6 +183,13 @@ static int	ft_exit(t_cmd *cmd, t_minishell *minishell)
 	return (0);
 }
 
+/**
+ * @brief Exécute une commande builtin
+ *
+ * @param cmd Structure de la commande à exécuter
+ * @param minishell Structure principale du shell
+ * @return int Code de retour de la commande exécutée
+ */
 int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 {
 	if (ft_strcmp(cmd->name, "cd") == 0)

@@ -1,0 +1,6 @@
+cat << EOF
+Bonjour
+Ceci est un test
+de heredoc
+avec plusieurs lignes
+EOF

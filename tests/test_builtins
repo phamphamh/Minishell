@@ -1,0 +1,281 @@
+# TESTS DES COMMANDES BUILTIN MINISHELL
+# =====================================
+# Ce fichier contient des tests pour toutes les commandes builtin
+# Incluant : echo, cd, pwd, export, unset, env, exit
+
+# ----- TESTS ECHO -----
+echo
+echo Bonjour
+echo "Bonjour"
+echo 'Bonjour'
+echo Bonjour le monde
+echo "Bonjour le monde"
+echo 'Bonjour le monde'
+echo -n
+echo -n Bonjour
+echo -n "Bonjour"
+echo -n 'Bonjour'
+echo -n Bonjour le monde
+echo -n "Bonjour le monde"
+echo -n 'Bonjour le monde'
+echo -nnnnn Bonjour
+echo -n -n -n Bonjour
+echo -n-n Bonjour
+echo -abc Bonjour
+echo - Bonjour
+echo -- Bonjour
+echo Bonjour -n
+echo "Bonjour -n"
+echo 'Bonjour -n'
+echo "$HOME"
+echo '$HOME'
+echo "$HOME"'$USER'"$PWD"
+echo \$HOME
+echo \\$HOME
+echo \\\$HOME
+echo \\\\$HOME
+echo \\\\\$HOME
+echo $HOME$USER
+echo "$HOME$USER"
+echo '$HOME$USER'
+echo ""
+echo ''
+echo """Bonjour"""
+echo '''Bonjour'''
+echo "'"Bonjour"'"
+echo '"'Bonjour'"'
+echo $PATH
+echo "$PATH"
+echo '$PATH'
+echo $INEXISTANT
+echo "$INEXISTANT"
+echo '$INEXISTANT'
+echo $?
+echo "$?"
+echo Statut : $?
+echo *
+echo "*"
+echo '*'
+echo \*
+echo \\*
+echo "texte avec des espaces     multiples"
+echo 'texte avec des espaces     multiples'
+
+# ----- TESTS CD -----
+pwd
+cd
+pwd
+cd .
+pwd
+cd ..
+pwd
+cd /
+pwd
+cd $HOME
+pwd
+cd -
+pwd
+cd /tmp
+pwd
+cd -
+pwd
+cd srcs
+pwd
+cd ../includes
+pwd
+cd ../
+pwd
+cd ./srcs
+pwd
+cd ~/
+pwd
+cd ~
+pwd
+cd inexistant
+cd /inexistant
+cd ""
+cd ''
+cd - inexistant
+cd ../.. inexistant
+cd / inexistant
+cd / inexistant autrearg
+cd ~~ inexistant
+cd $HOME inexistant
+cd ..
+cd . ..
+cd . .. srcs
+cd -- inexistant
+cd -L inexistant
+cd -P inexistant
+cd -LP inexistant
+cd srcs libft
+pwd
+cd /etc/
+pwd
+cd -
+pwd
+
+# ----- TESTS PWD -----
+pwd
+pwd inexistant
+pwd inexistant autrearg
+pwd -L
+pwd -P
+pwd --
+pwd -
+pwd -LP
+pwd -PL
+pwd -L -P
+cd /tmp && pwd && cd -
+cd / && pwd && cd -
+cd $HOME && pwd && cd -
+
+# ----- TESTS EXPORT -----
+export
+export A=1
+export
+export B=2 C=3
+export
+export A=nouveau
+export
+export A+=_plus
+export
+export A="avec espaces"
+export
+export A='avec apostrophes'
+export
+export A=$HOME
+export
+export A="$HOME"
+export
+export A='$HOME'
+export
+export A=$INEXISTANT
+export
+export A= B= C=
+export
+export A
+export A B C
+export =ABC
+export 1A=valeur
+export A-B=valeur
+export A.B=valeur
+export _A=valeur
+export A_B=valeur
+export A?B=valeur
+export A*B=valeur
+export A@B=valeur
+export A#B=valeur
+export A/B=valeur
+export A:B=valeur
+export A,B=valeur
+export A;B=valeur
+export A!B=valeur
+export A&B=valeur
+export A|B=valeur
+export HOME=$HOME:nouveau
+export
+export A="nouvelle
+ligne"
+export
+export PATH=
+which ls
+export PATH=$PATH
+which ls
+
+# ----- TESTS UNSET -----
+export TEST1=valeur1 TEST2=valeur2 TEST3=valeur3
+export
+unset TEST1
+export
+unset TEST2 TEST3
+export
+unset INEXISTANT
+export
+unset PATH
+export
+ls
+export PATH=/bin:/usr/bin
+unset HOME
+cd
+pwd
+unset PWD
+pwd
+unset
+unset ""
+unset ''
+unset TEST1 ""
+unset TEST1 INEXISTANT
+unset =TEST1
+unset TEST1= TEST2
+unset 1TEST
+unset TEST-1
+unset TEST.1
+unset TEST_1
+unset TEST?1
+unset TEST*1
+unset TEST@1
+unset TEST#1
+unset TEST/1
+unset TEST:1
+unset TEST,1
+unset TEST;1
+unset TEST!1
+unset TEST&1
+unset TEST|1
+
+# ----- TESTS ENV -----
+env
+env | grep HOME
+env | grep USER
+env | grep PATH
+env | grep PWD
+env | grep OLDPWD
+env | grep SHLVL
+env | grep _
+env inexistant
+env inexistant autrearg
+env -i
+env -u
+env -i env
+env -u HOME
+env -u HOME env
+export A=1 B=2 C=3
+env | grep A
+env | grep B
+env | grep C
+env | grep D
+unset A B C
+env | grep A
+env | grep B
+env | grep C
+
+# ----- TESTS EXIT -----
+# Note: ces commandes vont fermer le shell, donc elles sont commentées
+# Pour les tester, décommentez une ligne à la fois et exécutez
+# exit
+# exit 0
+# exit 1
+# exit 255
+# exit -1
+# exit 256
+# exit -256
+# exit 9223372036854775807
+# exit -9223372036854775808
+# exit 9223372036854775808
+# exit -9223372036854775809
+# exit +1
+# exit +-1
+# exit 1 2
+# exit 1 2 3
+# exit a
+# exit 1a
+# exit a1
+# exit 1 a
+# exit +a
+# exit -a
+# exit a b
+# exit ""
+# exit ''
+# exit " "
+# exit ' '

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/02/25 17:27:59 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:12:21 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@
 # include <stdbool.h>
 # include <unistd.h>
 # include <limits.h>
+
+// Variable globale pour gérer les signaux
+int g_signal_received;
 
 // Déclaration des fonctions de readline
 void	rl_clear_history(void);
@@ -139,6 +142,7 @@ void	update_pwd_and_oldpwd(t_minishell *minishell);
 // exec.c
 void	ft_execute_command(t_cmd *cmd, t_minishell *minishell);
 char	*ft_find_executable(char *cmd_name, t_env *env);
+void	ft_execute_child(t_cmd *cmd, t_minishell *minishell);
 
 // pipe_handler.c
 int		ft_create_pipe(t_cmd *cmd);

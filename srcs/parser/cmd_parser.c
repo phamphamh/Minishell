@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 18:30:24 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:19:36 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ static t_cmd *ft_create_command(t_token *start, t_minishell *minishell)
     i = 0;
     while (current && current->type != TOKEN_PIPE)
     {
-        if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT || current->type == TOKEN_REDIR_APPEND)
+        if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT ||
+            current->type == TOKEN_REDIR_APPEND || current->type == TOKEN_HEREDOC)
             ft_process_redirection(&current, cmd, minishell);
         else
             ft_process_argument(&current, cmd, &i, minishell);

@@ -6,47 +6,48 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:31:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/02/25 17:28:12 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/01 16:24:10 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/header.h"
 
+/**
+ * @brief Nettoie les ressources et quitte proprement le programme
+ *
+ * @param minishell Structure principale à nettoyer
+ * @param exit_num Code de sortie à retourner
+ */
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
 	if (minishell)
 	{
-		ft_putstr_fd("[LOG] Nettoyage avant sortie\n", 2);
-		// Nettoyer explicitement les tokens si présents
 		if (minishell->tokens)
 		{
-			ft_putstr_fd("[LOG] Nettoyage des tokens\n", 2);
 			ft_gc_remove_list(&minishell->gc_head, minishell->tokens);
 			minishell->tokens = NULL;
 		}
-
-		// Nettoyer explicitement les commandes si présentes
 		if (minishell->commands)
 		{
-			ft_putstr_fd("[LOG] Nettoyage des commandes\n", 2);
 			ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
 			minishell->commands = NULL;
 		}
-
-		// Nettoyer explicitement les variables d'environnement
 		if (minishell->env)
 		{
-			ft_putstr_fd("[LOG] Nettoyage des variables d'environnement\n", 2);
 			ft_gc_remove_env(&minishell->gc_head, minishell->env);
 			minishell->env = NULL;
 		}
-
-		// Nettoyer le garbage collector
 		ft_gc_clear(&minishell->gc_head);
 	}
 	exit(exit_num);
 }
 
+/**
+ * @brief Vérifie si une chaîne est un identifiant valide
+ *
+ * @param str Chaîne à vérifier
+ * @return true si c'est un identifiant valide, false sinon
+ */
 bool	ft_is_valid_identifier(const char *str)
 {
 	int	i;
@@ -63,6 +64,12 @@ bool	ft_is_valid_identifier(const char *str)
 	return (true);
 }
 
+/**
+ * @brief Vérifie si la partie avant le '=' est un identifiant valide
+ *
+ * @param str Chaîne à vérifier
+ * @return true si la partie avant '=' est un identifiant valide, false sinon
+ */
 bool	ft_is_valid_identifier_before_equal(const char *str)
 {
 	int		i;
@@ -83,6 +90,13 @@ bool	ft_is_valid_identifier_before_equal(const char *str)
 	return (true);
 }
 
+/**
+ * @brief Vérifie si une variable d'environnement correspond à un nom donné
+ *
+ * @param env_var Variable d'environnement à vérifier
+ * @param var_name Nom à comparer
+ * @return 1 si correspondance, 0 sinon
+ */
 int	ft_env_var_match(const char *env_var, const char *var_name)
 {
 	size_t	len;
@@ -94,6 +108,13 @@ int	ft_env_var_match(const char *env_var, const char *var_name)
 		&& (env_var[len] == '=' || env_var[len] == '\0'));
 }
 
+/**
+ * @brief Recherche une variable d'environnement par son nom
+ *
+ * @param env Liste des variables d'environnement
+ * @param var Nom de la variable à rechercher
+ * @return t_env* Variable trouvée, NULL si non trouvée
+ */
 t_env	*ft_find_env_var(t_env *env, const char *var)
 {
 	t_env	*current;
@@ -110,6 +131,12 @@ t_env	*ft_find_env_var(t_env *env, const char *var)
 	return (NULL);
 }
 
+/**
+ * @brief Ajoute une variable d'environnement
+ *
+ * @param minishell Structure principale du shell
+ * @param var Variable à ajouter (format "NOM=VALEUR")
+ */
 void	ft_add_env_var(t_minishell *minishell, const char *var)
 {
 	t_env	*new_var;
