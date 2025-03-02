@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/02 12:39:30 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/02 13:11:16 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ static t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	ft_gc_add(&minishell->gc_head, new_token);
 	new_token->value = cleaned_value;
 	ft_gc_add(&minishell->gc_head, new_token->value);
-
 	new_token->type = type;
 	new_token->next = NULL;
 	new_token->prev = NULL;

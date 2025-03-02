@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/02 12:57:34 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/02 13:22:24 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,8 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		}
 	}
 	ft_setup_signals();
+	ft_gc_remove(&minishell->gc_head, pids);
+	free(pids);
 }
 
 /**
