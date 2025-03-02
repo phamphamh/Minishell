@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:59:09 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:16 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/02 17:20:32 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	update_env_var(t_env *env, const char *name, const char *new_value,
 		if (strncmp(current->var, name, name_len) == 0
 			&& current->var[name_len] == '=')
 		{
-			free(current->var);
 			current->var = malloc(strlen(name) + strlen(new_value) + 2);
 			if (!current->var)
 			{
@@ -41,6 +40,7 @@ void	update_env_var(t_env *env, const char *name, const char *new_value,
 				ft_gc_clear(&minishell->gc_head);
 				exit(EXIT_FAILURE);
 			}
+			ft_gc_add(&minishell->gc_head, current->var);
 			sprintf(current->var, "%s=%s", name, new_value);
 			return ;
 		}
