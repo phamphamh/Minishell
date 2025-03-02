@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_syntax.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:14 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/02 12:43:40 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 /**
  * @brief Vérifie si un token est spécial et non supporté (&&, ;)
  *
- * @param value Valeur du token à vérifier
+ * @param value Valeur du token à vérifierz
  * @return int 1 si erreur de syntaxe, 0 sinon
  */
 static int	ft_check_special_token(char *value)
 {
-	if (!value)
+	if (!value || !value[0])
 		return (0);
 	if (ft_strcmp(value, "&&") == 0 || ft_strcmp(value, "&&&") == 0 ||
 		ft_strncmp(value, "&&", 2) == 0)

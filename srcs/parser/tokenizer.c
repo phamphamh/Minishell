@@ -3,15 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:08 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/02 12:39:30 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
+
+char *ft_remove_escape_chars(char *str)
+{
+    char *new_str;
+    int i = 0, j = 0;
+    int len = ft_strlen(str);
+
+    new_str = malloc(len + 1);
+    if (!new_str)
+        return (NULL);
+
+    while (str[i])
+    {
+        if (str[i] == '\\' && str[i + 1] && !ft_strchr("$\"\\", str[i + 1]))
+            i++;
+        new_str[j++] = str[i++];
+    }
+    new_str[j] = '\0';
+    return (new_str);
+}
 /*
  * brief: Crée un nouveau token avec la valeur et le type spécifiés
  *
@@ -23,18 +43,27 @@
 static t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 {
 	t_token	*new_token;
+	char	*cleaned_value;
+
+	cleaned_value = ft_remove_escape_chars(value);
+	if (!cleaned_value)
+		return (NULL);
 
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
+	{
+		free(cleaned_value);
 		return (NULL);
+	}
+
 	ft_gc_add(&minishell->gc_head, new_token);
-	new_token->value = ft_strdup(value);
-	if (!new_token->value)
-		return (NULL);
+	new_token->value = cleaned_value;
 	ft_gc_add(&minishell->gc_head, new_token->value);
+
 	new_token->type = type;
 	new_token->next = NULL;
 	new_token->prev = NULL;
+
 	return (new_token);
 }
 
@@ -98,9 +127,9 @@ static t_token	*ft_process_tokens(char **split_input, t_minishell *minishell)
  */
 t_token	*ft_tokenize(char *input, t_minishell *minishell)
 {
-	char	**split_input;
-	char	*expanded_input;
-	t_token	*token_list;
+	char **split_input;
+    char *expanded_input;
+    t_token *token_list;
 
 	expanded_input = ft_expand_operators(input);
 	if (!expanded_input)
@@ -112,5 +141,3 @@ t_token	*ft_tokenize(char *input, t_minishell *minishell)
 	token_list = ft_process_tokens(split_input, minishell);
 	return (token_list);
 }
-
-
