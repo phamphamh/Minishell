@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:25:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:11 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/02 12:56:22 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,24 +155,33 @@ void	ft_gc_remove_cmds(t_gc_node **gc_head, t_cmd *cmds)
 		{
 			while (current->args[i])
 			{
-				ft_gc_remove(gc_head, current->args[i]);
+				ft_gc_remove(gc_head, current->args[i]); // ✅ Ajout
+				free(current->args[i]); // ✅ Libérer chaque argument
 				i++;
 			}
 			ft_gc_remove(gc_head, current->args);
+			free(current->args);
 		}
+		// Libérer les redirections
 		redir = current->redirs;
 		while (redir)
 		{
 			next_redir = redir->next;
 			if (redir->file)
+			{
 				ft_gc_remove(gc_head, redir->file);
+				free(redir->file);
+			}
 			ft_gc_remove(gc_head, redir);
+			free(redir);
 			redir = next_redir;
 		}
 		ft_gc_remove(gc_head, current);
+		free(current);
 		current = next;
 	}
 }
+
 
 /**
  * @brief Retire et libère une liste de variables d'environnement du garbage collector

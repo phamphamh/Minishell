@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:09 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/02 12:57:34 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ void	ft_process_line(char *line, t_minishell *minishell)
 	pids = malloc(sizeof(pid_t) * cmd_count);
 	if (!pids)
 		return ;
+	ft_gc_add(&minishell->gc_head, pids);
 	for (i = 0; i < cmd_count; i++)
 		pids[i] = -1;
 	i = 0;
@@ -182,7 +183,6 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		}
 	}
 	ft_setup_signals();
-	free(pids);
 }
 
 /**
