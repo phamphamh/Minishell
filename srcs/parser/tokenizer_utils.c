@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:07 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/04 15:22:06 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ char	*ft_expand_operators(char *input)
  * token: Valeur du token à analyser
  * return: Type de token (TOKEN_WORD, TOKEN_PIPE, etc.)
  */
-int	ft_determine_token_type(char *token)
+int	ft_determine_token_type(char *token, t_token *prev)
 {
 	if (!token)
 		return (TOKEN_EOF);
@@ -134,5 +134,11 @@ int	ft_determine_token_type(char *token)
 		return (TOKEN_REDIR_OUT);
 	if (ft_strcmp_trim(token, ">>") == 0)
 		return (TOKEN_REDIR_APPEND);
+
+	// si token precedent est << alors le token suivant sera TOKEN_EOF
+	if (prev && prev->type == TOKEN_HEREDOC)
+		return (TOKEN_EOF);
+
 	return (TOKEN_WORD);
 }
+

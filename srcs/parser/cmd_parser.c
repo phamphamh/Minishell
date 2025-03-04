@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:19:36 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/04 15:21:36 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,17 @@ static t_cmd *ft_create_command(t_token *start, t_minishell *minishell)
             ft_process_argument(&current, cmd, &i, minishell);
     }
     cmd->args[i] = NULL;
-    cmd->name = cmd->args[0];
+
+    // verif pour heredoc
+    if (cmd->redirs && cmd->redirs->type == TOKEN_HEREDOC)
+    {
+        cmd->name = ft_strdup("heredoc");
+        ft_gc_add(&minishell->gc_head, cmd->name);
+    }
+    else
+    {
+        cmd->name = cmd->args[0];
+    }
     return (cmd);
 }
 

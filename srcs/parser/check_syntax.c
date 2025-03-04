@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/02 12:43:40 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/04 14:53:29 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,19 @@ static int	ft_check_first_token(t_token *current)
 	return (0);
 }
 
+static int ft_check_heredoc_syntax(t_token *current)
+{
+    if (current->type == TOKEN_HEREDOC)
+    {
+        if (!current->next || current->next->type != TOKEN_EOF)
+        {
+            ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+            return (1);
+        }
+    }
+    return (0);
+}
+
 /**
  * @brief Vérifie la validité syntaxique d'une séquence de tokens
  *
@@ -83,7 +96,7 @@ static int	ft_check_token_sequence(t_token *current)
 {
 	while (current)
 	{
-		if (ft_check_special_token(current->value))
+		if (ft_check_special_token(current->value) || ft_check_heredoc_syntax(current))
 			return (1);
 		if (current->type == TOKEN_PIPE &&
 			(!current->next || current->next->type == TOKEN_PIPE))

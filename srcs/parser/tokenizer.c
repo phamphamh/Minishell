@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/02 13:11:16 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/04 15:22:31 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,23 +99,24 @@ static t_token	*ft_add_token(t_token **token_list, t_token *new_token)
  */
 static t_token	*ft_process_tokens(char **split_input, t_minishell *minishell)
 {
-	t_token	*token_list;
+	t_token	*token_list = NULL;
 	t_token	*new_token;
-	int		i;
+	t_token	*prev = NULL; // Garder le token précédent pour détecter EOF
+	int		i = 0;
 
-	token_list = NULL;
-	i = 0;
 	while (split_input[i])
 	{
 		new_token = ft_create_token(split_input[i],
-				ft_determine_token_type(split_input[i]), minishell);
+				ft_determine_token_type(split_input[i], prev), minishell);
 		if (!new_token)
 			return (NULL);
 		ft_add_token(&token_list, new_token);
+		prev = new_token;
 		i++;
 	}
 	return (token_list);
 }
+
 
 /*
  * brief: Convertit une ligne d'entrée en liste de tokens

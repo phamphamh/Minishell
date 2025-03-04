@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/01 23:04:16 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/04 14:52:28 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ int ft_is_operator(char c);
 char *ft_allocate_expanded(char *input);
 void ft_fill_expanded(char *input, char *expanded);
 char *ft_expand_operators(char *input);
-int ft_determine_token_type(char *token);
+int ft_determine_token_type(char *token, t_token *prev);
 t_token	*ft_tokenize(char *input, t_minishell *minishell);
 //int		ft_determine_token_type(char *token);
 

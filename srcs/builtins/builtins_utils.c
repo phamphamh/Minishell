@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:59:09 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/02 17:20:32 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/04 15:20:49 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,8 @@ bool	ft_is_all_nb(char *str)
  */
 bool	ft_is_builtin(char *value)
 {
+	if (!value)
+		return (false);
 	if (!ft_strcmp_trim("exit", value))
 		return (true);
 	else if (!ft_strcmp_trim("echo", value))

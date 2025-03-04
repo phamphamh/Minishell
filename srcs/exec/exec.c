@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/02 13:21:00 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/04 15:12:27 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,9 +148,12 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	cmd_path = ft_find_executable(cmd->name, minishell->env);
 	if (!cmd_path)
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->name, 2);
-		ft_putstr_fd(": command not found\n", 2);
+		if (ft_strcmp(cmd->name,"heredoc"))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->name, 2);
+			ft_putstr_fd(": command not found\n", 2);
+		}
 		ft_clean_exit(minishell, 127);
 	}
 	if (stat(cmd_path, &file_stat) == 0)
