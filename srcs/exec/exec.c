@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/04 15:12:27 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/04 21:01:43 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	if (ft_strcmp(cmd->name, "\"\"") == 0 || ft_strcmp(cmd->name, "''") == 0)
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
-		exit(127);
+		ft_clean_exit(minishell, 127);
 	}
 	if (ft_strcmp(cmd->name, "grep") == 0 && cmd->args[1]
 		&& ft_strstr(cmd->args[1], "bash"))
@@ -141,7 +141,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 				ft_putstr_fd("minishell: ", 2);
 				ft_putstr_fd(cmd->name, 2);
 				ft_putstr_fd(": is a directory\n", 2);
-				exit(126);
+				ft_clean_exit(minishell, 126);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 			ft_putstr_fd(cmd_path, 2);
 			ft_putstr_fd(": is a directory\n", 2);
 			free(cmd_path);
-			exit(126);
+			ft_clean_exit(minishell, 126);
 		}
 	}
 	env_array = ft_env_to_array(minishell->env);
@@ -172,7 +172,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	{
 		perror("minishell");
 		free(cmd_path);
-		exit(126);
+		ft_clean_exit(minishell, 126);
 	}
 }
 
