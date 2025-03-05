@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:30:16 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/05 11:57:25 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,19 @@ static int	ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin, int s
 	while (1)
 	{
 		line = readline("> ");
-		if (!line)
-			break ;
+		if (!line)  // L'utilisateur a fait Ctrl+D
+		{
+			ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", 2);
+			ft_putstr_fd(last_heredoc->file, 2);
+			ft_putstr_fd("')\n", 2);
+			break;
+		}
 		if (g_signal_received)
 		{
 			free(line);
 			break ;
 		}
-		if (!ft_strcmp(line, last_heredoc->file))
+		if (!ft_strcmp_trim(line, last_heredoc->file))
 		{
 			free(line);
 			break ;

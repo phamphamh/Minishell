@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:59:09 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/04 15:20:49 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/05 11:47:19 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ void	ft_print_env(t_env *env)
  * @param env Liste des variables d'environnement
  * @return char** Tableau de variables, NULL en cas d'erreur
  */
-char	**ft_env_to_array(t_env *env)
+char	**ft_env_to_array(t_minishell *minishell, t_env *env)
 {
 	t_env	*current;
 	char	**env_array;
@@ -210,15 +210,21 @@ char	**ft_env_to_array(t_env *env)
 	env_array = malloc(sizeof(char *) * (size + 1));
 	if (!env_array)
 		return (NULL);
+	ft_gc_add(&minishell->gc_head, env_array);
 	i = 0;
 	current = env;
 	while (current)
 	{
 		env_array[i] = ft_strdup(current->var);
+		ft_gc_add(&minishell->gc_head, env_array[i]);
 		if (!env_array[i])
 		{
 			while (i > 0)
+			{
+				ft_gc_remove(&minishell->gc_head, env_array[i]);
 				free(env_array[--i]);
+			}
+			ft_gc_remove(&minishell->gc_head, env_array);
 			free(env_array);
 			return (NULL);
 		}

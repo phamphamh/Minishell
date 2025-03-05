@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/04 21:01:43 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/05 11:44:33 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,9 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 
 	ft_setup_pipes(cmd);
 	if (!ft_handle_redirection(cmd->redirs))
-		exit(1);
+		ft_clean_exit(minishell, 1);
 	if (!cmd->name || !*cmd->name)
-		exit(0);
+		ft_clean_exit(minishell, 0);
 	if (ft_strcmp(cmd->name, "\"\"") == 0 || ft_strcmp(cmd->name, "''") == 0)
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
@@ -167,7 +167,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 			ft_clean_exit(minishell, 126);
 		}
 	}
-	env_array = ft_env_to_array(minishell->env);
+	env_array = ft_env_to_array(minishell, minishell->env);
 	if (execve(cmd_path, cmd->args, env_array) == -1)
 	{
 		perror("minishell");

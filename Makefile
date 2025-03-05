@@ -84,7 +84,7 @@ run: $(NAME)
 		echo "Bash POSIX output:"; \
 		cat output_bash.txt; \
 		echo "----------------------------------------"; \
-	done < data/test
+	done < tests/test
 	@$(RM) output_minishell.txt output_bash.txt
 
 runv: $(NAME)

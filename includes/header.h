@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/04 14:52:28 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/05 11:44:48 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	ft_ignore_signals(void);
 // builtins.c
 int		ft_execute_builtin(t_cmd *cmd, t_minishell *minishell);
 void	ft_print_env(t_env *env);
-char	**ft_env_to_array(t_env *env);
+char	**ft_env_to_array(t_minishell *minishell, t_env *env);
 bool	ft_is_builtin(char *value);
 
 // builtins_utils.c
