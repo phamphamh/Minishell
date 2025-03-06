@@ -1,0 +1,30 @@
+ls
+ls -l
+ls -la
+ls -la /
+ls -la /tmp
+ls -la $HOME
+ls -la "$HOME"
+ls -la '$HOME'
+ls -la inexistant
+cat Makefile
+cat -e Makefile
+cat inexistant
+cat Makefile inexistant
+grep NAME Makefile
+grep -i name Makefile
+grep inexistant Makefile
+grep NAME inexistant
+wc Makefile
+wc -l Makefile
+wc -c Makefile
+wc -w Makefile
+wc inexistant
+wc Makefile inexistant
+head Makefile
+head -n 5 Makefile
+head inexistant
+tail Makefile
+tail -n 5 Makefile
+tail inexistant
+touch testfile

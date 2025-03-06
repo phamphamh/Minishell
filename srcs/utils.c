@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:31:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/06 16:20:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@
  */
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
+	// Fermer tous les descripteurs de fichiers ouverts non standards
+	ft_close_all_fds(NULL);
+
 	if (minishell)
 	{
 		if (minishell->tokens)

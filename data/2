@@ -1,8 +1,3 @@
-# TESTS D'EXÉCUTION DE COMMANDES EXTERNES
-# =====================================
-# Ce fichier contient des tests pour l'exécution de commandes externes
-
-# ----- COMMANDES DE BASE -----
 ls
 ls -l
 ls -la
@@ -49,8 +44,6 @@ find . -name "*.c" -type f | wc -l
 ps
 ps aux | grep bash
 ps aux | grep zsh
-
-# ----- CHEMINS ABSOLUS ET RELATIFS -----
 /bin/ls
 /bin/ls -l
 ./minishell -c "echo Bonjour"

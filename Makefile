@@ -6,7 +6,7 @@
 #    By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+           #
 #    Created: 2025/01/14 13:04:12 by yboumanz          #+#    #+#              #
-#    Updated: 2025/01/14 13:04:14 by yboumanz         ###   ########.fr        #
+#    Updated: 2025/03/06 17:51:15 by yboumanz         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,13 @@ SRCS = srcs/main.c \
        srcs/signal_handler.c \
        srcs/builtins/builtins.c \
        srcs/builtins/builtins_utils.c \
-       srcs/exec/exec.c \
+       srcs/exec/exec_utils.c \
+       srcs/exec/exec_command.c \
+       srcs/exec/exec_child.c \
        srcs/exec/pipe_handler.c \
+       srcs/exec/pipe_management.c \
        srcs/exec/redirection.c \
+       srcs/exec/redirection_utils.c \
        srcs/parser/tokenizer.c \
        srcs/parser/tokenizer_utils.c \
        srcs/parser/cmd_parser.c \
@@ -43,7 +47,7 @@ INCLUDES = -I./includes -I./$(LIBFT_DIR)
 
 LIBS = -L$(LIBFT_DIR) -lft -L/usr/local/lib -lreadline
 
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes $(V_FLAG)
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes -q $(V_FLAG)
 VALGRIND_OTHER = valgrind --vgdb=yes
 V_FLAG = --suppressions="data/ignore_valgrind"
 HELLGRIND = valgrind --tool=helgrind -g3

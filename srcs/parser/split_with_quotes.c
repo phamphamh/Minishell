@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   split_with_quotes.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/04 21:04:08 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/06 16:22:16 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/header.h"
+#include "../../includes/header.h"
 
 bool	is_quote(char c)
 {

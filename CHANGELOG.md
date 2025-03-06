@@ -1,5 +1,47 @@
 # Historique des modifications - Projet 42
 
+### 2025-03-06 - Refactorisation majeure du code d'exécution
+- [CODE] Restructuration complète du système d'exécution pour améliorer la lisibilité et la maintenance
+  ► Impact : Code plus clair, meilleure organisation et respect des normes du projet
+  ► Modifications :
+    - Élimination des variables globales dans pipe_handler.c en créant une structure locale
+    - Division des fonctions longues en sous-fonctions plus spécifiques
+    - Meilleure organisation du code avec des responsabilités clairement définies
+    - Suppression des fichiers inutilisés et réorganisation des fonctionnalités
+
+### 2025-03-06 - Refactorisation du code d'exécution de commandes
+- [CODE] Restructuration du système d'exécution pour améliorer la clarté et éviter les duplications
+  ► Impact : Code plus maintenable et élimination des problèmes de compilation
+  ► Modifications :
+    - Séparation des responsabilités en plusieurs fichiers (exec_command.c, exec_child.c)
+    - Suppression des définitions dupliquées de fonctions
+    - Mise à jour du Makefile pour inclure les nouveaux fichiers
+    - Meilleure organisation des fonctions liées à l'exécution des commandes
+
+### 2025-03-06 - srcs/exec/pipe_handler.c
+- [BUGFIX] Résolution des fuites de descripteurs de fichiers
+  ► Impact : Correction des problèmes de descripteurs non fermés signalés par Valgrind
+  ► Modifications :
+    - Implémentation d'un système de suivi des descripteurs ouverts
+    - Ajout de fonctions pour enregistrer et désenregistrer les descripteurs
+    - Fermeture explicite des descripteurs hérités problématiques
+
+### 2025-03-06 - srcs/exec/exec.c
+- [BUGFIX] Amélioration de la gestion des processus enfants
+  ► Impact : Meilleure gestion des descripteurs de fichiers et transmission correcte des données via pipes
+  ► Modifications :
+    - Refactorisation de la fonction ft_execute_command pour gérer correctement les processus multiples
+    - Implémentation d'une fermeture ciblée des descripteurs hérités
+    - Ajout d'une fonction ft_close_inherited_fds pour fermer les descripteurs problématiques
+
+### 2025-03-06 - srcs/exec/redirection.c
+- [BUGFIX] Correction de la gestion des redirections
+  ► Impact : Plus de fuites de descripteurs lors des redirections
+  ► Modifications :
+    - Enregistrement des descripteurs ouverts lors des redirections
+    - Désenregistrement des descripteurs après leur fermeture
+    - Correction de l'indentation pour éviter les erreurs de compilation
+
 ### 2025-02-28 - srcs/signal_handler.c
 - [BUGFIX] Amélioration de la gestion des signaux pour corriger les problèmes avec Ctrl+C et Ctrl+D
   ► Impact : Comportement plus stable et conforme aux attentes avec les combinaisons de touches

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/06 13:55:16 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/06 17:29:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,11 +135,21 @@ void	ft_process_line(char *line, t_minishell *minishell)
 			int saved_stdin = dup(STDIN_FILENO);
 			int saved_stdout = dup(STDOUT_FILENO);
 
+			if (saved_stdin == -1 || saved_stdout == -1)
+			{
+				if (saved_stdin != -1)
+					close(saved_stdin);
+				if (saved_stdout != -1)
+					close(saved_stdout);
+				minishell->exit_nb = 1;
+				break;
+			}
+
 			ft_setup_pipes(current);
 			if (!ft_handle_redirection(current->redirs))
 			{
 				minishell->exit_nb = 1;
-				ft_restore_fds(saved_stdin, saved_stdout);
+				// ft_restore_fds est déjà appelé dans ft_handle_redirection en cas d'erreur
 			}
 			else
 			{
@@ -222,19 +232,27 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
 	char		*line;
+	int			saved_stdin;
+	int			saved_stdout;
+	int			exceptions[3];
 
 	(void)argc;
 	(void)argv;
 	ft_initialize_shell(&minishell);
 	ft_initialize(&minishell, envp);
 	ft_setup_signals();
+
+	// Sauvegarder les descripteurs de fichiers standards au début
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+
 	while (1)
 	{
 		line = readline("minishell$ ");
 		if (!line)
 		{
-			ft_putstr_fd("exit\n", STDOUT_FILENO);
-			ft_clean_exit(&minishell, minishell.exit_nb);
+			write(1, "exit\n", 5);
+			break ;
 		}
 		if (g_signal_received)
 		{
@@ -242,9 +260,26 @@ int	main(int argc, char **argv, char **envp)
 			ft_setup_signals();
 			continue ;
 		}
-		ft_process_line(line, &minishell);
+		if (*line)
+		{
+			ft_process_line(line, &minishell);
+		}
 		free(line);
+
+		// Fermer tous les descripteurs non-standards après chaque commande
+		exceptions[0] = saved_stdin;
+		exceptions[1] = saved_stdout;
+		exceptions[2] = -1;
+		ft_close_all_fds(exceptions);
 		ft_setup_signals();
 	}
+
+	// Restaurer les descripteurs standards avant de quitter
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+
+	ft_clean_exit(&minishell, minishell.exit_nb);
 	return (0);
 }

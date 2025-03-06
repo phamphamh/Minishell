@@ -1,0 +1,23 @@
+{
+   ignore_inherited_fds
+   Memcheck:Leak
+   match-leak-kinds: fd
+   ...
+   fun:fork
+}
+
+{
+   ignore_pts_descriptors
+   Memcheck:Leak
+   match-leak-kinds: fd
+   fun:open
+   obj:/dev/pts/*
+}
+
+{
+   suppress_inherited_fds
+   Memcheck:FD
+   obj:/dev/pts/6
+   match-fd-dirs:/dev/pts/
+}
+
