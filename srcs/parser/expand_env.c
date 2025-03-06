@@ -18,7 +18,7 @@ static char	*prepare_result_buffer(const char *str)
 	char	*result;
 
 	len = strlen(str) * 2;
-	result = malloc(len + 1);
+	result = malloc(len + 500);
 	if (!result)
 		return (NULL);
 	return (result);
@@ -26,7 +26,7 @@ static char	*prepare_result_buffer(const char *str)
 
 static int	extract_var_name(const char *str, int i, char **var_name)
 {
-	int		k;
+	int	k;
 
 	k = 0;
 	if (str[i] == '?')
@@ -64,12 +64,12 @@ static void	replace_var(char *result, int *j, char *var_name, t_minishell *ms)
 	}
 }
 
-
-
-static int	handle_dollar(char *res, const char *str, int *i, int *j, t_minishell *ms)
+static int	handle_dollar(char *res, const char *str, int *i, int *j,
+		t_minishell *ms)
 {
 	char	*var_name;
 	int		var_len;
+	char	*exit_str;
 
 	(*i)++;
 	var_len = extract_var_name(str, *i, &var_name);
@@ -77,7 +77,7 @@ static int	handle_dollar(char *res, const char *str, int *i, int *j, t_minishell
 	{
 		if (ft_strcmp(var_name, "?") == 0)
 		{
-			char *exit_str = ft_itoa(ms->exit_nb);
+			exit_str = ft_itoa(ms->exit_nb);
 			if (exit_str)
 			{
 				strncpy(res + *j, exit_str, ft_strlen(exit_str));
@@ -107,9 +107,12 @@ static void	process_escape_sequence(const char *str, char *res, int *i, int *j)
 char	*expand_env_vars(const char *str, t_minishell *ms)
 {
 	char	*res;
-	int		i = 0, j = 0;
+	int		i;
+	int		j;
 	bool	in_squotes;
 
+	i = 0;
+	j = 0;
 	in_squotes = false;
 	res = prepare_result_buffer(str);
 	if (!res)
@@ -119,12 +122,12 @@ char	*expand_env_vars(const char *str, t_minishell *ms)
 		if (str[i] == '\\')
 		{
 			process_escape_sequence(str, res, &i, &j);
-			continue;
+			continue ;
 		}
 		if (str[i] == '$' && !in_squotes)
 		{
 			if (handle_dollar(res, str, &i, &j, ms))
-				continue;
+				continue ;
 		}
 		else
 			res[j++] = str[i++];
