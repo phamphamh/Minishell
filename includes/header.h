@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/06 17:58:20 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/06 18:20:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,11 @@
 
 # include "../libft/libft.h"
 # include <curses.h>
-<<<<<<< HEAD
 # include <stdlib.h>
 # include <stdbool.h>
 # include <unistd.h>
-=======
 # include <dirent.h>
 # include <errno.h>
->>>>>>> fc44fbd7f9bb468f758d50f35f8d1340981437bb
 # include <fcntl.h>
 # include <limits.h>
 # include <readline/history.h>
@@ -178,28 +175,6 @@ char						*ft_find_executable(char *cmd_name, t_env *env);
 void						ft_execute_child(t_cmd *cmd,
 								t_minishell *minishell);
 
-<<<<<<< HEAD
-// pipe.c
-int		ft_create_pipe(t_cmd *cmd);
-void	ft_close_pipes(t_cmd *cmd);
-void	ft_setup_pipes(t_cmd *cmd);
-void	ft_close_all_fds(int *exceptions);
-void    ft_close_unused_pipes(t_cmd *cmd, t_cmd *cmd_list);
-void    ft_register_fd(int fd);
-void    ft_unregister_fd(int fd);
-void    ft_close_tracked_fds(void);
-void    ft_protect_fd(int fd);
-
-// redirection.c
-int		ft_handle_redirection(t_redirection *redir);
-void	ft_restore_fds(int saved_stdin, int saved_stdout);
-int     ft_handle_input(t_redirection *last_in, int saved_stdin, int saved_stdout);
-int     ft_handle_output(t_redirection *last_out, int saved_stdin, int saved_stdout);
-
-// redirection_utils.c
-void    ft_find_last_redirections(t_redirection *redir, t_redirection **last_out, t_redirection **last_in, t_redirection **last_heredoc);
-int     ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin, int saved_stdout);
-=======
 // pipe_handler.c
 int							ft_create_pipe(t_cmd *cmd);
 void						ft_close_pipes(t_cmd *cmd);
@@ -208,7 +183,6 @@ void						ft_setup_pipes(t_cmd *cmd);
 // redirection.c
 int							ft_handle_redirection(t_redirection *redir);
 void						ft_restore_fds(int saved_stdin, int saved_stdout);
->>>>>>> fc44fbd7f9bb468f758d50f35f8d1340981437bb
 
 // tokenizer.c
 int							ft_is_operator(char c);
