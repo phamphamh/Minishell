@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/05 11:44:48 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/06 13:43:02 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ extern int g_signal_received;
 void	rl_clear_history(void);
 void	rl_redisplay(void);
 int		rl_on_new_line(void);
+void	rl_replace_line(const char *text, int clear_undo);
 
 // Types de tokens
 typedef enum e_token_type
@@ -124,6 +125,7 @@ void	ft_gc_remove_env(t_gc_node **gc_head, t_env *env);
 void	ft_setup_signals(void);
 void	ft_reset_signals(void);
 void	ft_ignore_signals(void);
+void	ft_heredoc_signals(void);
 
 // builtins.c
 int		ft_execute_builtin(t_cmd *cmd, t_minishell *minishell);

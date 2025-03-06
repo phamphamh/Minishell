@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/04 21:01:39 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/06 13:55:16 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,9 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		current = current->next;
 		i++;
 	}
-	for (i = 0; i < cmd_count; i++)
+
+	i = 0;
+	while (i < cmd_count)
 	{
 		if (pids[i] > 0)
 		{
@@ -179,8 +181,15 @@ void	ft_process_line(char *line, t_minishell *minishell)
 			if (WIFEXITED(status))
 				minishell->exit_nb = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
+			{
 				minishell->exit_nb = 128 + WTERMSIG(status);
+				if (WTERMSIG(status) == SIGINT)
+					ft_putstr_fd("\n", 1);
+				else if (WTERMSIG(status) == SIGQUIT)
+					ft_putstr_fd("Quit (core dumped)\n", 1);
+			}
 		}
+		i++;
 	}
 	ft_setup_signals();
 	ft_gc_remove(&minishell->gc_head, pids);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handler.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 23:04:21 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/06 14:14:57 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,9 @@ static void	ft_handle_sigint(int sig)
 	(void)sig;
 	g_signal_received = 1;            // Indique qu'un signal SIGINT a été reçu
 	write(1, "\n", 1);                // Nouvelle ligne
+	rl_replace_line("", 1);           // Efface la ligne courante
 	rl_on_new_line();                // Indique à readline qu'on est sur une nouvelle ligne
 	rl_redisplay();                  // Réaffiche le prompt
-}
-
-/**
- * @brief Gestionnaire pour le signal SIGQUIT (Ctrl+\)
- *
- * @param sig Numéro du signal reçu
- */
-static void	ft_handle_sigquit(int sig)
-{
-	(void)sig;
-	// Dans le shell interactif, SIGQUIT (Ctrl+\) est ignoré
-	// Le gestionnaire est vide, mais on le définit explicitement pour clarté
 }
 
 /**
@@ -56,7 +45,7 @@ void	ft_setup_signals(void)
 	sigaction(SIGINT, &sa_int, NULL);
 
 	// Configurer SIGQUIT (Ctrl+\)
-	sa_quit.sa_handler = ft_handle_sigquit;
+	sa_quit.sa_handler = SIG_IGN;  // Utiliser SIG_IGN directement au lieu d'un gestionnaire
 	sa_quit.sa_flags = SA_RESTART;  // Ajouter SA_RESTART pour cohérence
 	sigemptyset(&sa_quit.sa_mask);
 	sigaction(SIGQUIT, &sa_quit, NULL);
@@ -78,7 +67,16 @@ void	ft_reset_signals(void)
  */
 void	ft_ignore_signals(void)
 {
-	// Pendant l'attente des processus enfants
+	// Pendant l'attente des processus enfants, ignorer les signaux
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
+}
+
+/**
+ * @brief Gestionnaire de signal spécifique pour le heredoc
+ */
+void	ft_heredoc_signals(void)
+{
+	signal(SIGINT, SIG_DFL);  // Laisser le heredoc être interrompu
+	signal(SIGQUIT, SIG_IGN); // Ignorer Ctrl+\ pendant le heredoc
 }

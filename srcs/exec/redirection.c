@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/05 11:57:25 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/06 14:51:29 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,7 @@ static int	ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin, int s
 		ft_restore_fds(saved_stdin, saved_stdout);
 		return (0);
 	}
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+	ft_heredoc_signals();  // Utiliser notre gestionnaire spécifique pour heredoc
 	g_signal_received = 0;
 	while (1)
 	{
@@ -82,25 +81,29 @@ static int	ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin, int s
 			ft_putstr_fd("')\n", 2);
 			break;
 		}
-		if (g_signal_received)
+		if (g_signal_received) // L'utilisateur a fait Ctrl+C
 		{
 			free(line);
-			break ;
+			break;
 		}
 		if (!ft_strcmp_trim(line, last_heredoc->file))
 		{
 			free(line);
-			break ;
+			break;
 		}
 		ft_putstr_fd(line, heredoc_pipe[1]);
 		ft_putstr_fd("\n", heredoc_pipe[1]);
 		free(line);
 	}
-	ft_setup_signals();
+	ft_setup_signals(); // Restaurer les gestionnaires de signaux
 	close(heredoc_pipe[1]);
 	dup2(heredoc_pipe[0], STDIN_FILENO);
 	close(heredoc_pipe[0]);
-	return (1);
+
+	if (g_signal_received)
+		return (0); // Retourner 0 en cas de Ctrl+C
+	else
+		return (1); // Retourner 1 sinon
 }
 
 /**
