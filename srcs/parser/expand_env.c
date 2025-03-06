@@ -3,26 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   expand_env.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/07 13:35:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/02 12:42:27 by tcousin          ###   ########.fr       */
+/*   Created: 2025/01/12 14:34:29 by tcousin            #+#    #+#            */
+/*   Updated: 2025/03/06 17:05:27 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
-
-static char	*prepare_result_buffer(const char *str)
-{
-	int		len;
-	char	*result;
-
-	len = strlen(str) * 2;
-	result = malloc(len + 500);
-	if (!result)
-		return (NULL);
-	return (result);
-}
 
 static int	extract_var_name(const char *str, int i, char **var_name)
 {
@@ -41,97 +29,100 @@ static int	extract_var_name(const char *str, int i, char **var_name)
 	return (k);
 }
 
-static void	replace_var(char *result, int *j, char *var_name, t_minishell *ms)
+static void	replace_var(char *var_name, t_expand_env *env)
 {
 	t_env	*env_var;
 	char	*var_value;
 
-	env_var = ft_find_env_var(ms->env, var_name);
-	if (env_var)
+	env_var = ft_find_env_var(env->ms->env, var_name);
+	if (!env_var)
 	{
-		var_value = ft_strchr(env_var->var, '=');
-		if (var_value)
-		{
-			var_value++; // Aller après le '='
-			strncpy(result + *j, var_value, ft_strlen(var_value));
-			*j += ft_strlen(var_value);
-		}
+		env->res[(*env->j)++] = ' ';
+		return ;
 	}
-	else
+	var_value = ft_strchr(env_var->var, '=');
+	if (var_value && var_value[1])
 	{
-		// ⚠️ Ajout d'un espace ou d'une nouvelle ligne si la variable n'existe pas
-		result[(*j)++] = ' '; // Peut être remplacé par '\n' si nécessaire
+		var_value++;
+		ft_strlcpy(env->res + *env->j, var_value, ft_strlen(var_value) + 1);
+		*env->j += ft_strlen(var_value);
 	}
 }
 
-static int	handle_dollar(char *res, const char *str, int *i, int *j,
-		t_minishell *ms)
+static void	handle_dollar(const char *str, int *index, t_expand_env *env)
 {
 	char	*var_name;
 	int		var_len;
 	char	*exit_str;
 
-	(*i)++;
-	var_len = extract_var_name(str, *i, &var_name);
-	if (var_len > 0)
+	(*index)++;
+	var_len = extract_var_name(str, *index, &var_name);
+	if (var_len == 0)
 	{
-		if (ft_strcmp(var_name, "?") == 0)
+		env->res[(*env->j)++] = '$';
+		return ;
+	}
+	if (ft_strcmp(var_name, "?") == 0)
+	{
+		exit_str = ft_itoa(env->ms->exit_nb);
+		if (exit_str)
 		{
-			exit_str = ft_itoa(ms->exit_nb);
-			if (exit_str)
-			{
-				strncpy(res + *j, exit_str, ft_strlen(exit_str));
-				*j += ft_strlen(exit_str);
-				free(exit_str);
-			}
+			ft_strlcpy(env->res + *env->j, exit_str, ft_strlen(exit_str) + 1);
+			*env->j += ft_strlen(exit_str);
+			free(exit_str);
 		}
-		else
-			replace_var(res, j, var_name, ms);
-		free(var_name);
-		*i += var_len;
-		return (1);
 	}
-	res[(*j)++] = '$';
-	return (0);
+	else
+		replace_var(var_name, env);
+	free(var_name);
+	*index += var_len;
 }
 
-static void	process_escape_sequence(const char *str, char *res, int *i, int *j)
+/**
+ * @brief Traite l'expansion des variables et les séquences d'échappement.
+ *
+ * @param str La chaîne d'entrée.
+ * @param env Structure contenant le buffer et minishell.
+ */
+static void	process_expansion(const char *str, t_expand_env *env)
 {
-	if (str[*i] == '\\' && str[*i + 1])
-	{
-		res[(*j)++] = str[*i + 1];
-		*i += 2;
-	}
-}
-
-char	*expand_env_vars(const char *str, t_minishell *ms)
-{
-	char	*res;
 	int		i;
-	int		j;
 	bool	in_squotes;
 
 	i = 0;
-	j = 0;
 	in_squotes = false;
-	res = prepare_result_buffer(str);
-	if (!res)
-		return (NULL);
 	while (str[i])
 	{
 		if (str[i] == '\\')
-		{
-			process_escape_sequence(str, res, &i, &j);
-			continue ;
-		}
-		if (str[i] == '$' && !in_squotes)
-		{
-			if (handle_dollar(res, str, &i, &j, ms))
-				continue ;
-		}
+			process_escape_sequence(str, env->res, &i, env->j);
+		else if (str[i] == '$' && !in_squotes)
+			handle_dollar(str, &i, env);
 		else
-			res[j++] = str[i++];
+			env->res[(*env->j)++] = str[i++];
 	}
+}
+
+/**
+ * @brief Expande les variables d'environnement dans une chaîne.
+ *
+ * @param str La chaîne d'entrée contenant potentiellement des variables.
+ * @param ms Structure principale du shell.
+ * @return char* Une nouvelle chaîne avec les variables expandées.
+ */
+char	*expand_env_vars(const char *str, t_minishell *ms)
+{
+	int				j;
+	char			*res;
+	t_expand_env	env;
+
+	j = 0;
+	res = prepare_result_buffer(str);
+	if (!res)
+		return (NULL);
+	env.res = res;
+	env.j = &j;
+	env.ms = ms;
+	process_expansion(str, &env);
 	res[j] = '\0';
 	return (res);
 }

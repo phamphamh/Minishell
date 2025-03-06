@@ -27,16 +27,15 @@ int	ft_count_args(t_token *start)
 	current = start;
 	while (current && current->type != TOKEN_PIPE)
 	{
-		if (current->type != TOKEN_REDIR_IN && current->type != TOKEN_REDIR_OUT &&
-			current->type != TOKEN_REDIR_APPEND && current->type != TOKEN_HEREDOC)
-		{
+		if (current->type != TOKEN_REDIR_IN && current->type != TOKEN_REDIR_OUT
+			&& current->type != TOKEN_REDIR_APPEND
+			&& current->type != TOKEN_HEREDOC)
 			count++;
-		}
 		current = current->next;
-		if (current && (current->type == TOKEN_REDIR_IN ||
-			current->type == TOKEN_REDIR_OUT ||
-			current->type == TOKEN_REDIR_APPEND ||
-			current->type == TOKEN_HEREDOC))
+		if (current && (current->type == TOKEN_REDIR_IN
+				|| current->type == TOKEN_REDIR_OUT
+				|| current->type == TOKEN_REDIR_APPEND
+				|| current->type == TOKEN_HEREDOC))
 			current = current->next;
 	}
 	return (count);
@@ -51,7 +50,7 @@ int	ft_count_args(t_token *start)
  * @return t_redirection* Nouvelle redirection créée, NULL en cas d'erreur
  */
 t_redirection	*ft_create_redirection(t_token *token, t_token *next,
-				t_minishell *minishell)
+		t_minishell *minishell)
 {
 	t_redirection	*redir;
 
@@ -75,6 +74,41 @@ t_redirection	*ft_create_redirection(t_token *token, t_token *next,
 }
 
 /**
+ * @brief Gère l'ouverture du fichier en cas de redirection de sortie
+ *
+ * @param redir Structure de redirection
+ */
+static void	ft_handle_output_redirection(t_redirection *redir)
+{
+	int	fd;
+
+	fd = open(redir->file, O_CREAT | O_WRONLY, 0644);
+	if (fd >= 0)
+		close(fd);
+}
+
+/**
+ * @brief Ajoute une redirection à une commande
+ *
+ * @param cmd Commande à modifier
+ * @param redir Redirection à ajouter
+ */
+static void	ft_add_redirection(t_cmd *cmd, t_redirection *redir)
+{
+	t_redirection	*last_redir;
+
+	if (!cmd->redirs)
+		cmd->redirs = redir;
+	else
+	{
+		last_redir = cmd->redirs;
+		while (last_redir->next)
+			last_redir = last_redir->next;
+		last_redir->next = redir;
+	}
+}
+
+/**
  * @brief Traite une redirection dans la liste de tokens
  *
  * @param current Pointeur vers le token courant (sera avancé)
@@ -85,29 +119,15 @@ void	ft_process_redirection(t_token **current, t_cmd *cmd,
 		t_minishell *minishell)
 {
 	t_redirection	*redir;
-	t_redirection	*last_redir;
-	int				fd;
 
 	redir = ft_create_redirection(*current, (*current)->next, minishell);
 	if (!redir)
 		return ;
 	if (redir->type == TOKEN_REDIR_OUT || redir->type == TOKEN_REDIR_APPEND)
-	{
-		fd = -1;
-		fd = open(redir->file, O_CREAT | O_WRONLY, 0644);
-		if (fd >= 0)
-			close(fd);
-	}
-	if (!cmd->redirs)
-	{
-		cmd->redirs = redir;
-	}
-	else
-	{
-		last_redir = cmd->redirs;
-		while (last_redir->next)
-			last_redir = last_redir->next;
-		last_redir->next = redir;
-	}
-	*current = (*current)->next ? (*current)->next->next : NULL;
+		ft_handle_output_redirection(redir);
+	ft_add_redirection(cmd, redir);
+	if (*current)
+		*current = (*current)->next;
+	if (*current)
+		*current = (*current)->next;
 }

@@ -1,3 +1,0 @@
-minishell$ ls -la /
-
-minishell$ exit

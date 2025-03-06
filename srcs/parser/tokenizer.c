@@ -12,26 +12,29 @@
 
 #include "../../includes/header.h"
 
-
-char *ft_remove_escape_chars(char *str)
+char	*ft_remove_escape_chars(char *str)
 {
-    char *new_str;
-    int i = 0, j = 0;
-    int len = ft_strlen(str);
+	char	*new_str;
+	int		i;
+	int		j;
+	int		len;
 
-    new_str = malloc(len + 1);
-    if (!new_str)
-        return (NULL);
-
-    while (str[i])
-    {
-        if (str[i] == '\\' && str[i + 1] && !ft_strchr("$\"\\", str[i + 1]))
-            i++;
-        new_str[j++] = str[i++];
-    }
-    new_str[j] = '\0';
-    return (new_str);
+	i = 0;
+	j = 0;
+	len = ft_strlen(str);
+	new_str = malloc(len + 1);
+	if (!new_str)
+		return (NULL);
+	while (str[i])
+	{
+		if (str[i] == '\\' && str[i + 1] && !ft_strchr("$\"\\", str[i + 1]))
+			i++;
+		new_str[j++] = str[i++];
+	}
+	new_str[j] = '\0';
+	return (new_str);
 }
+
 /*
  * brief: Crée un nouveau token avec la valeur et le type spécifiés
  *
@@ -48,21 +51,18 @@ static t_token	*ft_create_token(char *value, int type, t_minishell *minishell)
 	cleaned_value = ft_remove_escape_chars(value);
 	if (!cleaned_value)
 		return (NULL);
-
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 	{
 		free(cleaned_value);
 		return (NULL);
 	}
-
 	ft_gc_add(&minishell->gc_head, new_token);
 	new_token->value = cleaned_value;
 	ft_gc_add(&minishell->gc_head, new_token->value);
 	new_token->type = type;
 	new_token->next = NULL;
 	new_token->prev = NULL;
-
 	return (new_token);
 }
 
@@ -99,11 +99,14 @@ static t_token	*ft_add_token(t_token **token_list, t_token *new_token)
  */
 static t_token	*ft_process_tokens(char **split_input, t_minishell *minishell)
 {
-	t_token	*token_list = NULL;
+	t_token	*token_list;
 	t_token	*new_token;
-	t_token	*prev = NULL; // Garder le token précédent pour détecter EOF
-	int		i = 0;
+	t_token	*prev;
+	int		i;
 
+	token_list = NULL;
+	prev = NULL;
+	i = 0;
 	while (split_input[i])
 	{
 		new_token = ft_create_token(split_input[i],
@@ -117,7 +120,6 @@ static t_token	*ft_process_tokens(char **split_input, t_minishell *minishell)
 	return (token_list);
 }
 
-
 /*
  * brief: Convertit une ligne d'entrée en liste de tokens
  *
@@ -127,9 +129,9 @@ static t_token	*ft_process_tokens(char **split_input, t_minishell *minishell)
  */
 t_token	*ft_tokenize(char *input, t_minishell *minishell)
 {
-	char **split_input;
-    char *expanded_input;
-    t_token *token_list;
+	char	**split_input;
+	char	*expanded_input;
+	t_token	*token_list;
 
 	expanded_input = ft_expand_operators(input);
 	if (!expanded_input)
