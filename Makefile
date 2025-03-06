@@ -27,10 +27,13 @@ SRCS = srcs/main.c \
        srcs/parser/tokenizer.c \
        srcs/parser/tokenizer_utils.c \
        srcs/parser/cmd_parser.c \
+       srcs/parser/cmd_parser_utils.c \
        srcs/parser/parser_utils.c \
        srcs/parser/split_with_quotes.c \
        srcs/parser/split_utils.c \
+       srcs/parser/check_syntax_utils.c \
        srcs/parser/check_syntax.c \
+       srcs/parser/expand_env_utils.c \
        srcs/parser/expand_env.c \
        srcs/utils.c
 

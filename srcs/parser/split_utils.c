@@ -13,18 +13,11 @@
 #include "../../includes/header.h"
 
 /**
- * @brief Traite le contenu entre guillemets doubles, avec expansion des variables
- *
- * @param s Chaîne de caractères source
- * @param start Indice de début du contenu
- * @param end Indice de fin du contenu
- * @param tokens Tableau de tokens à remplir
- * @param token_count Pointeur vers le compteur de tokens
- * @param ms Structure principale du shell
- * @return int 0 si succès, -1 en cas d'erreur
+ * @brief Traite le contenu entre guillemets doubles,
+ *        avec expansion des variables.
  */
 static int	process_double_quotes(const char *s, int start, int end,
-				char **tokens, int *token_count, t_minishell *ms)
+		t_split_env *env)
 {
 	char	*content;
 	char	*expanded;
@@ -36,94 +29,70 @@ static int	process_double_quotes(const char *s, int start, int end,
 		return (-1);
 	strncpy(content, &s[start], len);
 	content[len] = '\0';
-	expanded = expand_env_vars(content, ms);
+	expanded = expand_env_vars(content, env->ms);
 	free(content);
 	if (!expanded)
 		return (-1);
-	tokens[*token_count] = expanded;
-	ft_gc_add(&ms->gc_head, tokens[*token_count]);
-	(*token_count)++;
+	env->tokens[env->token_count] = expanded;
+	ft_gc_add(&env->ms->gc_head, expanded);
+	env->token_count++;
 	return (0);
 }
 
 /**
- * @brief Stocke un token entre guillemets
- *
- * @param s Chaîne de caractères source
- * @param start Indice de début du contenu
- * @param end Indice de fin du contenu
- * @param quote Type de guillemet (simple ou double)
- * @param tokens Tableau de tokens à remplir
- * @param token_count Pointeur vers le compteur de tokens
- * @param ms Structure principale du shell
- * @return int 0 si succès, -1 en cas d'erreur
+ * @brief Stocke un token entre guillemets.
  */
-static int	store_quoted_token(const char *s, int start, int end, char quote,
-				char **tokens, int *token_count, t_minishell *ms)
+static int	store_quoted_token(const char *s, int start, int end,
+		t_split_env *env)
 {
 	char	*temp;
 
-	if (quote == '"')
-		return (process_double_quotes(s, start, end, tokens, token_count, ms));
+	if (env->quote == '"')
+		return (process_double_quotes(s, start, end, env));
 	temp = malloc((end - start) + 1);
 	if (!temp)
 		return (-1);
 	strncpy(temp, &s[start], end - start);
 	temp[end - start] = '\0';
-	tokens[*token_count] = temp;
-	ft_gc_add(&ms->gc_head, tokens[*token_count]);
-	(*token_count)++;
+	env->tokens[env->token_count] = temp;
+	ft_gc_add(&env->ms->gc_head, temp);
+	env->token_count++;
 	return (0);
 }
 
 /**
- * @brief Gère un token entre guillemets
- *
- * @param s Chaîne de caractères source
- * @param i Indice courant dans la chaîne
- * @param tokens Tableau de tokens à remplir
- * @param token_count Pointeur vers le compteur de tokens
- * @param ms Structure principale du shell
- * @return int Nouvel indice après traitement, -1 en cas d'erreur
+ * @brief Gère un token entre guillemets.
  */
-int	handle_quoted_token(const char *s, int i, char **tokens,
-		int *token_count, t_minishell *ms)
+int	handle_quoted_token(const char *s, int i, t_split_env *env)
 {
-	char	quote;
-	int		start;
+	int	start;
 
-	quote = s[i];
+	env->quote = s[i];
 	start = i + 1;
-	i = skip_quotes(s, i, &quote);
+	i = skip_quotes(s, i, &env->quote);
 	if (i == -1)
 		return (-1);
 	if (start == i - 1)
 	{
-		tokens[*token_count] = ft_strdup(quote == '"' ? "\"\"" : "''");
-		if (!tokens[*token_count])
+		if (env->quote == '"')
+			env->tokens[env->token_count] = ft_strdup("\"\"");
+		else
+			env->tokens[env->token_count] = ft_strdup("''");
+		if (!env->tokens[env->token_count])
 			return (-1);
-		ft_gc_add(&ms->gc_head, tokens[*token_count]);
-		(*token_count)++;
+		ft_gc_add(&env->ms->gc_head, env->tokens[env->token_count]);
+		env->token_count++;
 		return (i);
 	}
-	if (store_quoted_token(s, start, i - 1, quote, tokens, token_count, ms) == -1)
+	if (store_quoted_token(s, start, i - 1, env) == -1)
 		return (-1);
 	return (i);
 }
 
 /**
- * @brief Gère un token sans guillemets
- *
- * @param s Chaîne de caractères source
- * @param i Indice courant dans la chaîne
- * @param delimiter Délimiteur de token
- * @param tokens Tableau de tokens à remplir
- * @param token_count Pointeur vers le compteur de tokens
- * @param ms Structure principale du shell
- * @return int Nouvel indice après traitement, -1 en cas d'erreur
+ * @brief Gère un token sans guillemets.
  */
-static int	handle_unquoted_token(const char *s, int i, char delimiter,
-				char **tokens, int *token_count, t_minishell *ms)
+static int	handle_unquoted_token(const char *s, int i, t_split_env *env)
 {
 	const char	*start;
 	int			token_len;
@@ -131,7 +100,7 @@ static int	handle_unquoted_token(const char *s, int i, char delimiter,
 	char		*expanded;
 
 	start = &s[i];
-	while (s[i] && s[i] != delimiter && !is_quote(s[i]))
+	while (s[i] && s[i] != env->delimiter && !is_quote(s[i]))
 		i++;
 	token_len = &s[i] - start;
 	temp = malloc(token_len + 1);
@@ -139,35 +108,26 @@ static int	handle_unquoted_token(const char *s, int i, char delimiter,
 		return (-1);
 	strncpy(temp, start, token_len);
 	temp[token_len] = '\0';
-	expanded = expand_env_vars(temp, ms);
+	expanded = expand_env_vars(temp, env->ms);
 	free(temp);
 	if (!expanded)
 		return (-1);
-	tokens[*token_count] = expanded;
-	ft_gc_add(&ms->gc_head, tokens[*token_count]);
-	(*token_count)++;
+	env->tokens[env->token_count] = expanded;
+	ft_gc_add(&env->ms->gc_head, expanded);
+	env->token_count++;
 	return (i);
 }
 
 /**
- * @brief Gère l'extraction d'un token depuis une chaîne
- *
- * @param s Chaîne de caractères source
- * @param i Indice courant dans la chaîne
- * @param delimiter Délimiteur de token
- * @param tokens Tableau de tokens à remplir
- * @param token_count Pointeur vers le compteur de tokens
- * @param ms Structure principale du shell
- * @return int Nouvel indice après traitement, -1 en cas d'erreur
+ * @brief Gère l'extraction d'un token depuis une chaîne.
  */
-int	handle_token(const char *s, int i, char delimiter, char **tokens,
-		int *token_count, t_minishell *ms)
+int	handle_token(const char *s, int i, t_split_env *env)
 {
-	while (s[i] == delimiter)
+	while (s[i] == env->delimiter)
 		i++;
 	if (!s[i])
 		return (i);
 	if (is_quote(s[i]))
-		return (handle_quoted_token(s, i, tokens, token_count, ms));
-	return (handle_unquoted_token(s, i, delimiter, tokens, token_count, ms));
+		return (handle_quoted_token(s, i, env));
+	return (handle_unquoted_token(s, i, env));
 }

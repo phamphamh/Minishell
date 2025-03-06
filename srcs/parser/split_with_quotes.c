@@ -12,11 +12,17 @@
 
 #include "../includes/header.h"
 
+/**
+ * @brief Vérifie si un caractère est une quote.
+ */
 bool	is_quote(char c)
 {
 	return (c == '\'' || c == '"');
 }
 
+/**
+ * @brief Passe les caractères entre quotes.
+ */
 int	skip_quotes(const char *s, int i, char *quote)
 {
 	*quote = s[i++];
@@ -24,70 +30,72 @@ int	skip_quotes(const char *s, int i, char *quote)
 		i++;
 	if (s[i] != *quote)
 	{
-		fprintf(stderr, "Syntax error: missing closing quote %c\n", *quote);
+		ft_putstr_fd("Syntax error: missing closing quote ", 2);
+		ft_putchar_fd(*quote, 2);
+		ft_putstr_fd("\n", 2);
 		return (-1);
 	}
 	return (i + 1);
 }
 
 /**
- * @brief Gère l'allocation et la libération des tokens.
- *
- * @param tokens Pointeur vers le tableau de tokens.
- * @param free_flag Indique s'il faut libérer la mémoire.
- * @param token_count Nombre de tokens alloués.
- * @param ms Structure principale du shell.
- * @return Pointeur vers `tokens` ou `NULL` en cas d'échec.
+ * @brief Libère les tokens en cas d'échec.
  */
-static char	**manage_tokens(char **tokens, int free_flag, int *token_count, t_minishell *ms)
+static char	**free_tokens(t_split_env *env, int free_flag)
 {
-	if (free_flag && tokens)
+	if (free_flag && env->tokens)
 	{
-		// Supprime et libère chaque token
-		while (--(*token_count) >= 0)
+		while (--(env->token_count) >= 0)
 		{
-			ft_gc_remove(&ms->gc_head, tokens[*token_count]);
-			free(tokens[*token_count]);
+			ft_gc_remove(&env->ms->gc_head, env->tokens[env->token_count]);
+			free(env->tokens[env->token_count]);
 		}
-		// Supprime et libère le tableau des tokens
-		ft_gc_remove(&ms->gc_head, tokens);
-		free(tokens);
+		ft_gc_remove(&env->ms->gc_head, env->tokens);
+		free(env->tokens);
 		return (NULL);
 	}
-	return (tokens);
+	return (env->tokens);
 }
 
-static int	process_tokens(const char *s, char delimiter, char **tokens, int *token_count, t_minishell *ms)
+/**
+ * @brief Gère le découpage de la chaîne en tokens.
+ */
+static int	process_tokens(const char *s, t_split_env *env)
 {
-	int	i = 0;
+	int	i;
 	int	prev_i;
 
+	i = 0;
 	while (s[i])
 	{
 		prev_i = i;
-		i = handle_token(s, i, delimiter, tokens, token_count, ms);
+		i = handle_token(s, i, env);
 		if (i == -1)
-			return ((int)(long)manage_tokens(tokens, 1, token_count, ms));
+			return ((int)(long)free_tokens(env, 1));
 		if (i <= prev_i)
-			break;
+			break ;
 	}
 	return (i);
 }
 
+/**
+ * @brief Découpe une chaîne en tokens en gérant les quotes.
+ */
 char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms)
 {
-	char	**tokens;
-	int		token_count = 0;
+	t_split_env	env;
 
+	env.token_count = 0;
+	env.delimiter = delimiter;
+	env.ms = ms;
 	if (!s)
 		return (NULL);
-	tokens = malloc(sizeof(char *) * (strlen(s) + 1));
-	if (!tokens)
+	env.tokens = malloc(sizeof(char *) * (ft_strlen(s) + 1));
+	if (!env.tokens)
 		return (NULL);
-	ft_gc_add(&ms->gc_head, tokens);
-	if (!process_tokens(s, delimiter, tokens, &token_count, ms))
+	ft_gc_add(&ms->gc_head, env.tokens);
+	if (!process_tokens(s, &env))
 		return (NULL);
-
-	tokens[token_count] = NULL;
-	return (tokens);
+	env.tokens[env.token_count] = NULL;
+	return (env.tokens);
 }
