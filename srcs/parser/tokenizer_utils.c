@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/04 15:22:06 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/07 12:44:38 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,20 +83,32 @@ static void	ft_fill_expanded(char *input, char *expanded)
 {
 	int	i;
 	int	j;
+	char	in_quotes;
 
 	i = 0;
 	j = 0;
+	in_quotes = 0; // 🔹 0 = pas dans des guillemets, sinon contient '"' ou '\''
+
 	while (input[i])
 	{
-		if ((input[i] == '<' && input[i + 1] == '<') || (input[i] == '>'
-				&& input[i + 1] == '>'))
+		// 🔹 Si on rencontre une quote, on change l'état `in_quotes`
+		if (is_quote(input[i]))
+		{
+			if (in_quotes == 0)
+				in_quotes = input[i]; // On entre dans une quote
+			else if (in_quotes == input[i])
+				in_quotes = 0; // On sort des quotes
+		}
+
+		// 🔹 Ajoute des espaces autour des opérateurs SEULEMENT SI on n'est PAS dans une chaîne de caractères
+		if (!in_quotes && ((input[i] == '<' && input[i + 1] == '<') || (input[i] == '>' && input[i + 1] == '>')))
 		{
 			expanded[j++] = ' ';
 			expanded[j++] = input[i++];
 			expanded[j++] = input[i++];
 			expanded[j++] = ' ';
 		}
-		else if (ft_is_operator(input[i]))
+		else if (!in_quotes && ft_is_operator(input[i]))
 		{
 			expanded[j++] = ' ';
 			expanded[j++] = input[i++];
@@ -107,6 +119,7 @@ static void	ft_fill_expanded(char *input, char *expanded)
 	}
 	expanded[j] = '\0';
 }
+
 
 /**
  * @brief Étend les opérateurs en ajoutant des espaces autour d'eux.
@@ -133,12 +146,15 @@ char	*ft_expand_operators(char *input)
  * @param prev Token précédent (utile pour HEREDOC)
  * @return int Type du token (TOKEN_WORD, TOKEN_PIPE, etc.)
  */
-int	ft_determine_token_type(char *token, t_token *prev)
+int	ft_determine_token_type(char *token, int *is_cmd, t_token *prev)
 {
 	if (!token)
 		return (TOKEN_EOF);
 	if (ft_strcmp_trim(token, "|") == 0)
+	{
+		*is_cmd = 1;
 		return (TOKEN_PIPE);
+	}
 	if (ft_strcmp_trim(token, "<<") == 0)
 		return (TOKEN_HEREDOC);
 	if (ft_strcmp_trim(token, "<") == 0)
@@ -149,5 +165,14 @@ int	ft_determine_token_type(char *token, t_token *prev)
 		return (TOKEN_REDIR_APPEND);
 	if (prev && prev->type == TOKEN_HEREDOC)
 		return (TOKEN_EOF);
+	if (*is_cmd && token[0] != '\0')
+	{
+		*is_cmd = 0; // ✅ Désactive `is_cmd` après avoir marqué la commande
+		return (TOKEN_CMD);
+	}
+
 	return (TOKEN_WORD);
 }
+
+
+

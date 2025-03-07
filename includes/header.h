@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/06 13:43:02 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/07 11:13:53 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void						rl_replace_line(const char *text, int clear_undo);
 // Types de tokens
 typedef enum e_token_type
 {
+	TOKEN_CMD,
 	TOKEN_WORD,
 	TOKEN_PIPE,
 	TOKEN_REDIR_IN,
@@ -185,7 +186,7 @@ void						ft_restore_fds(int saved_stdin, int saved_stdout);
 int							ft_is_operator(char c);
 char						*ft_allocate_expanded(char *input);
 char						*ft_expand_operators(char *input);
-int							ft_determine_token_type(char *token, t_token *prev);
+int							ft_determine_token_type(char *token, int	*is_cmd, t_token *prev);
 t_token						*ft_tokenize(char *input, t_minishell *minishell);
 // int		ft_determine_token_type(char *token);
 

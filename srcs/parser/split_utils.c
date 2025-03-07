@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/04 21:03:48 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/07 13:01:52 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,18 +72,11 @@ int	handle_quoted_token(const char *s, int i, t_split_env *env)
 	i = skip_quotes(s, i, &env->quote);
 	if (i == -1)
 		return (-1);
-	if (start == i - 1)
-	{
-		if (env->quote == '"')
-			env->tokens[env->token_count] = ft_strdup("\"\"");
-		else
-			env->tokens[env->token_count] = ft_strdup("''");
-		if (!env->tokens[env->token_count])
-			return (-1);
-		ft_gc_add(&env->ms->gc_head, env->tokens[env->token_count]);
-		env->token_count++;
-		return (i);
-	}
+	if (start == i - 1) // Si les guillemets sont vides
+{
+	return (i); // 🔹 Ne pas ajouter de token vide
+}
+
 	if (store_quoted_token(s, start, i - 1, env) == -1)
 		return (-1);
 	return (i);
@@ -123,11 +116,26 @@ static int	handle_unquoted_token(const char *s, int i, t_split_env *env)
  */
 int	handle_token(const char *s, int i, t_split_env *env)
 {
-	while (s[i] == env->delimiter)
+	bool	has_space = false;
+
+	while (s[i] == env->delimiter) // Détecte un espace
+	{
+		has_space = true;
 		i++;
+	}
+
 	if (!s[i])
 		return (i);
+
+	if (has_space) // Si un espace a été trouvé, ajoute un marqueur spécial
+	{
+		env->tokens[env->token_count] = ft_strdup("\1"); // Marqueur d’espace
+		ft_gc_add(&env->ms->gc_head, env->tokens[env->token_count]);
+		env->token_count++;
+	}
+
 	if (is_quote(s[i]))
 		return (handle_quoted_token(s, i, env));
 	return (handle_unquoted_token(s, i, env));
 }
+
