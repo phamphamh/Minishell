@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:15:23 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 19:40:31 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 20:16:50 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,15 @@ void	ft_close_pipes(t_cmd *cmd)
  */
 void	ft_setup_pipes(t_cmd *cmd)
 {
-    if (cmd->pipe_in != -1)
-    {
-        dup2(cmd->pipe_in, STDIN_FILENO);
-        close(cmd->pipe_in);
-    }
-    if (cmd->pipe_out != -1)
-    {
-        if (cmd->redirs && cmd->redirs->type == TOKEN_REDIR_IN)  // ✅ Empêcher `|` d’écraser `<`
-            return;
-        dup2(cmd->pipe_out, STDOUT_FILENO);
-        close(cmd->pipe_out);
-    }
+	if (cmd->pipe_in != -1)
+	{
+		dup2(cmd->pipe_in, STDIN_FILENO);
+		close(cmd->pipe_in);
+	}
+	if (cmd->pipe_out != -1)
+	{
+		dup2(cmd->pipe_out, STDOUT_FILENO);
+		close(cmd->pipe_out);
+	}
 }
 
