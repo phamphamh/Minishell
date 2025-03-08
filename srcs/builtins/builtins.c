@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:15 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/08 20:00:14 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,33 +192,75 @@ static int	ft_exit(t_cmd *cmd, t_minishell *minishell)
  */
 int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 {
-	if (ft_strcmp(cmd->name, "cd") == 0)
-		return (ft_cd(cmd, minishell));
-	else if (ft_strcmp(cmd->name, "echo") == 0)
-		return (ft_echo(cmd));
-	else if (ft_strcmp(cmd->name, "pwd") == 0)
-		return (ft_pwd());
-	else if (ft_strcmp(cmd->name, "export") == 0)
-	{
-		if (!cmd->args[1])
-			ft_print_export_list(minishell->env);
-		else
-			ft_handle_export_var(minishell, cmd->args[1]);
-		return (0);
-	}
-	else if (ft_strcmp(cmd->name, "unset") == 0)
-	{
-		if (cmd->args[1])
-			ft_handle_unset_var(minishell, cmd->args[1]);
-		return (0);
-	}
-	else if (ft_strcmp(cmd->name, "env") == 0)
-	{
-		ft_print_env(minishell->env);
-		return (0);
-	}
-	else if (ft_strcmp(cmd->name, "exit") == 0)
-		return (ft_exit(cmd, minishell));
-	return (0);
+	// A REFACTO LA LOGIQUE DES BUILTINS SUR 1 FONCTION A APPELE
+    // Si la commande est dans un pipe, on la lance dans un sous-processus
+    if (cmd->pipe_out != -1 || cmd->pipe_in != -1)
+    {
+        pid_t pid = fork();
+        if (pid == -1)
+        {
+            ft_putstr_fd("minishell: fork error\n", 2);
+            return (1);
+        }
+        if (pid == 0)
+{
+    int ret = 0;
+
+    if (ft_strcmp(cmd->name, "cd") == 0)
+        ret = ft_cd(cmd, minishell);
+    else if (ft_strcmp(cmd->name, "echo") == 0)
+        ret = ft_echo(cmd);
+    else if (ft_strcmp(cmd->name, "pwd") == 0)
+        ret = ft_pwd();
+    else if (ft_strcmp(cmd->name, "export") == 0)
+    {
+        if (!cmd->args[1])
+            ft_print_export_list(minishell->env);
+        else
+            printf("export %s\n", cmd->args[1]); // Simule `export` sans modifier l'environnement
+    }
+    else if (ft_strcmp(cmd->name, "unset") == 0)
+        return (0); // Ne pas modifier l'environnement global dans un pipe
+    else if (ft_strcmp(cmd->name, "env") == 0)
+        ft_print_env(minishell->env);
+    else if (ft_strcmp(cmd->name, "exit") == 0)
+        ft_exit(cmd, minishell);
+
+    exit(ret);
 }
 
+        waitpid(pid, NULL, 0);
+        return (0);
+    }
+
+    if (ft_strcmp(cmd->name, "cd") == 0)
+        return (ft_cd(cmd, minishell));
+    else if (ft_strcmp(cmd->name, "echo") == 0)
+        return (ft_echo(cmd));
+    else if (ft_strcmp(cmd->name, "pwd") == 0)
+        return (ft_pwd());
+    else if (ft_strcmp(cmd->name, "export") == 0)
+    {
+        if (!cmd->args[1])
+            ft_print_export_list(minishell->env);
+        else
+            ft_handle_export_var(minishell, cmd->args[1]);
+        return (0);
+    }
+    else if (ft_strcmp(cmd->name, "unset") == 0)
+    {
+        if (cmd->pipe_out != -1 || cmd->pipe_in != -1)
+            return (0); // Ne pas modifier l'environnement global dans un pipe
+        if (cmd->args[1])
+            ft_handle_unset_var(minishell, cmd->args[1]);
+        return (0);
+    }
+    else if (ft_strcmp(cmd->name, "env") == 0)
+    {
+        ft_print_env(minishell->env);
+        return (0);
+    }
+    else if (ft_strcmp(cmd->name, "exit") == 0)
+        return (ft_exit(cmd, minishell));
+    return (0);
+}
