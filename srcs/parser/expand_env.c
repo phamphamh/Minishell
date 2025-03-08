@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/07 12:48:14 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 13:51:29 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void	replace_var(char *var_name, t_expand_env *env)
 	env_var = ft_find_env_var(env->ms->env, var_name);
 	if (!env_var)
 	{
-		env->res[(*env->j)++] = ' ';
+		env->res[(*env->j)++] = '\0';
 		return ;
 	}
 	var_value = ft_strchr(env_var->var, '=');

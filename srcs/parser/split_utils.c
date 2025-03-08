@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/07 13:01:52 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 13:45:53 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,9 @@ static int	handle_unquoted_token(const char *s, int i, t_split_env *env)
  */
 int	handle_token(const char *s, int i, t_split_env *env)
 {
-	bool	has_space = false;
+	bool	has_space;
 
+	has_space = false;
 	while (s[i] == env->delimiter) // Détecte un espace
 	{
 		has_space = true;
@@ -133,7 +134,6 @@ int	handle_token(const char *s, int i, t_split_env *env)
 		ft_gc_add(&env->ms->gc_head, env->tokens[env->token_count]);
 		env->token_count++;
 	}
-
 	if (is_quote(s[i]))
 		return (handle_quoted_token(s, i, env));
 	return (handle_unquoted_token(s, i, env));

@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/07 13:08:04 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 13:54:50 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ int	ft_str_only_spaces(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] != ' ' && str[i] != '\t') // Si ce n'est pas un espace ou un tab
+		if ((str[i] != ' ' && str[i] != '\t')) // Si ce n'est pas un espace ou un tab
 			return (0);
 		i++;
 	}
@@ -187,32 +187,39 @@ t_token	*ft_tokenize(char *input, t_minishell *minishell)
 	if (!expanded_input)
 		return (NULL);
 	split_input = ft_split_with_quotes(expanded_input, ' ', minishell);
+
 	free(expanded_input);
 	if (!split_input)
 		return (NULL);
 
+	// 🔹 Compter le nombre de tokens valides (non vides)
 	int valid_count = 0;
 	for (i = 0; split_input[i]; i++)
 	{
-		if (split_input[i][0] != '\0' && !ft_str_only_spaces(split_input[i]))
+		if(split_input[i][0] != '\0')
 			valid_count++;
+
 	}
+
+	// 🔹 Allouer un nouveau tableau filtré
 	filtered_input = malloc(sizeof(char *) * (valid_count + 1));
 	if (!filtered_input)
 		return (NULL);
 	ft_gc_add(&minishell->gc_head, filtered_input);
 
+	// 🔹 Remplir filtered_input avec les tokens valides
 	i = 0;
 	j = 0;
 	while (split_input[i])
 	{
-		if (split_input[i][0] != '\0' && !ft_str_only_spaces(split_input[i]))
+		if (split_input[i][0] != '\0')
 		{
 			filtered_input[j++] = split_input[i];
 		}
 		i++;
 	}
 	filtered_input[j] = NULL;
+
 	token_list = ft_process_tokens(filtered_input, minishell);
 	return (token_list);
 }
