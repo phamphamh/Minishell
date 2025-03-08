@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/07 12:15:42 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 19:35:18 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 	minishell->exit_nb = 0;
 }
 
+//DEBUG DELETE AFTER
 void	ft_print_tokens(t_token *tokens)
 {
 	t_token *current = tokens;
@@ -90,6 +91,7 @@ void	ft_print_tokens(t_token *tokens)
 	printf("🔹 Fin de la liste des tokens\n");
 }
 
+//DEBUG DELETE AFTER
 void	ft_print_commands(t_cmd *cmds)
 {
 	t_cmd	*current = cmds;
@@ -206,7 +208,7 @@ void	ft_process_line(char *line, t_minishell *minishell)
 			int saved_stdout = dup(STDOUT_FILENO);
 
 			ft_setup_pipes(current);
-			if (!ft_handle_redirection(current->redirs))
+			if (!ft_handle_redirection(current, current->redirs))
 			{
 				minishell->exit_nb = 1;
 				ft_restore_fds(saved_stdin, saved_stdout);

@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/05 11:44:33 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 19:16:17 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	struct stat	file_stat;
 
 	ft_setup_pipes(cmd);
-	if (!ft_handle_redirection(cmd->redirs))
+	if (!ft_handle_redirection(cmd, cmd->redirs))
 		ft_clean_exit(minishell, 1);
 	if (!cmd->name || !*cmd->name)
 		ft_clean_exit(minishell, 0);
@@ -200,7 +200,7 @@ void	ft_execute_command(t_cmd *cmd, t_minishell *minishell)
 		saved_stdin = dup(STDIN_FILENO);
 		saved_stdout = dup(STDOUT_FILENO);
 		ft_setup_pipes(cmd);
-		if (!ft_handle_redirection(cmd->redirs))
+		if (!ft_handle_redirection(cmd, cmd->redirs))
 		{
 			minishell->exit_nb = 1;
 			ft_restore_fds(saved_stdin, saved_stdout);

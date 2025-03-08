@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/07 11:13:53 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 19:15:50 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ void						ft_close_pipes(t_cmd *cmd);
 void						ft_setup_pipes(t_cmd *cmd);
 
 // redirection.c
-int							ft_handle_redirection(t_redirection *redir);
+int							ft_handle_redirection(t_cmd *cmd, t_redirection *redir);
 void						ft_restore_fds(int saved_stdin, int saved_stdout);
 
 // tokenizer.c
