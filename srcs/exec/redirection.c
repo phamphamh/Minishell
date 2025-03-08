@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 19:40:58 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 21:48:07 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,8 @@ static int	ft_handle_input(t_cmd *cmd, t_redirection *last_in, int saved_stdin, 
     }
     dup2(fd, STDIN_FILENO);
     close(fd);
+
+    // Gérer la sortie en cas de pipe
     if (cmd->pipe_out != -1)
     {
         dup2(cmd->pipe_out, STDOUT_FILENO);
@@ -190,11 +192,34 @@ int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
     t_redirection	*last_out;
     t_redirection	*last_in;
     t_redirection	*last_heredoc;
+    t_redirection	*current;
 
     saved_stdout = dup(STDOUT_FILENO);
     saved_stdin = dup(STDIN_FILENO);
+
     ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
 
+    // 🔥 Parcours toutes les redirections d'entrée pour détecter une erreur
+    current = redir;
+    while (current)
+    {
+        if (current->type == TOKEN_REDIR_IN)
+        {
+            int fd = open(current->file, O_RDONLY);
+            if (fd == -1)
+            {
+                ft_putstr_fd("minishell: ", 2);
+                ft_putstr_fd(current->file, 2);
+                ft_putstr_fd(": No such file or directory\n", 2);
+                ft_restore_fds(saved_stdin, saved_stdout);
+                return (0);
+            }
+            close(fd);
+        }
+        current = current->next;
+    }
+
+    // ✅ Si tout est valide, on applique la dernière redirection d'entrée
     if (last_heredoc)
     {
         if (!ft_handle_heredoc(last_heredoc, saved_stdin, saved_stdout))
@@ -212,6 +237,7 @@ int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
     }
     return (1);
 }
+
 
 /**
  * @brief Restaure les descripteurs de fichiers standard

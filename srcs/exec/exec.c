@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 19:16:17 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 22:01:50 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,11 +169,15 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	}
 	env_array = ft_env_to_array(minishell, minishell->env);
 	if (execve(cmd_path, cmd->args, env_array) == -1)
-	{
-		perror("minishell");
-		free(cmd_path);
-		ft_clean_exit(minishell, 126);
-	}
+{
+    perror("minishell");
+    free(cmd_path);
+
+    if (errno == ENOENT) // Fichier introuvable
+        ft_clean_exit(minishell, 127);
+    else
+        ft_clean_exit(minishell, 126); // Autres erreurs (permissions, etc.)
+}
 }
 
 /**
@@ -184,48 +188,56 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
  */
 void	ft_execute_command(t_cmd *cmd, t_minishell *minishell)
 {
-	pid_t	pid;
-	int		saved_stdin;
-	int		saved_stdout;
+    pid_t	pid;
+    int		saved_stdin;
+    int		saved_stdout;
 
-	if (!cmd->name || !*cmd->name)
-		return ;
-	if (cmd->next && !ft_create_pipe(cmd))
-	{
-		minishell->exit_nb = 1;
-		return ;
-	}
-	if (ft_is_builtin(cmd->name))
-	{
-		saved_stdin = dup(STDIN_FILENO);
-		saved_stdout = dup(STDOUT_FILENO);
-		ft_setup_pipes(cmd);
-		if (!ft_handle_redirection(cmd, cmd->redirs))
-		{
-			minishell->exit_nb = 1;
-			ft_restore_fds(saved_stdin, saved_stdout);
-			return ;
-		}
-		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
-		ft_restore_fds(saved_stdin, saved_stdout);
-		ft_close_pipes(cmd);
-		return ;
-	}
-	pid = fork();
-	if (pid == -1)
-	{
-		ft_putstr_fd("minishell: fork error\n", 2);
-		minishell->exit_nb = 1;
-		return ;
-	}
-	if (pid == 0)
-	{
-		ft_reset_signals();
-		ft_execute_child(cmd, minishell);
-	}
-	else
-	{
-		ft_ignore_signals();
-		ft_close_pipes(cmd);
-	}
+    if (!cmd->name || !*cmd->name)
+        return ;
+    if (cmd->next && !ft_create_pipe(cmd))
+    {
+        minishell->exit_nb = 1;
+        return ;
+    }
+    if (ft_is_builtin(cmd->name))
+    {
+        saved_stdin = dup(STDIN_FILENO);
+        saved_stdout = dup(STDOUT_FILENO);
+        ft_setup_pipes(cmd);
+        // 🚨 Vérifie si la redirection a échoué
+        if (!ft_handle_redirection(cmd, cmd->redirs))
+        {
+            minishell->exit_nb = 1;
+            ft_restore_fds(saved_stdin, saved_stdout);
+            return;  // 🚨 Sortir immédiatement pour éviter la boucle infinie
+        }
+        minishell->exit_nb = ft_execute_builtin(cmd, minishell);
+        ft_restore_fds(saved_stdin, saved_stdout);
+        ft_close_pipes(cmd);
+        return ;
+    }
+    pid = fork();
+    if (pid == -1)
+    {
+        ft_putstr_fd("minishell: fork error\n", 2);
+        minishell->exit_nb = 1;
+        return ;
+    }
+
+    if (pid == 0)
+    {
+        ft_reset_signals();
+
+        // 🚨 Vérifie si la redirection a échoué dans le processus enfant
+        if (!ft_handle_redirection(cmd, cmd->redirs))
+            ft_clean_exit(minishell, 1);
+
+        ft_execute_child(cmd, minishell);
+    }
+    else
+    {
+        ft_ignore_signals();
+        ft_close_pipes(cmd);
+    }
 }
+

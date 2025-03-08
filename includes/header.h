@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/08 19:15:50 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/08 21:08:29 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,9 +156,9 @@ char						**ft_env_to_array(t_minishell *minishell,
 bool						ft_is_builtin(char *value);
 
 // builtins_utils.c
-void						ft_handle_export_var(t_minishell *minishell,
+int						ft_handle_export_var(t_minishell *minishell,
 								char *var);
-void						ft_handle_unset_var(t_minishell *minishell,
+int						ft_handle_unset_var(t_minishell *minishell,
 								char *var_name);
 void						ft_print_export_list(t_env *env);
 void						ft_print_export_var(t_env *env_var);
