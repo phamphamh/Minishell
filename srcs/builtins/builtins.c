@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 21:14:54 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/09 13:17:41 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,12 +216,12 @@ int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 				if (!cmd->args[1])
 					ft_print_export_list(minishell->env);
 				else
-					ret = ft_handle_export_var(minishell, cmd->args[1]); // Correction ici
+					ret = ft_handle_export_var(minishell, cmd->args); // Correction ici
 			}
 			else if (ft_strcmp(cmd->name, "unset") == 0)
 			{
 				if (cmd->args[1])
-					ret = ft_handle_unset_var(minishell, cmd->args[1]); // Correction ici
+					ret = ft_handle_unset_var(minishell, cmd->args); // Correction ici
 			}
 			else if (ft_strcmp(cmd->name, "env") == 0)
 				ft_print_env(minishell->env);
@@ -250,13 +250,13 @@ int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 			ft_print_export_list(minishell->env);
 		else
 		{
-			ret = ft_handle_export_var(minishell, cmd->args[1]); // Correction ici
+			ret = ft_handle_export_var(minishell, cmd->args); // Correction ici
 		}
 	}
 	else if (ft_strcmp(cmd->name, "unset") == 0)
 	{
 		if (cmd->args[1])
-			ret = ft_handle_unset_var(minishell, cmd->args[1]); // Correction ici
+			ret = ft_handle_unset_var(minishell, cmd->args); // Correction ici
 	}
 	else if (ft_strcmp(cmd->name, "env") == 0)
 	{
