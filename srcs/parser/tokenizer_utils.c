@@ -6,18 +6,11 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/07 12:44:38 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/10 19:12:57 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
-
-/**
- * @brief Vérifie si un caractère est un opérateur ('|', '<', '>')
- *
- * @param c Caractère à vérifier
- * @return int 1 si c'est un opérateur, 0 sinon
- */
 
 /**
  * @brief Compte les espaces supplémentaires nécessaires pour étendre
@@ -79,46 +72,58 @@ char	*ft_allocate_expanded(char *input)
  * @param input Chaîne d'entrée
  * @param expanded Chaîne de sortie allouée
  */
-static void	ft_fill_expanded(char *input, char *expanded)
+static void	ft_update_quote_state(char c, char *in_quotes)
 {
-	int	i;
-	int	j;
+	if (is_quote(c))
+	{
+		if (*in_quotes == 0)
+			*in_quotes = c;
+		else if (*in_quotes == c)
+			*in_quotes = 0;
+	}
+}
+
+static void	ft_add_operator_with_spaces(char *input, char *expanded, int *i, int *j)
+{
+	expanded[(*j)++] = ' ';
+	expanded[(*j)++] = input[(*i)++];
+	expanded[(*j)++] = input[(*i)++];
+	expanded[(*j)++] = ' ';
+}
+
+static void	ft_add_char_with_spaces(char *input, char *expanded, int *i, int *j)
+{
+	expanded[(*j)++] = ' ';
+	expanded[(*j)++] = input[(*i)++];
+	expanded[(*j)++] = ' ';
+}
+
+static void	ft_process_character(char *input, char *expanded, int *i, int *j, char *in_quotes)
+{
+	ft_update_quote_state(input[*i], in_quotes);
+	if (!(*in_quotes) && ((input[*i] == '<' && input[*i + 1] == '<')
+		|| (input[*i] == '>' && input[*i + 1] == '>')))
+		ft_add_operator_with_spaces(input, expanded, i, j);
+	else if (!(*in_quotes) && ft_is_operator(input[*i]))
+		ft_add_char_with_spaces(input, expanded, i, j);
+	else
+		expanded[(*j)++] = input[(*i)++];
+}
+
+void	ft_fill_expanded(char *input, char *expanded)
+{
+	int		i;
+	int		j;
 	char	in_quotes;
 
 	i = 0;
 	j = 0;
-	in_quotes = 0; // 🔹 0 = pas dans des guillemets, sinon contient '"' ou '\''
-
+	in_quotes = 0;
 	while (input[i])
-	{
-		// 🔹 Si on rencontre une quote, on change l'état `in_quotes`
-		if (is_quote(input[i]))
-		{
-			if (in_quotes == 0)
-				in_quotes = input[i]; // On entre dans une quote
-			else if (in_quotes == input[i])
-				in_quotes = 0; // On sort des quotes
-		}
-
-		// 🔹 Ajoute des espaces autour des opérateurs SEULEMENT SI on n'est PAS dans une chaîne de caractères
-		if (!in_quotes && ((input[i] == '<' && input[i + 1] == '<') || (input[i] == '>' && input[i + 1] == '>')))
-		{
-			expanded[j++] = ' ';
-			expanded[j++] = input[i++];
-			expanded[j++] = input[i++];
-			expanded[j++] = ' ';
-		}
-		else if (!in_quotes && ft_is_operator(input[i]))
-		{
-			expanded[j++] = ' ';
-			expanded[j++] = input[i++];
-			expanded[j++] = ' ';
-		}
-		else
-			expanded[j++] = input[i++];
-	}
+		ft_process_character(input, expanded, &i, &j, &in_quotes);
 	expanded[j] = '\0';
 }
+
 
 
 /**
