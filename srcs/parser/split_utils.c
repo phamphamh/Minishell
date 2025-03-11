@@ -29,7 +29,7 @@ static int	process_double_quotes(const char *s, int start, int end,
 		return (-1);
 	strncpy(content, &s[start], len);
 	content[len] = '\0';
-	expanded = expand_env_vars(content, env->ms);
+	expanded = expand_env_vars(content, env->ms, true);
 	free(content);
 	if (!expanded)
 		return (-1);
@@ -72,11 +72,10 @@ int	handle_quoted_token(const char *s, int i, t_split_env *env)
 	i = skip_quotes(s, i, &env->quote);
 	if (i == -1)
 		return (-1);
-	if (start == i - 1) // Si les guillemets sont vides
-{
-	return (i); // 🔹 Ne pas ajouter de token vide
-}
-
+	if (start == i - 1)
+	{
+		return (i);
+	}
 	if (store_quoted_token(s, start, i - 1, env) == -1)
 		return (-1);
 	return (i);
@@ -101,7 +100,7 @@ static int	handle_unquoted_token(const char *s, int i, t_split_env *env)
 		return (-1);
 	strncpy(temp, start, token_len);
 	temp[token_len] = '\0';
-	expanded = expand_env_vars(temp, env->ms);
+	expanded = expand_env_vars(temp, env->ms, false);
 	free(temp);
 	if (!expanded)
 		return (-1);
@@ -119,18 +118,16 @@ int	handle_token(const char *s, int i, t_split_env *env)
 	bool	has_space;
 
 	has_space = false;
-	while (s[i] == env->delimiter) // Détecte un espace
+	while (s[i] == env->delimiter)
 	{
 		has_space = true;
 		i++;
 	}
-
 	if (!s[i])
 		return (i);
-
-	if (has_space) // Si un espace a été trouvé, ajoute un marqueur spécial
+	if (has_space)
 	{
-		env->tokens[env->token_count] = ft_strdup("\1"); // Marqueur d’espace
+		env->tokens[env->token_count] = ft_strdup("\1");
 		ft_gc_add(&env->ms->gc_head, env->tokens[env->token_count]);
 		env->token_count++;
 	}
@@ -138,4 +135,3 @@ int	handle_token(const char *s, int i, t_split_env *env)
 		return (handle_quoted_token(s, i, env));
 	return (handle_unquoted_token(s, i, env));
 }
-

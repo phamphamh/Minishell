@@ -13,7 +13,7 @@
 #include "../includes/header.h"
 
 // Initialisation de la variable globale pour les signaux
-int	g_signal_received = 0;
+int		g_signal_received = 0;
 
 /**
  * @brief Transforme les variables d'environnement en liste chaînée
@@ -77,12 +77,13 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 	minishell->exit_nb = 0;
 }
 
-//DEBUG DELETE AFTER
+// DEBUG DELETE AFTER
 void	ft_print_tokens(t_token *tokens)
 {
-	t_token *current = tokens;
-	printf("🔹 Liste des tokens générés :\n");
+	t_token	*current;
 
+	current = tokens;
+	printf("🔹 Liste des tokens générés :\n");
 	while (current)
 	{
 		printf("Token: \"%s\" | Type: %d\n", current->value, current->type);
@@ -91,21 +92,21 @@ void	ft_print_tokens(t_token *tokens)
 	printf("🔹 Fin de la liste des tokens\n");
 }
 
-//DEBUG DELETE AFTER
+// DEBUG DELETE AFTER
 void	ft_print_commands(t_cmd *cmds)
 {
-	t_cmd	*current = cmds;
-	int		cmd_index = 0;
-	int		arg_index;
-	t_redirection *redir;
+	t_cmd			*current;
+	int				cmd_index;
+	int				arg_index;
+	t_redirection	*redir;
 
+	current = cmds;
+	cmd_index = 0;
 	printf("\n🔹 Liste des commandes générées :\n");
-
 	while (current)
 	{
 		printf("🔹 Commande %d:\n", cmd_index);
 		printf("   - Nom: %s\n", current->name ? current->name : "(null)");
-
 		// Affichage des arguments
 		printf("   - Arguments: ");
 		if (current->args)
@@ -120,7 +121,6 @@ void	ft_print_commands(t_cmd *cmds)
 		else
 			printf("(null)");
 		printf("\n");
-
 		// Affichage des redirections
 		printf("   - Redirections:\n");
 		redir = current->redirs;
@@ -136,14 +136,12 @@ void	ft_print_commands(t_cmd *cmds)
 				printf("     ⏩ Here-Doc (<<) -> %s\n", redir->file);
 			redir = redir->next;
 		}
-
 		// Affichage des pipes
-		printf("   - Pipe_in: %d, Pipe_out: %d\n", current->pipe_in, current->pipe_out);
-
+		printf("   - Pipe_in: %d, Pipe_out: %d\n", current->pipe_in,
+			current->pipe_out);
 		current = current->next;
 		cmd_index++;
 	}
-
 	printf("🔹 Fin de la liste des commandes\n\n");
 }
 
@@ -162,24 +160,31 @@ void	ft_process_line(char *line, t_minishell *minishell)
 	int		cmd_count;
 	int		i;
 	int		status;
+	int		saved_stdin;
+	int		saved_stdout;
 
 	if (!line || !*line)
 		return ;
 	add_history(line);
 	minishell->tokens = NULL;
 	minishell->commands = NULL;
+	// Vérifie si la ligne ne contient qu'un backslash seul
+	if (ft_strcmp(line, "\\") == 0)
+	{
+		ft_putstr_fd("minishell: \\: command not found\n", 2);
+		minishell->exit_nb = 127; // Code d'erreur "command not found"
+		return ;
+	}
 	tokens = ft_tokenize(line, minishell);
 	if (!tokens)
 		return ;
 	minishell->tokens = tokens;
-	//ft_print_tokens(tokens);
 	if (ft_check_syntax_errors(tokens))
 		return ;
 	cmd = tokens_to_cmds(tokens, minishell);
 	if (!cmd)
 		return ;
 	minishell->commands = cmd;
-	//ft_print_commands(cmd);
 	cmd_count = 0;
 	current = cmd;
 	while (current)
@@ -204,9 +209,8 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		}
 		if (ft_is_builtin(current->name))
 		{
-			int saved_stdin = dup(STDIN_FILENO);
-			int saved_stdout = dup(STDOUT_FILENO);
-
+			saved_stdin = dup(STDIN_FILENO);
+			saved_stdout = dup(STDOUT_FILENO);
 			ft_setup_pipes(current);
 			if (!ft_handle_redirection(current, current->redirs))
 			{
@@ -243,7 +247,6 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		current = current->next;
 		i++;
 	}
-
 	i = 0;
 	while (i < cmd_count)
 	{

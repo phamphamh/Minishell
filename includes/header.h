@@ -109,14 +109,16 @@ typedef struct s_minishell
 	int						exit_nb;
 }							t_minishell;
 
-// structure pour faciliter l'expand sans devoir passer 5 argument
+// structure pour faciliter l'expand d'env sans devoir passer 5 argument
 typedef struct s_expand_env
 {
 	char					*res;
 	int						*j;
+	int						buf_size;
 	t_minishell				*ms;
 }							t_expand_env;
 
+// structure pour faciliter le split sans devoir passer 5 argument (fuck la norme)
 typedef struct s_split_env
 {
 	char					**tokens;
@@ -125,6 +127,24 @@ typedef struct s_split_env
 	char					quote;
 	t_minishell				*ms;
 }							t_split_env;
+// structure pour faciliter l'expand pour les characteres speciaux sans devoir passer 5 argument
+typedef struct s_expand_state
+{
+	char					*input;
+	char					*expanded;
+	int						*i;
+	int						*j;
+}							t_expand_state;
+
+// structure pour faciliter la tokenisation sans devoir passer 5 argument
+typedef struct s_tokenizer
+{
+	t_token					*prev;
+	t_token					*token_list;
+	t_minishell				*minishell;
+	int						is_cmd;
+	int						skip_concat;
+}							t_tokenizer;
 
 // Prototypes des fonctions
 // main.c
@@ -156,9 +176,9 @@ char						**ft_env_to_array(t_minishell *minishell,
 bool						ft_is_builtin(char *value);
 
 // builtins_utils.c
-int						ft_handle_export_var(t_minishell *minishell,
+int							ft_handle_export_var(t_minishell *minishell,
 								char **var);
-int						ft_handle_unset_var(t_minishell *minishell,
+int							ft_handle_unset_var(t_minishell *minishell,
 								char **var_name);
 void						ft_print_export_list(t_env *env);
 void						ft_print_export_var(t_env *env_var);
@@ -179,23 +199,40 @@ void						ft_close_pipes(t_cmd *cmd);
 void						ft_setup_pipes(t_cmd *cmd);
 
 // redirection.c
-int							ft_handle_redirection(t_cmd *cmd, t_redirection *redir);
+int							ft_handle_redirection(t_cmd *cmd,
+								t_redirection *redir);
 void						ft_restore_fds(int saved_stdin, int saved_stdout);
 
 // tokenizer.c
 int							ft_is_operator(char c);
+int							ft_handle_space_token(char *token);
+void						ft_concat_tokens(t_token *prev, char *token,
+								t_minishell *minishell);
 char						*ft_allocate_expanded(char *input);
+char						*ft_remove_escape_chars(char *str);
+void						ft_process_character(t_expand_state *state,
+								char *in_quotes);
+t_token						*ft_create_token(char *value, int type,
+								t_minishell *minishell);
+t_token						*ft_add_token(t_token **token_list,
+								t_token *new_token);
+int							ft_process_token(char **split_input,
+								t_tokenizer *t);
 char						*ft_expand_operators(char *input);
-int							ft_determine_token_type(char *token, int	*is_cmd, t_token *prev);
+int							ft_determine_token_type(char *token, int *is_cmd,
+								t_token *prev);
 t_token						*ft_tokenize(char *input, t_minishell *minishell);
 // int		ft_determine_token_type(char *token);
 
 // expand env variables
+int							extract_var_name(const char *str, int i,
+								char **var_name);
 void						process_escape_sequence(const char *str, char *res,
 								int *i, int *j);
-char						*prepare_result_buffer(const char *str);
+char						*prepare_result_buffer(const char *str,
+								t_minishell *ms);
 char						*expand_env_vars(const char *str,
-								t_minishell *minishell);
+								t_minishell *minishell, bool in_quotes);
 
 // split_with_quotes.c
 char						**ft_split_with_quotes(const char *s,
