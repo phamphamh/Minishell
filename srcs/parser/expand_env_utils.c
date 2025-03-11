@@ -67,5 +67,5 @@ char	*prepare_result_buffer(const char *str, t_minishell *ms)
 	int	len;
 
 	len = calculate_new_length(str, ms);
-	return (ft_calloc(len + 1, sizeof(char)));
+	return (ft_calloc(len + 10, sizeof(char)));
 }
