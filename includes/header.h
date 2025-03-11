@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/11 15:09:56 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:05:11 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,15 +176,31 @@ char						**ft_env_to_array(t_minishell *minishell,
 bool						ft_is_builtin(char *value);
 
 // builtins_utils.c
-int							ft_handle_export_var(t_minishell *minishell,
-								char **var);
-int							ft_handle_unset_var(t_minishell *minishell,
-								char **var_name);
 void						ft_print_export_list(t_env *env);
-void						ft_print_export_var(t_env *env_var);
 void						update_env_var(t_env *env, const char *name,
 								const char *new_value, t_minishell *minishell);
 void						update_pwd_and_oldpwd(t_minishell *minishell);
+
+// builtins_utils2.c
+void						ft_print_export_var(t_env *env_var);
+
+// builtins_utils3.c
+int							ft_handle_export_var(t_minishell *minishell, char **var);
+int							ft_handle_unset_var(t_minishell *minishell, char **var_name);
+void						ft_export_error(char *var, t_minishell *minishell);
+void						ft_unset_error(char *var, t_minishell *minishell);
+
+// builtins_cd.c
+int							ft_cd(t_cmd *cmd, t_minishell *minishell);
+
+// builtins_echo.c
+int							ft_echo(t_cmd *cmd);
+
+// builtins_pwd.c
+int							ft_pwd(t_minishell *minishell);
+
+// builtins_exit.c
+int							ft_exit(t_cmd *cmd, t_minishell *minishell);
 
 // exec.c
 void						close_pipe_fds(t_cmd *cmd);

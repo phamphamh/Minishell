@@ -1,4 +1,0 @@
-- ls >./test_files/invalid_permission >"./outfiles/outfile01"  >./test_files/invalid_permission
-- cat <missing | echo oi
-- cat <"./infile_big" | echo hi
-

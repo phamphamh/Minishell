@@ -20,12 +20,20 @@ SRCS = srcs/main.c \
        srcs/garbage_collector.c \
        srcs/garbage_collector_utils.c \
        srcs/signal_handler.c \
-       srcs/builtins/builtins.c \
-       srcs/builtins/builtins_utils.c \
+       srcs/builtins/builtins_utils2.c \
+       srcs/builtins/builtins_utils3.c \
+       srcs/builtins/builtins_utils_part1.c \
+       srcs/builtins/builtins_utils_part2.c \
+       srcs/builtins/builtins_utils_common.c \
+       srcs/builtins/builtins_cd.c \
+       srcs/builtins/builtins_echo.c \
+       srcs/builtins/builtins_pwd.c \
+       srcs/builtins/builtins_exit.c \
+       srcs/builtins/builtins_execute_builtin.c \
        srcs/exec/exec.c \
        srcs/exec/exec_utils.c \
        srcs/exec/exec_utils2.c \
-       srcs/exec/utils.c \
+       srcs/exec/exec_utils3.c \
        srcs/exec/pipe_handler.c \
        srcs/exec/redirection.c \
        srcs/parser/tokenizer.c \
