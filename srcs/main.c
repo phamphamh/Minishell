@@ -34,11 +34,9 @@ t_env	*ft_env_to_list(char **envp, t_minishell *minishell)
 	env = NULL;
 	last = NULL;
 	i = 0;
-
 	// Si pas d'environnement, retourner une liste vide
 	if (!envp)
 		return (NULL);
-
 	while (envp[i])
 	{
 		var = ft_strdup(envp[i]);
@@ -48,7 +46,6 @@ t_env	*ft_env_to_list(char **envp, t_minishell *minishell)
 			ft_clean_env_list(env);
 			return (NULL);
 		}
-
 		new = malloc(sizeof(t_env));
 		if (!new)
 		{
@@ -57,10 +54,8 @@ t_env	*ft_env_to_list(char **envp, t_minishell *minishell)
 			ft_clean_env_list(env);
 			return (NULL);
 		}
-
 		new->var = var;
 		new->next = NULL;
-
 		if (!env)
 			env = new;
 		else
@@ -110,7 +105,6 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 	minishell->tokens = NULL;
 	minishell->commands = NULL;
 	minishell->exit_nb = 0;
-
 	// Initialiser l'environnement
 	minishell->env = ft_env_to_list(envp, minishell);
 	if (!minishell->env && envp)
@@ -118,7 +112,6 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 		ft_putstr_fd("Erreur: Impossible d'initialiser l'environnement\n", 2);
 		ft_clean_exit(minishell, 1);
 	}
-
 	// Vérifier si PATH existe dans l'environnement
 	has_path = false;
 	env_node = minishell->env;
@@ -127,11 +120,10 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 		if (ft_strncmp(env_node->var, "PATH=", 5) == 0)
 		{
 			has_path = true;
-			break;
+			break ;
 		}
 		env_node = env_node->next;
 	}
-
 	// Si PATH n'existe pas, l'ajouter avec des valeurs par défaut
 	if (!has_path)
 	{
@@ -140,7 +132,6 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 		{
 			// Ajouter à l'environnement
 			ft_add_env_var(minishell, default_path);
-
 			// La mémoire est gérée par ft_add_env_var, on peut libérer
 			free(default_path);
 		}
@@ -237,28 +228,23 @@ void	ft_process_line(char *line, t_minishell *minishell)
 	// Vérifications de base
 	if (!line || !*line)
 		return ;
-
 	has_error = 0;
 	// Initialisation pour chaque nouvelle ligne
 	minishell->tokens = NULL;
 	minishell->commands = NULL;
-
 	// Analyse lexicale
 	tokens = ft_tokenize(line, minishell);
 	if (!tokens)
 		return ;
 	minishell->tokens = tokens;
-
 	// Vérification de la syntaxe
 	if (ft_check_syntax_errors(tokens))
 		return ;
-
 	// Analyse syntaxique
 	cmd = tokens_to_cmds(tokens, minishell);
 	if (!cmd)
 		return ;
 	minishell->commands = cmd;
-
 	// Compte le nombre de commandes
 	cmd_count = 0;
 	current = cmd;
@@ -267,16 +253,13 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		cmd_count++;
 		current = current->next;
 	}
-
 	// Sécurité : si aucune commande, sortir
 	if (cmd_count == 0)
-		return;
-
+		return ;
 	// Alloue un tableau pour les PIDs des processus enfants
 	pids = malloc(sizeof(pid_t) * cmd_count);
 	if (!pids)
 		return ;
-
 	// Initialiser tous les PIDs à -1
 	i = 0;
 	while (i < cmd_count)
@@ -284,12 +267,9 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		pids[i] = -1;
 		i++;
 	}
-
 	// Ajouter au garbage collector
 	ft_gc_add(&minishell->gc_head, pids);
-
 	// ---- NOUVELLE LOGIQUE D'EXÉCUTION ----
-
 	// Créer tous les pipes nécessaires d'abord
 	current = cmd;
 	while (current && current->next && !has_error)
@@ -301,13 +281,11 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		}
 		current = current->next;
 	}
-
 	// Exécuter toutes les commandes
 	if (!has_error)
 	{
 		i = 0;
 		current = cmd;
-
 		while (current && i < cmd_count && !has_error)
 		{
 			// Vérification du type de commande
@@ -315,7 +293,6 @@ void	ft_process_line(char *line, t_minishell *minishell)
 			{
 				saved_stdin = dup(STDIN_FILENO);
 				saved_stdout = dup(STDOUT_FILENO);
-
 				if (saved_stdin == -1 || saved_stdout == -1)
 				{
 					ft_putstr_fd("minishell: dup error\n", 2);
@@ -325,7 +302,6 @@ void	ft_process_line(char *line, t_minishell *minishell)
 				else
 				{
 					ft_setup_pipes(current);
-
 					if (!ft_handle_redirection(current, current->redirs))
 					{
 						minishell->exit_nb = 1;
@@ -333,81 +309,70 @@ void	ft_process_line(char *line, t_minishell *minishell)
 					}
 					else
 					{
-						minishell->exit_nb = ft_execute_builtin(current, minishell);
+						minishell->exit_nb = ft_execute_builtin(current,
+								minishell);
 						ft_restore_fds(saved_stdin, saved_stdout);
 					}
-
 					ft_close_pipes(current);
 				}
 			}
 			else
 			{
 				pids[i] = fork();
-
 				if (pids[i] == -1)
 				{
 					ft_putstr_fd("minishell: fork error\n", 2);
 					minishell->exit_nb = 1;
 					has_error = 1;
 				}
-				else if (pids[i] == 0)  // Processus enfant
+				else if (pids[i] == 0) // Processus enfant
 				{
 					// Rétablir le comportement par défaut des signaux
 					ft_reset_signals();
-
 					// Configurer les tubes
 					ft_setup_pipes(current);
-
 					// Fermer tous les descripteurs inutilisés
 					ft_close_unused_fds(current);
-
 					// Gérer les redirections
 					if (!ft_handle_redirection(current, current->redirs))
 					{
 						ft_clean_exit(minishell, 1);
 					}
-
 					// Exécuter la commande
 					ft_execute_child(current, minishell);
-
 					// Si on arrive ici, c'est que quelque chose a échoué
 					exit(EXIT_FAILURE);
 				}
-				else  // Processus parent
+				else // Processus parent
 				{
 					// Ignorer les signaux pendant l'attente
 					ft_ignore_signals();
-
 					// Fermer les descripteurs non utilisés dans le parent
 					ft_close_pipes(current);
 				}
 			}
-
 			current = current->next;
 			i++;
 		}
 	}
-
 	// Fermer tous les tubes restants dans le processus parent
 	ft_close_all_pipes(cmd);
-
 	// Attendre tous les processus enfants
+	i = 0;
 	i = 0;
 	while (i < cmd_count)
 	{
 		if (pids[i] > 0)
 		{
-			// Attendre la fin du processus
-			if (waitpid(pids[i], &status, 0) > 0)
+			waitpid(pids[i], &status, 0);
+			// exit code du last processus
+			if (i == cmd_count - 1)
 			{
 				if (WIFEXITED(status))
-				{
 					minishell->exit_nb = WEXITSTATUS(status);
-				}
 				else if (WIFSIGNALED(status))
 				{
 					minishell->exit_nb = 128 + WTERMSIG(status);
-
 					if (WTERMSIG(status) == SIGINT)
 						ft_putstr_fd("\n", 1);
 					else if (WTERMSIG(status) == SIGQUIT)
@@ -417,10 +382,8 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		}
 		i++;
 	}
-
 	// Rétablir la gestion des signaux
 	ft_setup_signals();
-
 	// Nettoyer
 	ft_gc_remove(&minishell->gc_head, pids);
 	free(pids);
@@ -465,18 +428,16 @@ int	main(int argc, char **argv, char **envp)
 	ft_setup_signals();
 	// Ne plus appeler ft_initialize_shell ici car ft_initialize fait déjà le travail nécessaire
 	// ft_initialize_shell(&minishell);
-
 	while (1)
 	{
 		line = readline("minishell> ");
 		if (!line)
 		{
 			ft_putstr_fd("exit\n", 1);
-			break;
+			break ;
 		}
 		if (*line)
 			add_history(line);
-
 		ft_process_line(line, &minishell);
 		free(line);
 	}
