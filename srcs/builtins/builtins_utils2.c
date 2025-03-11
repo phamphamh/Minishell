@@ -3,66 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 12:00:24 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 20:53:31 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/11 15:01:34 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
-/* Vérifie si une variable correspond à un nom donné */
-int	ft_env_var_match(const char *env_var, const char *var_name)
-{
-	size_t	name_len;
-	char	*equal_pos;
+/* REMARQUE: La fonction ft_env_var_match a été déplacée vers utils.c
+   pour éviter les redéfinitions et les incompatibilités de type */
 
-	name_len = ft_strlen(var_name);
-	equal_pos = ft_strchr(env_var, '=');
-	if (equal_pos)
-		return (ft_strncmp(env_var, var_name, name_len) == 0
-			&& env_var[name_len] == '=');
-	return (ft_strcmp(env_var, var_name) == 0);
-}
-
-/* Recherche une variable dans l'environnement */
-t_env	*ft_find_env_var(t_env *env, const char *var)
-{
-	t_env	*current;
-	size_t	name_len;
-	char	*equal_pos;
-
-	equal_pos = ft_strchr(var, '=');
-	name_len = equal_pos ? (size_t)(equal_pos - var) : ft_strlen(var);
-	current = env;
-	while (current)
-	{
-		if (ft_strncmp(current->var, var, name_len) == 0
-			&& (current->var[name_len] == '=' || current->var[name_len] == '\0'))
-			return (current);
-		current = current->next;
-	}
-	return (NULL);
-}
-
-/* Ajoute une nouvelle variable à l'environnement */
-void	ft_add_env_var(t_minishell *minishell, const char *var)
-{
-	t_env	*new_node;
-
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return ;
-	new_node->var = ft_strdup(var);
-	if (!new_node->var)
-	{
-		free(new_node);
-		return ;
-	}
-	new_node->next = minishell->env;
-	minishell->env = new_node;
-}
+/* REMARQUE: La fonction ft_find_env_var a été déplacée vers utils.c
+   pour éviter les redéfinitions et les fuites mémoire */
 
 /* Compte le nombre de variables dans l'environnement */
 int	ft_env_list_size(t_env *env)
@@ -170,20 +124,28 @@ void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 {
 	t_env	*current;
 	t_env	*prev;
+	t_env	*to_remove;
+
+	if (!minishell || !var_name)
+		return;
+
+	to_remove = ft_find_env_var(minishell->env, var_name);
+	if (!to_remove)
+		return;
 
 	current = minishell->env;
 	prev = NULL;
 	while (current)
 	{
-		if (ft_env_var_match(current->var, var_name))
+		if (current == to_remove)
 		{
 			if (prev)
 				prev->next = current->next;
 			else
 				minishell->env = current->next;
-			ft_gc_remove(&minishell->gc_head, current->var);
-			ft_gc_remove(&minishell->gc_head, current);
-			return ;
+			free(current->var);
+			free(current);
+			return;
 		}
 		prev = current;
 		current = current->next;
@@ -242,39 +204,5 @@ void	ft_unset_error(char *var, t_minishell *minishell)
 	minishell->exit_nb = 1;
 }
 
-/* Vérifie si un identifiant est valide selon les règles POSIX */
-int	ft_is_valid_identifier(const char *str)
-{
-	int	i;
-
-	if (!str || !*str || ft_isdigit(*str))
-		return (0);
-	i = 0;
-	while (str[i])
-	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-/* Vérifie si la partie avant le '=' d'une variable est un identifiant valide */
-int	ft_is_valid_identifier_before_equal(const char *str)
-{
-	char	*equal_pos;
-	char	*name;
-	int		result;
-
-	if (!str || !*str)
-		return (0);
-	equal_pos = ft_strchr(str, '=');
-	if (!equal_pos)
-		return (ft_is_valid_identifier(str));
-	name = ft_substr(str, 0, equal_pos - str);
-	if (!name)
-		return (0);
-	result = ft_is_valid_identifier(name);
-	free(name);
-	return (result);
-}
+/* REMARQUE: Les fonctions ft_is_valid_identifier et ft_is_valid_identifier_before_equal
+   ont été déplacées vers utils.c pour éviter les redéfinitions */

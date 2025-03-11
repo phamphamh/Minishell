@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 21:48:07 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/11 14:17:33 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,6 +182,7 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out, int saved_stdin
 /**
  * @brief Gère toutes les redirections d'une commande
  *
+ * @param cmd Structure de la commande
  * @param redir Liste des redirections à traiter
  * @return int 1 si réussi, 0 en cas d'erreur
  */
@@ -194,12 +195,30 @@ int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
     t_redirection	*last_heredoc;
     t_redirection	*current;
 
-    saved_stdout = dup(STDOUT_FILENO);
-    saved_stdin = dup(STDIN_FILENO);
+    // Si pas de redirections, retourner succès
+    if (!redir)
+        return (1);
 
+    // Sauvegarder les descripteurs standard
+    saved_stdout = dup(STDOUT_FILENO);
+    if (saved_stdout == -1)
+    {
+        ft_putstr_fd("minishell: dup error\n", 2);
+        return (0);
+    }
+
+    saved_stdin = dup(STDIN_FILENO);
+    if (saved_stdin == -1)
+    {
+        close(saved_stdout);
+        ft_putstr_fd("minishell: dup error\n", 2);
+        return (0);
+    }
+
+    // Trouver les dernières redirections de chaque type
     ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
 
-    // 🔥 Parcours toutes les redirections d'entrée pour détecter une erreur
+    // Vérifier toutes les redirections d'entrée pour détecter une erreur
     current = redir;
     while (current)
     {
@@ -219,22 +238,39 @@ int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
         current = current->next;
     }
 
-    // ✅ Si tout est valide, on applique la dernière redirection d'entrée
+    // Si tout est valide, appliquer les redirections
+    int result = 1; // Supposer le succès par défaut
+
+    // Appliquer la redirection d'entrée (heredoc ou fichier)
     if (last_heredoc)
     {
         if (!ft_handle_heredoc(last_heredoc, saved_stdin, saved_stdout))
-            return (0);
+            result = 0;
     }
     else if (last_in)
     {
         if (!ft_handle_input(cmd, last_in, saved_stdin, saved_stdout))
-            return (0);
+            result = 0;
     }
-    if (last_out)
+
+    // Appliquer la redirection de sortie
+    if (result && last_out)
     {
         if (!ft_handle_output(cmd, last_out, saved_stdin, saved_stdout))
-            return (0);
+            result = 0;
     }
+
+    // Si erreur, restaurer les descripteurs originaux
+    if (!result)
+    {
+        ft_restore_fds(saved_stdin, saved_stdout);
+        return (0);
+    }
+
+    // Fermer les descripteurs sauvegardés car ils ne sont plus nécessaires
+    close(saved_stdin);
+    close(saved_stdout);
+
     return (1);
 }
 

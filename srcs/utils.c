@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:31:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/01 16:24:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:08:13 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,68 @@
  */
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
-	if (minishell)
+	int	fd;
+	t_env *current_env;
+	t_env *next_env;
+
+	if (!minishell)
+		exit(exit_num);
+
+	// Libérer manuellement l'environnement pour éviter les fuites
+	if (minishell->env)
 	{
-		if (minishell->tokens)
+		current_env = minishell->env;
+		while (current_env)
 		{
-			ft_gc_remove_list(&minishell->gc_head, minishell->tokens);
-			minishell->tokens = NULL;
+			next_env = current_env->next;
+			if (current_env->var)
+				free(current_env->var);
+			free(current_env);
+			current_env = next_env;
 		}
-		if (minishell->commands)
-		{
-			ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
-			minishell->commands = NULL;
-		}
-		if (minishell->env)
-		{
-			ft_gc_remove_env(&minishell->gc_head, minishell->env);
-			minishell->env = NULL;
-		}
-		ft_gc_clear(&minishell->gc_head);
+		minishell->env = NULL;
 	}
+
+	// Libérer les tokens
+	if (minishell->tokens)
+	{
+		ft_gc_remove_list(&minishell->gc_head, minishell->tokens);
+		minishell->tokens = NULL;
+	}
+
+	// Libérer les commandes
+	if (minishell->commands)
+	{
+		ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
+		minishell->commands = NULL;
+	}
+
+	// Nettoyer le garbage collector
+	if (minishell->gc_head)
+	{
+		t_gc_node *current = minishell->gc_head;
+		t_gc_node *next;
+
+		while (current)
+		{
+			next = current->next;
+			if (current->ptr)
+				free(current->ptr);
+			free(current);
+			current = next;
+		}
+		minishell->gc_head = NULL;
+	}
+
+	// Fermer tous les descripteurs de fichiers ouverts (sauf stdin, stdout, stderr)
+	fd = 3;
+	while (fd < 1024)
+	{
+		close(fd);
+		fd++;
+	}
+
+	// Quitter le programme
 	exit(exit_num);
 }
 
@@ -118,21 +161,32 @@ int	ft_env_var_match(const char *env_var, const char *var_name)
 t_env	*ft_find_env_var(t_env *env, const char *var)
 {
 	t_env	*current;
+	size_t	len;
+	char	*equal_pos;
 
 	if (!env || !var)
 		return (NULL);
+
+	// Déterminer la longueur du nom de la variable (jusqu'au '=' s'il y en a un)
+	equal_pos = ft_strchr(var, '=');
+	len = equal_pos ? (size_t)(equal_pos - var) : ft_strlen(var);
+
 	current = env;
 	while (current)
 	{
-		if (ft_env_var_match(current->var, var))
+		// Vérifier si cette variable correspond au nom recherché
+		if (ft_strncmp(current->var, var, len) == 0 &&
+			(current->var[len] == '=' || current->var[len] == '\0'))
+		{
 			return (current);
+		}
 		current = current->next;
 	}
 	return (NULL);
 }
 
 /**
- * @brief Ajoute une variable d'environnement
+ * @brief Ajoute une variable d'environnement à la liste
  *
  * @param minishell Structure principale du shell
  * @param var Variable à ajouter (format "NOM=VALEUR")
@@ -141,23 +195,58 @@ void	ft_add_env_var(t_minishell *minishell, const char *var)
 {
 	t_env	*new_var;
 	t_env	*current;
+	char	*env_name;
+	size_t	name_len;
+	char	*equal_sign;
 
 	if (!minishell || !var)
 		return ;
+
+	// Vérifier si la variable existe déjà pour éviter les doublons
+	equal_sign = ft_strchr(var, '=');
+	if (equal_sign)
+	{
+		name_len = equal_sign - var;
+		env_name = ft_substr(var, 0, name_len);
+		if (env_name)
+		{
+			current = minishell->env;
+			while (current)
+			{
+				if (ft_strncmp(current->var, env_name, name_len) == 0 &&
+					(current->var[name_len] == '=' || current->var[name_len] == '\0'))
+				{
+					// La variable existe déjà, mettre à jour sa valeur
+					free(current->var);
+					current->var = ft_strdup(var);
+					free(env_name);
+					return ;
+				}
+				current = current->next;
+			}
+			free(env_name);
+		}
+	}
+
+	// La variable n'existe pas, l'ajouter
 	new_var = malloc(sizeof(t_env));
 	if (!new_var)
 		return ;
-	ft_gc_add(&minishell->gc_head, new_var);
+
 	new_var->var = ft_strdup(var);
 	if (!new_var->var)
 	{
-		ft_gc_remove(&minishell->gc_head, new_var);
+		free(new_var);
 		return ;
 	}
-	ft_gc_add(&minishell->gc_head, new_var->var);
+
 	new_var->next = NULL;
+
+	// Ajouter à la fin de la liste
 	if (!minishell->env)
+	{
 		minishell->env = new_var;
+	}
 	else
 	{
 		current = minishell->env;

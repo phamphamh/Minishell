@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/11 13:32:45 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:09:56 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,7 @@ void						ft_execute_command(t_cmd *cmd,
 char						*ft_find_executable(char *cmd_name, t_env *env);
 void						ft_execute_child(t_cmd *cmd,
 								t_minishell *minishell);
+void						ft_close_unused_fds(t_cmd *cmd);
 
 // pipe_handler.c
 int							ft_create_pipe(t_cmd *cmd);
@@ -265,6 +266,7 @@ int							ft_check_syntax_errors(t_token *tokens);
 
 // utils.c
 void						ft_clean_exit(t_minishell *minishell, int exit_num);
+void						ft_clean_env_list(t_env *env);
 bool						ft_is_valid_identifier(const char *str);
 bool						ft_is_valid_identifier_before_equal(const char *str);
 int							ft_env_var_match(const char *env_var,
