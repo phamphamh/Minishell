@@ -17,6 +17,7 @@ CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
 SRCS = srcs/main.c \
+	   srcs/env_to_list.c \
 	   srcs/ft_process_line.c \
 	   srcs/ft_process_line_utils.c \
        srcs/garbage_collector.c \

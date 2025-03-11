@@ -148,6 +148,8 @@ typedef struct s_tokenizer
 // Prototypes des fonctions
 
 // main.c
+void						check_env_initialization(t_minishell *minishell,
+								char **envp);
 void						ft_initialize(t_minishell *minishell, char **envp);
 t_env						*ft_env_to_list(char **envp,
 								t_minishell *minishell);
@@ -325,6 +327,7 @@ int							ft_check_special_token(char *value);
 int							ft_check_syntax_errors(t_token *tokens);
 
 // utils.c
+void						set_default_path(t_minishell *minishell);
 void						ft_clean_exit(t_minishell *minishell, int exit_num);
 void						ft_clean_env_list(t_env *env);
 bool						ft_is_valid_identifier(const char *str);

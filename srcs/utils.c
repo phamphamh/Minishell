@@ -91,3 +91,16 @@ void	ft_add_env_var(t_minishell *minishell, const char *var)
 		current->next = new_var;
 	}
 }
+
+void	set_default_path(t_minishell *minishell)
+{
+	char	*default_path;
+
+	default_path = ft_strdup("PATH=/usr/local/bin:\
+		/usr/bin:/bin:/usr/sbin:/sbin:.");
+	if (default_path)
+	{
+		ft_add_env_var(minishell, default_path);
+		free(default_path);
+	}
+}
