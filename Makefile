@@ -50,7 +50,8 @@ SRCS = srcs/main.c \
        srcs/parser/check_syntax.c \
        srcs/parser/expand_env_utils.c \
        srcs/parser/expand_env.c \
-       srcs/utils.c
+       srcs/utils.c \
+       srcs/utils2.c \
 
 OBJS = $(SRCS:.c=.o)
 

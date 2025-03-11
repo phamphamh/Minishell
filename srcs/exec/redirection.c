@@ -120,25 +120,24 @@ static int	ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin,
 static int	ft_handle_input(t_cmd *cmd, t_redirection *last_in, int saved_stdin,
 		int saved_stdout)
 {
-    int	fd;
+	int	fd;
 
-    fd = open(last_in->file, O_RDONLY);
-    if (fd == -1)
-    {
-        ft_putstr_fd("minishell: ", 2);
-        ft_putstr_fd(last_in->file, 2);
-        ft_putstr_fd(": No such file or directory\n", 2);
-        ft_restore_fds(saved_stdin, saved_stdout);
-        return (0);
-    }
-    dup2(fd, STDIN_FILENO);
-    close(fd);
-    if (cmd->pipe_out != -1)
-    {
-        dup2(cmd->pipe_out, STDOUT_FILENO);
-        close(cmd->pipe_out);
-    }
-
+	fd = open(last_in->file, O_RDONLY);
+	if (fd == -1)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(last_in->file, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		ft_restore_fds(saved_stdin, saved_stdout);
+		return (0);
+	}
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	if (cmd->pipe_out != -1)
+	{
+		dup2(cmd->pipe_out, STDOUT_FILENO);
+		close(cmd->pipe_out);
+	}
 	fd = open(last_in->file, O_RDONLY);
 	if (fd == -1)
 	{
@@ -176,7 +175,6 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out,
 		fd = open(last_out->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	else
 		fd = open(last_out->file, O_CREAT | O_WRONLY | O_APPEND, 0644);
-
 	if (fd == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
@@ -185,14 +183,14 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out,
 		ft_restore_fds(saved_stdin, saved_stdout);
 		return (0);
 	}
-    if (cmd->pipe_out != -1)
-    {
-        close(cmd->pipe_out);
-        cmd->pipe_out = -1; // Désactive le pipe
-    }
-    dup2(fd, STDOUT_FILENO);
-    close(fd);
-    return (1);
+	if (cmd->pipe_out != -1)
+	{
+		close(cmd->pipe_out);
+		cmd->pipe_out = -1;
+	}
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	return (1);
 }
 
 /**
@@ -204,71 +202,73 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out,
  */
 int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
 {
-    int				saved_stdout;
-    int				saved_stdin;
-    t_redirection	*last_out;
-    t_redirection	*last_in;
-    t_redirection	*last_heredoc;
-    t_redirection	*current;
-    if (!redir)
-        return (1);
-    saved_stdout = dup(STDOUT_FILENO);
-    if (saved_stdout == -1)
-    {
-        ft_putstr_fd("minishell: dup error\n", 2);
-        return (0);
-    }
+	int				saved_stdout;
+	int				saved_stdin;
+	t_redirection	*last_out;
+	t_redirection	*last_in;
+	t_redirection	*last_heredoc;
+	t_redirection	*current;
+	int				fd;
+	int				result;
 
-    saved_stdin = dup(STDIN_FILENO);
-    if (saved_stdin == -1)
-    {
-        close(saved_stdout);
-        ft_putstr_fd("minishell: dup error\n", 2);
-        return (0);
-    }
-    ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
-    current = redir;
-    while (current)
-    {
-        if (current->type == TOKEN_REDIR_IN)
-        {
-            int fd = open(current->file, O_RDONLY);
-            if (fd == -1)
-            {
-                ft_putstr_fd("minishell: ", 2);
-                ft_putstr_fd(current->file, 2);
-                ft_putstr_fd(": No such file or directory\n", 2);
-                ft_restore_fds(saved_stdin, saved_stdout);
-                return (0);
-            }
-            close(fd);
-        }
-        current = current->next;
-    }
-    int result = 1;
-    if (last_heredoc)
-    {
-        if (!ft_handle_heredoc(last_heredoc, saved_stdin, saved_stdout))
-            result = 0;
-    }
-    else if (last_in)
-    {
-        if (!ft_handle_input(cmd, last_in, saved_stdin, saved_stdout))
-            result = 0;
-    }
-    if (result && last_out)
-    {
-        if (!ft_handle_output(cmd, last_out, saved_stdin, saved_stdout))
-            result = 0;
-    }
-    if (!result)
-    {
-        ft_restore_fds(saved_stdin, saved_stdout);
-        return (0);
-    }
-    close(saved_stdin);
-    close(saved_stdout);
-    return (1);
+	if (!redir)
+		return (1);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (saved_stdout == -1)
+	{
+		ft_putstr_fd("minishell: dup error\n", 2);
+		return (0);
+	}
+	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin == -1)
+	{
+		close(saved_stdout);
+		ft_putstr_fd("minishell: dup error\n", 2);
+		return (0);
+	}
+	ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
+	current = redir;
+	while (current)
+	{
+		if (current->type == TOKEN_REDIR_IN)
+		{
+			fd = open(current->file, O_RDONLY);
+			if (fd == -1)
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(current->file, 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				ft_restore_fds(saved_stdin, saved_stdout);
+				return (0);
+			}
+			close(fd);
+		}
+		current = current->next;
+	}
+	result = 1;
+	if (last_heredoc)
+	{
+		if (!ft_handle_heredoc(last_heredoc, saved_stdin, saved_stdout))
+			result = 0;
+	}
+	else if (last_in)
+	{
+		if (!ft_handle_input(cmd, last_in, saved_stdin, saved_stdout))
+			result = 0;
+	}
+	if (result && last_out)
+	{
+		if (!ft_handle_output(cmd, last_out, saved_stdin, saved_stdout))
+			result = 0;
+	}
+	if (!result)
+	{
+		ft_restore_fds(saved_stdin, saved_stdout);
+		return (0);
+	}
+	close(saved_stdin);
+	close(saved_stdout);
+	return (1);
 }
 
 /**

@@ -153,6 +153,9 @@ t_env						*ft_env_to_list(char **envp,
 								t_minishell *minishell);
 
 // garbage_collector.c
+void						free_env_list(t_minishell *minishell);
+void						free_gc_list(t_minishell *minishell);
+void						ft_clean_exit(t_minishell *minishell, int exit_num);
 bool						ft_gc_add(t_gc_node **gc_head, void *ptr);
 bool						ft_gc_remove(t_gc_node **gc_head, void *ptr);
 void						ft_gc_clear(t_gc_node **gc_head);
@@ -185,8 +188,10 @@ void						update_pwd_and_oldpwd(t_minishell *minishell);
 void						ft_print_export_var(t_env *env_var);
 
 // builtins_utils3.c
-int							ft_handle_export_var(t_minishell *minishell, char **var);
-int							ft_handle_unset_var(t_minishell *minishell, char **var_name);
+int							ft_handle_export_var(t_minishell *minishell,
+								char **var);
+int							ft_handle_unset_var(t_minishell *minishell,
+								char **var_name);
 void						ft_export_error(char *var, t_minishell *minishell);
 void						ft_unset_error(char *var, t_minishell *minishell);
 
