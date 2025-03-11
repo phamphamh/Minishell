@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 13:22:25 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:45:38 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,17 @@
 static void	ft_handle_sigint(int sig)
 {
 	(void)sig;
-	g_signal_received = 1;            // Indique qu'un signal SIGINT a été reçu
-	write(1, "\n", 1);                // Nouvelle ligne
-	rl_replace_line("", 1);           // Efface la ligne courante
-	rl_on_new_line();                // Indique à readline qu'on est sur une nouvelle ligne
-	rl_redisplay();                  // Réaffiche le prompt
+
+	// Ajouter un saut de ligne et un nouveau prompt
+	write(STDOUT_FILENO, "\n", 1);
+
+	// Marquer le signal comme reçu
+	g_signal_received = 130; // Code de sortie pour Ctrl+C
+
+	// Réinitialiser l'état de readline pour éviter les problèmes
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 /**
@@ -32,23 +38,16 @@ static void	ft_handle_sigint(int sig)
  */
 void	ft_setup_signals(void)
 {
+	// Pour SIGINT (Ctrl+C), utiliser sigaction pour plus de contrôle
 	struct sigaction	sa_int;
-	struct sigaction	sa_quit;
 
-	// Réinitialiser l'état du signal
-	g_signal_received = 0;
-
-	// Configurer SIGINT (Ctrl+C)
-	sa_int.sa_handler = ft_handle_sigint;
-	sa_int.sa_flags = SA_RESTART;  // Ajouter SA_RESTART pour éviter d'interrompre certaines fonctions système
 	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_handler = ft_handle_sigint;
+	sa_int.sa_flags = 0; // Pas de SA_RESTART
 	sigaction(SIGINT, &sa_int, NULL);
 
-	// Configurer SIGQUIT (Ctrl+\)
-	sa_quit.sa_handler = SIG_IGN;  // Utiliser SIG_IGN directement au lieu d'un gestionnaire
-	sa_quit.sa_flags = SA_RESTART;  // Ajouter SA_RESTART pour cohérence
-	sigemptyset(&sa_quit.sa_mask);
-	sigaction(SIGQUIT, &sa_quit, NULL);
+	// Pour SIGQUIT (Ctrl+\), simplement ignorer
+	signal(SIGQUIT, SIG_IGN);
 }
 
 /**
@@ -56,10 +55,9 @@ void	ft_setup_signals(void)
  */
 void	ft_reset_signals(void)
 {
-	// Dans les processus enfants, rétablir le comportement par défaut
+	// Rétablir le comportement par défaut pour les processus enfants
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	g_signal_received = 0;  // Réinitialiser l'état du signal
 }
 
 /**
@@ -67,7 +65,7 @@ void	ft_reset_signals(void)
  */
 void	ft_ignore_signals(void)
 {
-	// Pendant l'attente des processus enfants, ignorer les signaux
+	// Ignorer les signaux pendant l'attente des processus enfants
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 }
@@ -77,6 +75,7 @@ void	ft_ignore_signals(void)
  */
 void	ft_heredoc_signals(void)
 {
+	// Configuration spécifique pour les heredocs
 	signal(SIGINT, SIG_DFL);  // Laisser le heredoc être interrompu
 	signal(SIGQUIT, SIG_IGN); // Ignorer Ctrl+\ pendant le heredoc
 }

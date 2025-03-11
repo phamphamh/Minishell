@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 13:24:37 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:49:19 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void	ft_print_commands(t_cmd *cmds)
 }
 
 /**
- * @brief Traite une ligne de commande
+ * @brief Traite une ligne de commande entrée par l'utilisateur
  *
  * @param line Ligne de commande à traiter
  * @param minishell Structure principale du shell
@@ -165,9 +165,11 @@ void	ft_process_line(char *line, t_minishell *minishell)
 
 	if (!line || !*line)
 		return ;
-	add_history(line);
+
+	// Initialisation pour chaque nouvelle ligne
 	minishell->tokens = NULL;
 	minishell->commands = NULL;
+
 	// Vérifie si la ligne ne contient qu'un backslash seul
 	if (ft_strcmp(line, "\\") == 0)
 	{
@@ -175,16 +177,24 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		minishell->exit_nb = 127; // Code d'erreur "command not found"
 		return ;
 	}
+
+	// Analyse lexicale
 	tokens = ft_tokenize(line, minishell);
 	if (!tokens)
 		return ;
 	minishell->tokens = tokens;
+
+	// Vérification de la syntaxe
 	if (ft_check_syntax_errors(tokens))
 		return ;
+
+	// Analyse syntaxique
 	cmd = tokens_to_cmds(tokens, minishell);
 	if (!cmd)
 		return ;
 	minishell->commands = cmd;
+
+	// Le reste du code original...
 	cmd_count = 0;
 	current = cmd;
 	while (current)
@@ -247,6 +257,7 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		current = current->next;
 		i++;
 	}
+
 	i = 0;
 	while (i < cmd_count)
 	{
@@ -302,30 +313,35 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	ft_initialize_shell(&minishell);
 	ft_initialize(&minishell, envp);
+
+	// Configurer les signaux au début
 	ft_setup_signals();
+
 	while (1)
 	{
+		// Réinitialisation explicite des signaux pour chaque ligne
+		g_signal_received = 0;
+
+		// Lire la commande
 		line = readline("minishell$ ");
+
+		// Si Ctrl+D (EOF), sortir proprement
 		if (!line)
 		{
 			ft_putstr_fd("exit\n", STDOUT_FILENO);
 			ft_clean_exit(&minishell, minishell.exit_nb);
 		}
 
-		// Réinitialiser l'état des signaux avant de traiter la ligne
-		if (g_signal_received)
+		// Ajouter à l'historique si la ligne n'est pas vide
+		if (line && *line)
 		{
-			g_signal_received = 0;
-			free(line);
-			// Configurer les signaux à nouveau
-			ft_setup_signals();
-			continue;
+			add_history(line);
+			ft_process_line(line, &minishell);
 		}
 
-		ft_process_line(line, &minishell);
+		// Libérer la ligne
 		free(line);
-		// Réinitialiser explicitement les signaux après chaque commande
-		ft_setup_signals();
 	}
+
 	return (0);
 }

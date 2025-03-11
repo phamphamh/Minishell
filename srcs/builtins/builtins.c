@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 13:27:13 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:44:00 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,68 +25,76 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 	char	*old_pwd;
 	char	*new_pwd;
 	t_env	*pwd_var;
+	t_env	*home_var;
 
+	// Cas 1: aucun argument = aller au $HOME
 	if (!cmd->args[1])
 	{
-		pwd_var = ft_find_env_var(minishell->env, "HOME");
-		if (!pwd_var || !pwd_var->var)
+		home_var = ft_find_env_var(minishell->env, "HOME");
+		if (!home_var || !ft_strchr(home_var->var, '='))
 		{
 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 			return (1);
 		}
-		path = strchr(pwd_var->var, '=') + 1;
+		path = ft_strchr(home_var->var, '=') + 1;
 	}
+	// Cas 2: trop d'arguments
 	else if (cmd->args[2])
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		return (1);
 	}
+	// Cas 3: argument normal
 	else
 		path = cmd->args[1];
 
-	// Récupérer le répertoire courant
+	// Sauvegarder le PWD actuel (gérer le cas où il est inaccessible)
 	old_pwd = getcwd(NULL, 0);
-
-	// Si getcwd échoue (répertoire supprimé), utiliser PWD de l'environnement
 	if (!old_pwd)
 	{
+		// Répertoire actuel inaccessible (peut-être supprimé)
 		pwd_var = ft_find_env_var(minishell->env, "PWD");
 		if (pwd_var && ft_strchr(pwd_var->var, '='))
 			old_pwd = ft_strdup(ft_strchr(pwd_var->var, '=') + 1);
 		else
-			old_pwd = ft_strdup("/");  // Fallback sur la racine
+			old_pwd = ft_strdup("/");
 
 		if (!old_pwd)
 		{
-			ft_putstr_fd("minishell: cd: erreur mémoire\n", 2);
+			ft_putstr_fd("minishell: cd: erreur d'allocation mémoire\n", 2);
 			return (1);
 		}
 	}
 
-	// Tenter de changer de répertoire
+	// Tentative de changement de répertoire
 	if (chdir(path) == -1)
 	{
-		// Si échec, vérifier si on essaie de retourner au HOME
-		if (cmd->args[1] == NULL || ft_strcmp(path, "~") == 0)
+		// Si le répertoire courant est inaccessible et qu'on demande aller au home
+		if ((!cmd->args[1] || ft_strcmp(path, "~") == 0) &&
+			!getcwd(NULL, 0))
 		{
-			// Dans ce cas, tenter explicitement d'aller au home
-			pwd_var = ft_find_env_var(minishell->env, "HOME");
-			if (pwd_var && ft_strchr(pwd_var->var, '='))
+			// Réessayer avec le HOME explicitement
+			home_var = ft_find_env_var(minishell->env, "HOME");
+			if (home_var && ft_strchr(home_var->var, '='))
 			{
-				path = ft_strchr(pwd_var->var, '=') + 1;
+				path = ft_strchr(home_var->var, '=') + 1;
 				if (chdir(path) != -1)
 				{
-					// Succès, continuons avec la nouvelle PWD
+					// Succès, mettre à jour PWD et OLDPWD
 					new_pwd = getcwd(NULL, 0);
-					update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
-					update_env_var(minishell->env, "PWD", new_pwd, minishell);
-					free(old_pwd);
-					free(new_pwd);
-					return (0);
+					if (new_pwd)
+					{
+						update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
+						update_env_var(minishell->env, "PWD", new_pwd, minishell);
+						free(old_pwd);
+						free(new_pwd);
+						return (0);
+					}
 				}
 			}
 		}
 
+		// Échec du changement de répertoire
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(path, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
@@ -94,19 +102,36 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 		return (1);
 	}
 
-	// Récupérer le nouveau répertoire
+	// Succès du changement de répertoire, mettre à jour PWD et OLDPWD
 	new_pwd = getcwd(NULL, 0);
 	if (!new_pwd)
 	{
-		ft_putstr_fd("minishell: cd: error retrieving current directory\n", 2);
-		free(old_pwd);
-		return (1);
+		// Si nouveau répertoire inaccessible (rare)
+		ft_putstr_fd("minishell: cd: warning: current directory cannot be determined\n", 2);
+		// Essayer de construire le nouveau chemin à partir de l'ancien
+		if (path[0] == '/')
+			new_pwd = ft_strdup(path);  // Chemin absolu
+		else
+		{
+			// Chemin relatif
+			new_pwd = ft_strjoin(old_pwd, "/");
+			if (new_pwd)
+			{
+				char *tmp = new_pwd;
+				new_pwd = ft_strjoin(tmp, path);
+				free(tmp);
+			}
+		}
+
+		if (!new_pwd)
+		{
+			free(old_pwd);
+			return (1);
+		}
 	}
 
-	// Mettre à jour PWD et OLDPWD
-	pwd_var = ft_find_env_var(minishell->env, "PWD");
-	if (pwd_var)
-		update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
+	// Mettre à jour les variables d'environnement
+	update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
 	update_env_var(minishell->env, "PWD", new_pwd, minishell);
 
 	free(old_pwd);
@@ -173,33 +198,32 @@ static int	ft_pwd(t_minishell *minishell)
 	char	*pwd;
 	t_env	*pwd_var;
 
-	// Tenter d'obtenir le répertoire courant avec getcwd
+	// D'abord essayer avec getcwd
 	pwd = getcwd(NULL, 0);
 
-	// Si getcwd échoue (ex: répertoire supprimé), utiliser PWD de l'environnement
+	// Si getcwd échoue (probablement répertoire supprimé)
 	if (!pwd)
 	{
+		// Utiliser la variable PWD de l'environnement comme fallback
 		pwd_var = ft_find_env_var(minishell->env, "PWD");
 		if (pwd_var && ft_strchr(pwd_var->var, '='))
 		{
-			pwd = ft_strdup(ft_strchr(pwd_var->var, '=') + 1);
-			if (!pwd)
-			{
-				ft_putstr_fd("minishell: pwd: erreur mémoire\n", 2);
-				return (1);
-			}
-			ft_putendl_fd(pwd, 1);
-			free(pwd);
+			// Extraire la valeur après le '='
+			char *env_pwd = ft_strchr(pwd_var->var, '=') + 1;
+			ft_putendl_fd(env_pwd, STDOUT_FILENO);
+
+			// On retourne 0 car on a pu afficher une valeur
+			// (bash fait la même chose)
 			return (0);
 		}
-		else
-		{
-			ft_putstr_fd("minishell: pwd: répertoire courant indisponible\n", 2);
-			return (1);
-		}
+
+		// Si la variable PWD n'est pas disponible, signaler l'erreur
+		ft_putstr_fd("minishell: pwd: erreur: répertoire courant inaccessible\n", STDERR_FILENO);
+		return (1);
 	}
 
-	ft_putendl_fd(pwd, 1);
+	// Afficher le chemin et libérer la mémoire
+	ft_putendl_fd(pwd, STDOUT_FILENO);
 	free(pwd);
 	return (0);
 }
