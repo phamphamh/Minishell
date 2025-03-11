@@ -187,6 +187,25 @@ void						update_env_var(t_env *env, const char *name,
 void						update_pwd_and_oldpwd(t_minishell *minishell);
 
 // exec.c
+void						close_pipe_fds(t_cmd *cmd);
+void						ft_close_all_pipes(t_cmd *cmd_first);
+char						**ft_allocate_paths(char *path_value);
+void						free_paths(char **paths, int i);
+char						**ft_default_paths(void);
+char						**ft_get_paths(t_env *env);
+char						*ft_find_cmd_in_paths(char **paths, char *cmd_name);
+char						*ft_find_executable(char *cmd_name, t_env *env);
+void						ft_close_unused_fds(t_cmd *cmd);
+void						handle_cmd_not_found(t_cmd *cmd,
+								t_minishell *minishell);
+void						handle_is_directory(char *cmd_path,
+								t_minishell *minishell);
+void						handle_permission_denied(char *cmd_path,
+								t_minishell *minishell);
+void						handle_memory_error(char *cmd_path,
+								t_minishell *minishell);
+void						handle_execve_failure(char *cmd_path,
+								t_minishell *minishell);
 void						ft_execute_command(t_cmd *cmd,
 								t_minishell *minishell);
 char						*ft_find_executable(char *cmd_name, t_env *env);
@@ -198,7 +217,7 @@ void						ft_close_unused_fds(t_cmd *cmd);
 int							ft_create_pipe(t_cmd *cmd);
 void						ft_close_pipes(t_cmd *cmd);
 void						ft_setup_pipes(t_cmd *cmd);
-void                        ft_close_all_pipes(t_cmd *cmd_first);
+void						ft_close_all_pipes(t_cmd *cmd_first);
 
 // redirection.c
 int							ft_handle_redirection(t_cmd *cmd,

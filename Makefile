@@ -23,6 +23,9 @@ SRCS = srcs/main.c \
        srcs/builtins/builtins.c \
        srcs/builtins/builtins_utils.c \
        srcs/exec/exec.c \
+       srcs/exec/exec_utils.c \
+       srcs/exec/exec_utils2.c \
+       srcs/exec/utils.c \
        srcs/exec/pipe_handler.c \
        srcs/exec/redirection.c \
        srcs/parser/tokenizer.c \
