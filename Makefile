@@ -18,6 +18,7 @@ RM = rm -f
 
 SRCS = srcs/main.c \
        srcs/garbage_collector.c \
+       srcs/garbage_collector_utils.c \
        srcs/signal_handler.c \
        srcs/builtins/builtins.c \
        srcs/builtins/builtins_utils.c \
