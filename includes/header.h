@@ -109,7 +109,7 @@ typedef struct s_minishell
 	int						exit_nb;
 }							t_minishell;
 
-// structure pour faciliter l'expand sans devoir passer 5 argument
+// structure pour faciliter l'expand d'env sans devoir passer 5 argument
 typedef struct s_expand_env
 {
 	char					*res;
@@ -118,6 +118,7 @@ typedef struct s_expand_env
 	t_minishell				*ms;
 }							t_expand_env;
 
+// structure pour faciliter le split sans devoir passer 5 argument (fuck la norme)
 typedef struct s_split_env
 {
 	char					**tokens;
@@ -126,6 +127,24 @@ typedef struct s_split_env
 	char					quote;
 	t_minishell				*ms;
 }							t_split_env;
+// structure pour faciliter l'expand pour les characteres speciaux sans devoir passer 5 argument
+typedef struct s_expand_state
+{
+	char					*input;
+	char					*expanded;
+	int						*i;
+	int						*j;
+}							t_expand_state;
+
+// structure pour faciliter la tokenisation sans devoir passer 5 argument
+typedef struct s_tokenizer
+{
+	t_token					*prev;
+	t_token					*token_list;
+	t_minishell				*minishell;
+	int						is_cmd;
+	int						skip_concat;
+}							t_tokenizer;
 
 // Prototypes des fonctions
 // main.c
@@ -186,7 +205,19 @@ void						ft_restore_fds(int saved_stdin, int saved_stdout);
 
 // tokenizer.c
 int							ft_is_operator(char c);
+int							ft_handle_space_token(char *token);
+void						ft_concat_tokens(t_token *prev, char *token,
+								t_minishell *minishell);
 char						*ft_allocate_expanded(char *input);
+char						*ft_remove_escape_chars(char *str);
+void						ft_process_character(t_expand_state *state,
+								char *in_quotes);
+t_token						*ft_create_token(char *value, int type,
+								t_minishell *minishell);
+t_token						*ft_add_token(t_token **token_list,
+								t_token *new_token);
+int							ft_process_token(char **split_input,
+								t_tokenizer *t);
 char						*ft_expand_operators(char *input);
 int							ft_determine_token_type(char *token, int *is_cmd,
 								t_token *prev);

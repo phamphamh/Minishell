@@ -26,6 +26,9 @@ SRCS = srcs/main.c \
        srcs/exec/redirection.c \
        srcs/parser/tokenizer.c \
        srcs/parser/tokenizer_utils.c \
+       srcs/parser/tokenizer_utils2.c \
+       srcs/parser/tokenizer_utils3.c \
+       srcs/parser/process_tokens.c \
        srcs/parser/cmd_parser.c \
        srcs/parser/cmd_parser_utils.c \
        srcs/parser/parser_utils.c \

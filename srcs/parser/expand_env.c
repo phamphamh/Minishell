@@ -43,13 +43,12 @@ static void	replace_var(char *var_name, t_expand_env *env)
 	if (!var_value || !var_value[1])
 		return ;
 	var_value++;
-	// 🚀 Vérifie si on dépasse la capacité et réalloue
 	new_size = (*env->j) + ft_strlen(var_value) + 1;
-	if (new_size > env->buf_size) // Vérifie si on a assez de place
+	if (new_size > env->buf_size)
 	{
 		new_res = realloc(env->res, new_size);
 		if (!new_res)
-			return ; // ⚠ Erreur mémoire
+			return ;
 		env->res = new_res;
 		env->buf_size = new_size;
 	}
@@ -129,7 +128,7 @@ char	*expand_env_vars(const char *str, t_minishell *ms, bool in_quotes)
 		return (NULL);
 	env.j = &j;
 	env.ms = ms;
-	env.buf_size = ft_strlen(env.res) + 1; // Taille mémoire initiale
+	env.buf_size = ft_strlen(env.res) + 1;
 	process_expansion(str, &env, in_quotes);
 	env.res[j] = '\0';
 	return (env.res);

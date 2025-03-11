@@ -179,15 +179,12 @@ void	ft_process_line(char *line, t_minishell *minishell)
 	if (!tokens)
 		return ;
 	minishell->tokens = tokens;
-	ft_print_tokens(tokens);
 	if (ft_check_syntax_errors(tokens))
 		return ;
 	cmd = tokens_to_cmds(tokens, minishell);
-	// ft_print_commands(cmd);
 	if (!cmd)
 		return ;
 	minishell->commands = cmd;
-	// ft_print_commands(cmd);
 	cmd_count = 0;
 	current = cmd;
 	while (current)
