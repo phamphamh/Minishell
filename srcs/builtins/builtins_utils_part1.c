@@ -6,59 +6,42 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 18:44:53 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:41:38 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
-/*
-** Exemple de fonction 1.
-** Respecte la limite de 25 lignes.
-*/
-int	ft_util_func1(void)
+/**
+ * @brief Affiche un message d'erreur pour export
+ *
+ * @param var Nom de la variable
+ * @param minishell Structure principale du shell
+ */
+void	ft_export_error(char *var, t_minishell *minishell)
 {
-	int	result;
-
-	result = 0;
-	result = ft_strlen("dummy");
-	return (result);
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(var, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
+	minishell->exit_nb = 1;
 }
 
-/*
-** Exemple de fonction 2.
-*/
-int	ft_util_func2(int a)
+/**
+ * @brief Convertit la liste d'environnement en tableau
+ *
+ * @param minishell Structure principale du shell
+ * @param env Liste des variables d'environnement
+ * @return char** Tableau de variables d'environnement, NULL si erreur
+ */
+char	**ft_env_to_array(t_minishell *minishell, t_env *env)
 {
-	int	res;
+	char	**env_array;
+	int		count;
 
-	res = a * 2;
-	return (res);
-}
-
-/*
-** Exemple de fonction 3.
-*/
-int	ft_util_func3(char *str)
-{
-	int	len;
-
-	len = ft_strlen(str);
-	return (len);
-}
-
-/*
-** Exemple de fonction 4.
-*/
-int	ft_util_func4(char *s1, char *s2)
-{
-	char	*tmp;
-	int		result;
-
-	tmp = ft_strjoin(s1, s2);
-	if (!tmp)
-		return (0);
-	result = ft_strlen(tmp);
-	free(tmp);
-	return (result);
+	count = ft_count_env_elements(env);
+	env_array = (char **)malloc(sizeof(char *) * (count + 1));
+	if (!env_array)
+		return (NULL);
+	ft_gc_add(&minishell->gc_head, env_array);
+	return (ft_fill_env_array(minishell, env, env_array));
 }

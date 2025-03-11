@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/11 19:05:11 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:49:58 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,6 @@ typedef struct s_expand_env
 	t_minishell				*ms;
 }							t_expand_env;
 
-// structure pour faciliter le split sans devoir passer 5 argument (fuck la norme)
 typedef struct s_split_env
 {
 	char					**tokens;
@@ -127,7 +126,7 @@ typedef struct s_split_env
 	char					quote;
 	t_minishell				*ms;
 }							t_split_env;
-// structure pour faciliter l'expand pour les characteres speciaux sans devoir passer 5 argument
+
 typedef struct s_expand_state
 {
 	char					*input;

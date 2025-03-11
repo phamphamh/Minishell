@@ -12,13 +12,6 @@
 
 #include "../../includes/header.h"
 
-// Prototypes des fonctions builtins
-int ft_cd(t_cmd *cmd, t_minishell *minishell);
-int ft_echo(t_cmd *cmd);
-int ft_pwd(t_minishell *minishell);
-int ft_exit(t_cmd *cmd, t_minishell *minishell);
-int ft_exec_builtin_child2(t_cmd *cmd, t_minishell *minishell, int ret);
-
 static int	ft_exec_builtin_child(t_cmd *cmd, t_minishell *minishell)
 {
 	int	ret;

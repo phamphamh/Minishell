@@ -6,25 +6,11 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 18:59:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 18:59:59 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:36:47 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
-
-/**
- * @brief Vérifie si une chaîne correspond à une commande interne
- *
- * @param value Chaîne à vérifier
- * @return true si commande interne, false sinon
- */
-bool	ft_is_builtin(char *value)
-{
-	return (ft_strcmp(value, "echo") == 0 || ft_strcmp(value, "cd") == 0
-		|| ft_strcmp(value, "pwd") == 0 || ft_strcmp(value, "export") == 0
-		|| ft_strcmp(value, "unset") == 0 || ft_strcmp(value, "env") == 0
-		|| ft_strcmp(value, "exit") == 0);
-}
 
 /**
  * @brief Met à jour une variable d'environnement
@@ -166,24 +152,4 @@ static char	**ft_fill_env_array(t_minishell *minishell, t_env *env,
 	}
 	env_array[i] = NULL;
 	return (env_array);
-}
-
-/**
- * @brief Convertit la liste d'environnement en tableau
- *
- * @param minishell Structure principale du shell
- * @param env Liste des variables d'environnement
- * @return char** Tableau de variables d'environnement, NULL si erreur
- */
-char	**ft_env_to_array(t_minishell *minishell, t_env *env)
-{
-	char	**env_array;
-	int		count;
-
-	count = ft_count_env_elements(env);
-	env_array = (char **)malloc(sizeof(char *) * (count + 1));
-	if (!env_array)
-		return (NULL);
-	ft_gc_add(&minishell->gc_head, env_array);
-	return (ft_fill_env_array(minishell, env, env_array));
 }

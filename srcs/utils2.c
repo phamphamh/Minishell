@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal_handler.c                                   :+:      :+:    :+:   */
+/*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 13:45:38 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:40:07 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	free_gc_list(t_minishell *minishell)
 
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
-	int fd;
+	int	fd;
 
 	if (!minishell)
 		exit(exit_num);
