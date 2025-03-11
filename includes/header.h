@@ -118,7 +118,6 @@ typedef struct s_expand_env
 	t_minishell				*ms;
 }							t_expand_env;
 
-// structure pour faciliter le split sans devoir passer 5 argument (fuck la norme)
 typedef struct s_split_env
 {
 	char					**tokens;
@@ -127,7 +126,7 @@ typedef struct s_split_env
 	char					quote;
 	t_minishell				*ms;
 }							t_split_env;
-// structure pour faciliter l'expand pour les characteres speciaux sans devoir passer 5 argument
+
 typedef struct s_expand_state
 {
 	char					*input;
@@ -147,10 +146,18 @@ typedef struct s_tokenizer
 }							t_tokenizer;
 
 // Prototypes des fonctions
+
 // main.c
 void						ft_initialize(t_minishell *minishell, char **envp);
 t_env						*ft_env_to_list(char **envp,
 								t_minishell *minishell);
+void						ft_execute_builtin_command(t_cmd *cmd,
+								t_minishell *minishell);
+pid_t						ft_fork_and_execute(t_cmd *cmd,
+								t_minishell *minishell);
+void						ft_wait_child(pid_t pid, int *status,
+								t_minishell *minishell, int last);
+void						ft_process_line(char *line, t_minishell *minishell);
 
 // garbage_collector.c
 void						free_env_list(t_minishell *minishell);
@@ -179,6 +186,7 @@ char						**ft_env_to_array(t_minishell *minishell,
 bool						ft_is_builtin(char *value);
 
 // builtins_utils.c
+bool						ft_is_builtin(char *value);
 void						ft_print_export_list(t_env *env);
 void						update_env_var(t_env *env, const char *name,
 								const char *new_value, t_minishell *minishell);
@@ -188,6 +196,12 @@ void						update_pwd_and_oldpwd(t_minishell *minishell);
 void						ft_print_export_var(t_env *env_var);
 
 // builtins_utils3.c
+void						ft_remove_env_var(t_minishell *minishell,
+								t_env *to_remove);
+void						update_env_var(t_env *env, const char *name,
+								const char *new_value, t_minishell *minishell);
+int							ft_validate_export_var(t_minishell *minishell,
+								char *var, char **var_name, char **equal_pos);
 int							ft_handle_export_var(t_minishell *minishell,
 								char **var);
 int							ft_handle_unset_var(t_minishell *minishell,
@@ -227,8 +241,6 @@ void						handle_memory_error(char *cmd_path,
 								t_minishell *minishell);
 void						handle_execve_failure(char *cmd_path,
 								t_minishell *minishell);
-void						ft_execute_command(t_cmd *cmd,
-								t_minishell *minishell);
 char						*ft_find_executable(char *cmd_name, t_env *env);
 void						ft_execute_child(t_cmd *cmd,
 								t_minishell *minishell);
@@ -241,6 +253,14 @@ void						ft_setup_pipes(t_cmd *cmd);
 void						ft_close_all_pipes(t_cmd *cmd_first);
 
 // redirection.c
+void						ft_update_last_redirections(t_redirection *current,
+								t_redirection **last_out,
+								t_redirection **last_in,
+								t_redirection **last_heredoc);
+void						ft_find_last_redirections(t_redirection *redir,
+								t_redirection **last_out,
+								t_redirection **last_in,
+								t_redirection **last_heredoc);
 int							ft_handle_redirection(t_cmd *cmd,
 								t_redirection *redir);
 void						ft_restore_fds(int saved_stdin, int saved_stdout);
@@ -308,7 +328,6 @@ int							ft_check_syntax_errors(t_token *tokens);
 void						ft_clean_exit(t_minishell *minishell, int exit_num);
 void						ft_clean_env_list(t_env *env);
 bool						ft_is_valid_identifier(const char *str);
-bool						ft_is_valid_identifier_before_equal(const char *str);
 int							ft_env_var_match(const char *env_var,
 								const char *var_name);
 t_env						*ft_find_env_var(t_env *env, const char *var);

@@ -17,6 +17,8 @@ CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
 SRCS = srcs/main.c \
+	   srcs/ft_process_line.c \
+	   srcs/ft_process_line_utils.c \
        srcs/garbage_collector.c \
        srcs/garbage_collector_utils.c \
        srcs/signal_handler.c \
@@ -24,6 +26,7 @@ SRCS = srcs/main.c \
        srcs/builtins/builtins_utils3.c \
        srcs/builtins/builtins_utils_part1.c \
        srcs/builtins/builtins_utils_part2.c \
+       srcs/builtins/builtins_utils_part3.c \
        srcs/builtins/builtins_utils_common.c \
        srcs/builtins/builtins_cd.c \
        srcs/builtins/builtins_echo.c \
@@ -36,6 +39,7 @@ SRCS = srcs/main.c \
        srcs/exec/exec_utils3.c \
        srcs/exec/pipe_handler.c \
        srcs/exec/redirection.c \
+       srcs/exec/redirection_utils.c \
        srcs/parser/tokenizer.c \
        srcs/parser/tokenizer_utils.c \
        srcs/parser/tokenizer_utils2.c \

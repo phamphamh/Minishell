@@ -50,7 +50,7 @@ void	free_gc_list(t_minishell *minishell)
 
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
-	int fd;
+	int	fd;
 
 	if (!minishell)
 		exit(exit_num);

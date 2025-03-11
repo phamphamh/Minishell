@@ -28,18 +28,6 @@ bool	ft_is_valid_identifier(const char *str)
 	return (true);
 }
 
-bool	ft_is_valid_identifier_before_equal(const char *str)
-{
-	char	*equal_pos;
-
-	if (!str || !*str || (!ft_isalpha(*str) && *str != '_'))
-		return (false);
-	equal_pos = ft_strchr(str, '=');
-	if (!equal_pos)
-		return (ft_is_valid_identifier(str));
-	return (ft_is_valid_identifier(ft_substr(str, 0, equal_pos - str)));
-}
-
 int	ft_env_var_match(const char *env_var, const char *var_name)
 {
 	size_t	len;

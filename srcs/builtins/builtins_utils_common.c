@@ -13,56 +13,6 @@
 #include "../../includes/header.h"
 
 /**
- * @brief Vérifie si une chaîne correspond à une commande interne
- *
- * @param value Chaîne à vérifier
- * @return true si commande interne, false sinon
- */
-bool	ft_is_builtin(char *value)
-{
-	return (ft_strcmp(value, "echo") == 0 || ft_strcmp(value, "cd") == 0
-		|| ft_strcmp(value, "pwd") == 0 || ft_strcmp(value, "export") == 0
-		|| ft_strcmp(value, "unset") == 0 || ft_strcmp(value, "env") == 0
-		|| ft_strcmp(value, "exit") == 0);
-}
-
-/**
- * @brief Met à jour une variable d'environnement
- *
- * @param env Liste des variables d'environnement
- * @param name Nom de la variable à mettre à jour
- * @param new_value Nouvelle valeur
- * @param minishell Structure principale du shell
- */
-void	update_env_var(t_env *env, const char *name, const char *new_value,
-		t_minishell *minishell)
-{
-	t_env	*current;
-	char	*new_var;
-	char	*temp;
-
-	current = env;
-	while (current)
-	{
-		if (ft_env_var_match(current->var, name))
-		{
-			temp = ft_strjoin(name, "=");
-			if (!temp)
-				return ;
-			new_var = ft_strjoin(temp, new_value);
-			free(temp);
-			if (!new_var)
-				return ;
-			free(current->var);
-			current->var = new_var;
-			ft_gc_add(&minishell->gc_head, new_var);
-			return ;
-		}
-		current = current->next;
-	}
-}
-
-/**
  * @brief Vérifie si une chaîne est composée uniquement de chiffres
  *
  * @param str Chaîne à vérifier
@@ -139,7 +89,7 @@ static int	ft_count_env_elements(t_env *env)
  * @return char** Tableau rempli, NULL si erreur
  */
 static char	**ft_fill_env_array(t_minishell *minishell, t_env *env,
-				char **env_array)
+		char **env_array)
 {
 	t_env	*current;
 	int		i;

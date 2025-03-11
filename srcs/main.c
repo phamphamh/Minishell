@@ -13,7 +13,7 @@
 #include "../includes/header.h"
 
 // Initialisation de la variable globale pour les signaux
-int		g_signal_received = 0;
+int			g_signal_received = 0;
 
 /**
  * @brief Transforme les variables d'environnement en liste chaînée
@@ -130,162 +130,6 @@ void	ft_initialize(t_minishell *minishell, char **envp)
 }
 
 /**
- * @brief Traite une ligne de commande entrée par l'utilisateur
- *
- * @param line Ligne de commande à traiter
- * @param minishell Structure principale du shell
- */
-void	ft_process_line(char *line, t_minishell *minishell)
-{
-	t_token	*tokens;
-	t_cmd	*cmd;
-	t_cmd	*current;
-	pid_t	*pids;
-	int		cmd_count;
-	int		i;
-	int		status;
-	int		saved_stdin;
-	int		saved_stdout;
-	int		has_error;
-
-	if (!line || !*line)
-		return ;
-	has_error = 0;
-	minishell->tokens = NULL;
-	minishell->commands = NULL;
-	tokens = ft_tokenize(line, minishell);
-	if (!tokens)
-		return ;
-	minishell->tokens = tokens;
-	if (ft_check_syntax_errors(tokens))
-		return ;
-	cmd = tokens_to_cmds(tokens, minishell);
-	if (!cmd)
-		return ;
-	minishell->commands = cmd;
-	cmd_count = 0;
-	current = cmd;
-	while (current)
-	{
-		cmd_count++;
-		current = current->next;
-	}
-	if (cmd_count == 0)
-		return ;
-	pids = malloc(sizeof(pid_t) * cmd_count);
-	if (!pids)
-		return ;
-	i = 0;
-	while (i < cmd_count)
-	{
-		pids[i] = -1;
-		i++;
-	}
-	ft_gc_add(&minishell->gc_head, pids);
-	current = cmd;
-	while (current && current->next && !has_error)
-	{
-		if (!ft_create_pipe(current))
-		{
-			minishell->exit_nb = 1;
-			has_error = 1;
-		}
-		current = current->next;
-	}
-	if (!has_error)
-	{
-		i = 0;
-		current = cmd;
-		while (current && i < cmd_count && !has_error)
-		{
-			if (ft_is_builtin(current->name))
-			{
-				saved_stdin = dup(STDIN_FILENO);
-				saved_stdout = dup(STDOUT_FILENO);
-				if (saved_stdin == -1 || saved_stdout == -1)
-				{
-					ft_putstr_fd("minishell: dup error\n", 2);
-					minishell->exit_nb = 1;
-					has_error = 1;
-				}
-				else
-				{
-					ft_setup_pipes(current);
-					if (!ft_handle_redirection(current, current->redirs))
-					{
-						minishell->exit_nb = 1;
-						ft_restore_fds(saved_stdin, saved_stdout);
-					}
-					else
-					{
-						minishell->exit_nb = ft_execute_builtin(current,
-								minishell);
-						ft_restore_fds(saved_stdin, saved_stdout);
-					}
-					ft_close_pipes(current);
-				}
-			}
-			else
-			{
-				pids[i] = fork();
-				if (pids[i] == -1)
-				{
-					ft_putstr_fd("minishell: fork error\n", 2);
-					minishell->exit_nb = 1;
-					has_error = 1;
-				}
-				else if (pids[i] == 0)
-				{
-					ft_reset_signals();
-					ft_setup_pipes(current);
-					ft_close_unused_fds(current);
-					if (!ft_handle_redirection(current, current->redirs))
-					{
-						ft_clean_exit(minishell, 1);
-					}
-					ft_execute_child(current, minishell);
-					exit(EXIT_FAILURE);
-				}
-				else
-				{
-					ft_ignore_signals();
-					ft_close_pipes(current);
-				}
-			}
-			current = current->next;
-			i++;
-		}
-	}
-	ft_close_all_pipes(cmd);
-	i = 0;
-	i = 0;
-	while (i < cmd_count)
-	{
-		if (pids[i] > 0)
-		{
-			waitpid(pids[i], &status, 0);
-			if (i == cmd_count - 1)
-			{
-				if (WIFEXITED(status))
-					minishell->exit_nb = WEXITSTATUS(status);
-				else if (WIFSIGNALED(status))
-				{
-					minishell->exit_nb = 128 + WTERMSIG(status);
-					if (WTERMSIG(status) == SIGINT)
-						ft_putstr_fd("\n", 1);
-					else if (WTERMSIG(status) == SIGQUIT)
-						ft_putstr_fd("Quit (core dumped)\n", 1);
-				}
-			}
-		}
-		i++;
-	}
-	ft_setup_signals();
-	ft_gc_remove(&minishell->gc_head, pids);
-	free(pids);
-}
-
-/**
  * @brief Initialise la structure principale du shell
  *
  * @param minishell Structure à initialiser
@@ -300,26 +144,26 @@ void	ft_initialize_shell(t_minishell *minishell)
 }
 
 /**
- * @brief Point d'entrée du programme
+ * @brief Initialise le shell et vérifie l'environnement
  *
- * @param argc Nombre d'arguments
- * @param argv Tableau des arguments
+ * @param minishell Structure principale du shell
  * @param envp Tableau des variables d'environnement
- * @return int Code de sortie
  */
-int	main(int argc, char **argv, char **envp)
+static void	init_minishell(t_minishell *minishell, char **envp)
 {
-	t_minishell	minishell;
-	char		*line;
-
-	if (argc > 1)
-	{
-		ft_putstr_fd("Usage: ./minishell\n", 2);
-		return (1);
-	}
-	(void)argv;
-	ft_initialize(&minishell, envp);
+	ft_initialize(minishell, envp);
 	ft_setup_signals();
+}
+
+/**
+ * @brief Boucle principale du shell, récupérant et exécutant les commandes
+ *
+ * @param minishell Structure principale du shell
+ */
+static void	shell_loop(t_minishell *minishell)
+{
+	char	*line;
+
 	while (1)
 	{
 		line = readline("minishell> ");
@@ -330,9 +174,31 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (*line)
 			add_history(line);
-		ft_process_line(line, &minishell);
+		ft_process_line(line, minishell);
 		free(line);
 	}
+}
+
+/**
+ * @brief Point d'entrée du programme principal
+ *
+ * @param argc Nombre d'arguments
+ * @param argv Tableau des arguments
+ * @param envp Tableau des variables d'environnement
+ * @return int Code de sortie
+ */
+int	main(int argc, char **argv, char **envp)
+{
+	t_minishell	minishell;
+
+	if (argc > 1)
+	{
+		ft_putstr_fd("Usage: ./minishell\n", 2);
+		return (1);
+	}
+	(void)argv;
+	init_minishell(&minishell, envp);
+	shell_loop(&minishell);
 	ft_clean_exit(&minishell, minishell.exit_nb);
 	return (0);
 }
