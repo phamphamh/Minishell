@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/09 13:21:48 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/11 13:32:45 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,6 +197,7 @@ void						ft_execute_child(t_cmd *cmd,
 int							ft_create_pipe(t_cmd *cmd);
 void						ft_close_pipes(t_cmd *cmd);
 void						ft_setup_pipes(t_cmd *cmd);
+void                        ft_close_all_pipes(t_cmd *cmd_first);
 
 // redirection.c
 int							ft_handle_redirection(t_cmd *cmd,

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/09 13:17:41 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/11 13:27:13 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,49 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 	else
 		path = cmd->args[1];
 
+	// Récupérer le répertoire courant
 	old_pwd = getcwd(NULL, 0);
+
+	// Si getcwd échoue (répertoire supprimé), utiliser PWD de l'environnement
 	if (!old_pwd)
 	{
-		ft_putstr_fd("minishell: cd: error retrieving current directory\n", 2);
-		return (1);
+		pwd_var = ft_find_env_var(minishell->env, "PWD");
+		if (pwd_var && ft_strchr(pwd_var->var, '='))
+			old_pwd = ft_strdup(ft_strchr(pwd_var->var, '=') + 1);
+		else
+			old_pwd = ft_strdup("/");  // Fallback sur la racine
+
+		if (!old_pwd)
+		{
+			ft_putstr_fd("minishell: cd: erreur mémoire\n", 2);
+			return (1);
+		}
 	}
 
+	// Tenter de changer de répertoire
 	if (chdir(path) == -1)
 	{
+		// Si échec, vérifier si on essaie de retourner au HOME
+		if (cmd->args[1] == NULL || ft_strcmp(path, "~") == 0)
+		{
+			// Dans ce cas, tenter explicitement d'aller au home
+			pwd_var = ft_find_env_var(minishell->env, "HOME");
+			if (pwd_var && ft_strchr(pwd_var->var, '='))
+			{
+				path = ft_strchr(pwd_var->var, '=') + 1;
+				if (chdir(path) != -1)
+				{
+					// Succès, continuons avec la nouvelle PWD
+					new_pwd = getcwd(NULL, 0);
+					update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
+					update_env_var(minishell->env, "PWD", new_pwd, minishell);
+					free(old_pwd);
+					free(new_pwd);
+					return (0);
+				}
+			}
+		}
+
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(path, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
@@ -60,6 +94,7 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 		return (1);
 	}
 
+	// Récupérer le nouveau répertoire
 	new_pwd = getcwd(NULL, 0);
 	if (!new_pwd)
 	{
@@ -68,6 +103,7 @@ static int	ft_cd(t_cmd *cmd, t_minishell *minishell)
 		return (1);
 	}
 
+	// Mettre à jour PWD et OLDPWD
 	pwd_var = ft_find_env_var(minishell->env, "PWD");
 	if (pwd_var)
 		update_env_var(minishell->env, "OLDPWD", old_pwd, minishell);
@@ -129,18 +165,40 @@ static int	ft_echo(t_cmd *cmd)
 /**
  * @brief Implémentation de la commande pwd
  *
+ * @param minishell Structure principale du shell
  * @return int Code de retour (0 si succès, 1 si erreur)
  */
-static int	ft_pwd(void)
+static int	ft_pwd(t_minishell *minishell)
 {
 	char	*pwd;
+	t_env	*pwd_var;
 
+	// Tenter d'obtenir le répertoire courant avec getcwd
 	pwd = getcwd(NULL, 0);
+
+	// Si getcwd échoue (ex: répertoire supprimé), utiliser PWD de l'environnement
 	if (!pwd)
 	{
-		ft_putstr_fd("minishell: pwd: error retrieving current directory\n", 2);
-		return (1);
+		pwd_var = ft_find_env_var(minishell->env, "PWD");
+		if (pwd_var && ft_strchr(pwd_var->var, '='))
+		{
+			pwd = ft_strdup(ft_strchr(pwd_var->var, '=') + 1);
+			if (!pwd)
+			{
+				ft_putstr_fd("minishell: pwd: erreur mémoire\n", 2);
+				return (1);
+			}
+			ft_putendl_fd(pwd, 1);
+			free(pwd);
+			return (0);
+		}
+		else
+		{
+			ft_putstr_fd("minishell: pwd: répertoire courant indisponible\n", 2);
+			return (1);
+		}
 	}
+
 	ft_putendl_fd(pwd, 1);
 	free(pwd);
 	return (0);
@@ -210,7 +268,7 @@ int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 			else if (ft_strcmp(cmd->name, "echo") == 0)
 				ret = ft_echo(cmd);
 			else if (ft_strcmp(cmd->name, "pwd") == 0)
-				ret = ft_pwd();
+				ret = ft_pwd(minishell);
 			else if (ft_strcmp(cmd->name, "export") == 0)
 			{
 				if (!cmd->args[1])
@@ -243,7 +301,7 @@ int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 	else if (ft_strcmp(cmd->name, "echo") == 0)
 		ret = ft_echo(cmd);
 	else if (ft_strcmp(cmd->name, "pwd") == 0)
-		ret = ft_pwd();
+		ret = ft_pwd(minishell);
 	else if (ft_strcmp(cmd->name, "export") == 0)
 	{
 		if (!cmd->args[1])

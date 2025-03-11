@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 12:25:57 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:24:37 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,14 +311,20 @@ int	main(int argc, char **argv, char **envp)
 			ft_putstr_fd("exit\n", STDOUT_FILENO);
 			ft_clean_exit(&minishell, minishell.exit_nb);
 		}
+
+		// Réinitialiser l'état des signaux avant de traiter la ligne
 		if (g_signal_received)
 		{
+			g_signal_received = 0;
 			free(line);
+			// Configurer les signaux à nouveau
 			ft_setup_signals();
-			continue ;
+			continue;
 		}
+
 		ft_process_line(line, &minishell);
 		free(line);
+		// Réinitialiser explicitement les signaux après chaque commande
 		ft_setup_signals();
 	}
 	return (0);

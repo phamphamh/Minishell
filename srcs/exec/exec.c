@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 12:31:38 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:32:45 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,22 +100,31 @@ char	*ft_find_executable(char *cmd_name, t_env *env)
 /**
  * @brief Ferme tous les descripteurs de fichiers inutilisés
  * Cette fonction ferme tous les descripteurs de fichiers de 3 à 1024
- * pour éviter les fuites de descripteurs
+ * pour éviter les fuites de descripteurs.
+ * Dans un pipeline, seuls les descripteurs utilisés directement par la commande
+ * actuelle sont conservés.
  *
  * @param cmd Structure de la commande pour connaître les pipes à préserver
  */
 static void ft_close_unused_fds(t_cmd *cmd)
 {
-    int i;
+	int i;
 
-    i = 3;
-    while (i < 1024)
-    {
-        // Ne pas fermer les descripteurs utilisés par les pipes
-        if (cmd->pipe_in != i && cmd->pipe_out != i)
-            close(i);
-        i++;
-    }
+	i = 3;
+	while (i < 1024)
+	{
+		// Préserver les descripteurs utilisés par la commande
+		if ((cmd->pipe_in != -1 && i == cmd->pipe_in) ||
+			(cmd->pipe_out != -1 && i == cmd->pipe_out))
+		{
+			i++;
+			continue;
+		}
+
+		// Ferme tous les autres descripteurs
+		close(i);
+		i++;
+	}
 }
 
 /**
@@ -130,10 +139,8 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	char		**env_array;
 	struct stat	file_stat;
 
-	ft_setup_pipes(cmd);
-	if (!ft_handle_redirection(cmd, cmd->redirs))
-		ft_clean_exit(minishell, 1);
-	ft_close_unused_fds(cmd);
+	// Les redirections et fermetures des descripteurs sont maintenant gérées dans ft_execute_command
+
 	if (!cmd->name || !*cmd->name)
 		ft_clean_exit(minishell, 0);
 	if (ft_strcmp(cmd->name, "\"\"") == 0 || ft_strcmp(cmd->name, "''") == 0)
@@ -189,17 +196,43 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 			ft_clean_exit(minishell, 126);
 		}
 	}
+
 	env_array = ft_env_to_array(minishell, minishell->env);
 	if (execve(cmd_path, cmd->args, env_array) == -1)
-{
-    perror("minishell");
-    free(cmd_path);
+	{
+		perror("minishell");
+		free(cmd_path);
 
-    if (errno == ENOENT) // Fichier introuvable
-        ft_clean_exit(minishell, 127);
-    else
-        ft_clean_exit(minishell, 126); // Autres erreurs (permissions, etc.)
+		if (errno == ENOENT) // Fichier introuvable
+			ft_clean_exit(minishell, 127);
+		else
+			ft_clean_exit(minishell, 126); // Autres erreurs (permissions, etc.)
+	}
 }
+
+/**
+ * @brief Ferme les descripteurs de fichier pour toutes les commandes dans la pipeline
+ *
+ * @param cmd La première commande dans la pipeline
+ */
+void ft_close_all_pipes(t_cmd *cmd_first)
+{
+	t_cmd *current = cmd_first;
+
+	while (current)
+	{
+		if (current->pipe_in != -1)
+		{
+			close(current->pipe_in);
+			current->pipe_in = -1;
+		}
+		if (current->pipe_out != -1)
+		{
+			close(current->pipe_out);
+			current->pipe_out = -1;
+		}
+		current = current->next;
+	}
 }
 
 /**
@@ -210,59 +243,77 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
  */
 void	ft_execute_command(t_cmd *cmd, t_minishell *minishell)
 {
-    pid_t	pid;
-    int		saved_stdin;
-    int		saved_stdout;
+	pid_t	pid;
+	int		saved_stdin;
+	int		saved_stdout;
 
-    if (!cmd->name || !*cmd->name)
-        return ;
-    if (cmd->next && !ft_create_pipe(cmd))
-    {
-        minishell->exit_nb = 1;
-        return ;
-    }
-    if (ft_is_builtin(cmd->name))
-    {
-        saved_stdin = dup(STDIN_FILENO);
-        saved_stdout = dup(STDOUT_FILENO);
-        ft_setup_pipes(cmd);
-        // 🚨 Vérifie si la redirection a échoué
-        if (!ft_handle_redirection(cmd, cmd->redirs))
-        {
-            minishell->exit_nb = 1;
-            ft_restore_fds(saved_stdin, saved_stdout);
-            return;  // 🚨 Sortir immédiatement pour éviter la boucle infinie
-        }
-        minishell->exit_nb = ft_execute_builtin(cmd, minishell);
-        ft_restore_fds(saved_stdin, saved_stdout);
-        ft_close_pipes(cmd);
-        return ;
-    }
-    pid = fork();
-    if (pid == -1)
-    {
-        ft_putstr_fd("minishell: fork error\n", 2);
-        minishell->exit_nb = 1;
-        return ;
-    }
+	if (!cmd->name || !*cmd->name)
+		return ;
+	if (cmd->next && !ft_create_pipe(cmd))
+	{
+		minishell->exit_nb = 1;
+		return ;
+	}
+	if (ft_is_builtin(cmd->name))
+	{
+		saved_stdin = dup(STDIN_FILENO);
+		saved_stdout = dup(STDOUT_FILENO);
+		ft_setup_pipes(cmd);
 
-    if (pid == 0)
-    {
-        ft_reset_signals();
+		// Ferme les descripteurs inutilisés même pour les builtins
+		ft_close_unused_fds(cmd);
 
-        // 🚨 Vérifie si la redirection a échoué dans le processus enfant
-        if (!ft_handle_redirection(cmd, cmd->redirs))
-            ft_clean_exit(minishell, 1);
+		if (!ft_handle_redirection(cmd, cmd->redirs))
+		{
+			minishell->exit_nb = 1;
+			ft_restore_fds(saved_stdin, saved_stdout);
+			return;
+		}
+		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
+		ft_restore_fds(saved_stdin, saved_stdout);
+		ft_close_pipes(cmd);
+		return ;
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		ft_putstr_fd("minishell: fork error\n", 2);
+		minishell->exit_nb = 1;
+		return ;
+	}
 
-        ft_execute_child(cmd, minishell);
-    }
-    else
-    {
-        ft_ignore_signals();
-        ft_close_pipes(cmd);
+	if (pid == 0)
+	{
+		// Processus enfant
+		ft_reset_signals();
 
-        // Ajouter ft_close_unused_fds ici pourrait fermer des descripteurs encore nécessaires
-        // On le fait uniquement dans le processus enfant
-    }
+		// 1. Configurer les pipes
+		ft_setup_pipes(cmd);
+
+		// 2. Fermer tous les descripteurs inutilisés - méthode radicale
+		ft_close_unused_fds(cmd);
+
+		// 3. Gérer les redirections
+		if (!ft_handle_redirection(cmd, cmd->redirs))
+			ft_clean_exit(minishell, 1);
+
+		// 4. Exécuter la commande
+		ft_execute_child(cmd, minishell);
+	}
+	else
+	{
+		// Processus parent
+		ft_ignore_signals();
+
+		// Fermer les pipes pour cette commande dans le parent
+		ft_close_pipes(cmd);
+
+		// Si c'est la première commande de la pipeline, fermer tous les pipes
+		// des commandes suivantes pour éviter des descripteurs orphelins
+		if (cmd == minishell->commands)  // Vérifie si c'est la première commande
+		{
+			ft_close_all_pipes(cmd->next);
+		}
+	}
 }
 
