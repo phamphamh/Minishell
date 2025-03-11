@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/08 22:01:50 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/11 12:31:38 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,27 @@ char	*ft_find_executable(char *cmd_name, t_env *env)
 }
 
 /**
+ * @brief Ferme tous les descripteurs de fichiers inutilisés
+ * Cette fonction ferme tous les descripteurs de fichiers de 3 à 1024
+ * pour éviter les fuites de descripteurs
+ *
+ * @param cmd Structure de la commande pour connaître les pipes à préserver
+ */
+static void ft_close_unused_fds(t_cmd *cmd)
+{
+    int i;
+
+    i = 3;
+    while (i < 1024)
+    {
+        // Ne pas fermer les descripteurs utilisés par les pipes
+        if (cmd->pipe_in != i && cmd->pipe_out != i)
+            close(i);
+        i++;
+    }
+}
+
+/**
  * @brief Exécute une commande dans un processus enfant
  *
  * @param cmd Structure de la commande à exécuter
@@ -112,6 +133,7 @@ void	ft_execute_child(t_cmd *cmd, t_minishell *minishell)
 	ft_setup_pipes(cmd);
 	if (!ft_handle_redirection(cmd, cmd->redirs))
 		ft_clean_exit(minishell, 1);
+	ft_close_unused_fds(cmd);
 	if (!cmd->name || !*cmd->name)
 		ft_clean_exit(minishell, 0);
 	if (ft_strcmp(cmd->name, "\"\"") == 0 || ft_strcmp(cmd->name, "''") == 0)
@@ -238,6 +260,9 @@ void	ft_execute_command(t_cmd *cmd, t_minishell *minishell)
     {
         ft_ignore_signals();
         ft_close_pipes(cmd);
+
+        // Ajouter ft_close_unused_fds ici pourrait fermer des descripteurs encore nécessaires
+        // On le fait uniquement dans le processus enfant
     }
 }
 
