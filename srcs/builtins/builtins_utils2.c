@@ -127,12 +127,10 @@ void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 	t_env	*to_remove;
 
 	if (!minishell || !var_name)
-		return;
-
+		return ;
 	to_remove = ft_find_env_var(minishell->env, var_name);
 	if (!to_remove)
-		return;
-
+		return ;
 	current = minishell->env;
 	prev = NULL;
 	while (current)
@@ -145,7 +143,7 @@ void	ft_handle_unset_var(t_minishell *minishell, char *var_name)
 				minishell->env = current->next;
 			free(current->var);
 			free(current);
-			return;
+			return ;
 		}
 		prev = current;
 		current = current->next;
@@ -162,16 +160,16 @@ void	ft_handle_export_var(t_minishell *minishell, char *var)
 
 	equal_pos = ft_strchr(var, '=');
 	if (!equal_pos)
-		return;
+		return ;
 	name_len = equal_pos - var;
 	var_name = ft_substr(var, 0, name_len);
 	if (!var_name)
-		return;
+		return ;
 	if (!ft_is_valid_identifier(var_name))
 	{
 		ft_export_error(var_name, minishell);
 		free(var_name);
-		return;
+		return ;
 	}
 	env_entry = ft_find_env_var(minishell->env, var_name);
 	if (env_entry)

@@ -13,7 +13,8 @@
 #include "../../includes/header.h"
 
 /**
- * @brief Met à jour une variable d'environnement existante avec une nouvelle valeur
+
+	* @brief Met à jour une variable d'environnement existante avec une nouvelle valeur
  *
  * @param env Liste des variables d'environnement
  * @param name Nom de la variable à mettre à jour
@@ -49,7 +50,8 @@ void	update_env_var(t_env *env, const char *name, const char *new_value,
 }
 
 /**
- * @brief Met à jour les variables PWD et OLDPWD après un changement de répertoire
+
+	* @brief Met à jour les variables PWD et OLDPWD après un changement de répertoire
  *
  * @param minishell Structure principale du shell
  */
@@ -92,7 +94,8 @@ void	handle_exit_nmb(t_minishell *minishell, int exit_nmb)
 }
 
 /**
- * @brief Affiche un message d'erreur formaté sur le descripteur de fichier spécifié
+
+	* @brief Affiche un message d'erreur formaté sur le descripteur de fichier spécifié
  *
  * @param prefix Préfixe du message
  * @param arg Argument contenant l'erreur
@@ -123,7 +126,8 @@ static int	ft_isnum(int c)
 }
 
 /**
- * @brief Vérifie si une chaîne ne contient que des chiffres et éventuellement un signe
+
+	* @brief Vérifie si une chaîne ne contient que des chiffres et éventuellement un signe
  *
  * @param str Chaîne à vérifier
  * @return bool true si la chaîne est un nombre, false sinon
@@ -272,45 +276,47 @@ void	ft_print_export_list(t_env *env)
  */
 int	ft_handle_export_var(t_minishell *minishell, char **args)
 {
-    int i = 1;
-    int ret = 0;
+	int		i;
+	int		ret;
+	char	*equal_pos;
+	char	*var_name;
+	t_env	*env_var;
 
-    while (args[i])
-    {
-        char *equal_pos = ft_strchr(args[i], '=');
-        if (!ft_is_valid_identifier_before_equal(args[i])) // Vérification du nom valide
-        {
-            ft_putstr_fd("minishell: export: `", 2);
-            ft_putstr_fd(args[i], 2);
-            ft_putstr_fd("': not a valid identifier\n", 2);
-            ret = 1;
-        }
-        else if (equal_pos) // Si c'est une assignation (ex: var=1)
-        {
-            char *var_name = ft_substr(args[i], 0, equal_pos - args[i]);
-            t_env *env_var = ft_find_env_var(minishell->env, var_name);
-
-            if (env_var)
-            {
+	i = 1;
+	ret = 0;
+	while (args[i])
+	{
+		equal_pos = ft_strchr(args[i], '=');
+		if (!ft_is_valid_identifier_before_equal(args[i]))
+		{
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			ret = 1;
+		}
+		else if (equal_pos)
+		{
+			var_name = ft_substr(args[i], 0, equal_pos - args[i]);
+			env_var = ft_find_env_var(minishell->env, var_name);
+			if (env_var)
+			{
 				ft_gc_remove(&minishell->gc_head, env_var->var);
-                free(env_var->var);
-                env_var->var = ft_strdup(args[i]);
-            }
-            else
-                ft_add_env_var(minishell, args[i]);
-
-            free(var_name);
-        }
-        else // Si c'est juste un nom (ex: export var)
-        {
-            if (!ft_find_env_var(minishell->env, args[i]))
-                ft_add_env_var(minishell, args[i]);
-        }
-        i++;
-    }
-    return (ret);
+				free(env_var->var);
+				env_var->var = ft_strdup(args[i]);
+			}
+			else
+				ft_add_env_var(minishell, args[i]);
+			free(var_name);
+		}
+		else
+		{
+			if (!ft_find_env_var(minishell->env, args[i]))
+				ft_add_env_var(minishell, args[i]);
+		}
+		i++;
+	}
+	return (ret);
 }
-
 
 /**
  * @brief Gère la commande unset pour une variable
@@ -320,44 +326,45 @@ int	ft_handle_export_var(t_minishell *minishell, char **args)
  */
 int	ft_handle_unset_var(t_minishell *minishell, char **args)
 {
-    int i = 1;
-    int ret = 0;
+	int		i;
+	int		ret;
+	t_env	*prev;
+	t_env	*current;
 
-    while (args[i])
-    {
-        if (!ft_is_valid_identifier(args[i])) // Vérification du nom valide
-        {
-            ft_putstr_fd("minishell: unset: `", 2);
-            ft_putstr_fd(args[i], 2);
-            ft_putstr_fd("': not a valid identifier\n", 2);
-            ret = 1;
-        }
-        else
-        {
-            t_env *prev = NULL;
-            t_env *current = minishell->env;
-
-            while (current)
-            {
-                if (ft_env_var_match(current->var, args[i])) // Trouve la variable à supprimer
-                {
-                    if (prev)
-                        prev->next = current->next;
-                    else
-                        minishell->env = current->next;
-
+	i = 1;
+	ret = 0;
+	while (args[i])
+	{
+		if (!ft_is_valid_identifier(args[i]))
+		{
+			ft_putstr_fd("minishell: unset: `", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			ret = 1;
+		}
+		else
+		{
+			prev = NULL;
+			current = minishell->env;
+			while (current)
+			{
+				if (ft_env_var_match(current->var, args[i]))
+				{
+					if (prev)
+						prev->next = current->next;
+					else
+						minishell->env = current->next;
 					ft_gc_remove(&minishell->gc_head, current->var);
-                    free(current->var);
+					free(current->var);
 					ft_gc_remove(&minishell->gc_head, current);
-                    free(current);
-                    break;
-                }
-                prev = current;
-                current = current->next;
-            }
-        }
-        i++;
-    }
-    return (ret);
+					free(current);
+					break ;
+				}
+				prev = current;
+				current = current->next;
+			}
+		}
+		i++;
+	}
+	return (ret);
 }
-
