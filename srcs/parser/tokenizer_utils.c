@@ -83,7 +83,8 @@ static void	ft_update_quote_state(char c, char *in_quotes)
 	}
 }
 
-static void	ft_add_operator_with_spaces(char *input, char *expanded, int *i, int *j)
+static void	ft_add_operator_with_spaces(char *input, char *expanded, int *i,
+		int *j)
 {
 	expanded[(*j)++] = ' ';
 	expanded[(*j)++] = input[(*i)++];
@@ -98,11 +99,12 @@ static void	ft_add_char_with_spaces(char *input, char *expanded, int *i, int *j)
 	expanded[(*j)++] = ' ';
 }
 
-static void	ft_process_character(char *input, char *expanded, int *i, int *j, char *in_quotes)
+static void	ft_process_character(char *input, char *expanded, int *i, int *j,
+		char *in_quotes)
 {
 	ft_update_quote_state(input[*i], in_quotes);
 	if (!(*in_quotes) && ((input[*i] == '<' && input[*i + 1] == '<')
-		|| (input[*i] == '>' && input[*i + 1] == '>')))
+			|| (input[*i] == '>' && input[*i + 1] == '>')))
 		ft_add_operator_with_spaces(input, expanded, i, j);
 	else if (!(*in_quotes) && ft_is_operator(input[*i]))
 		ft_add_char_with_spaces(input, expanded, i, j);
@@ -123,8 +125,6 @@ void	ft_fill_expanded(char *input, char *expanded)
 		ft_process_character(input, expanded, &i, &j, &in_quotes);
 	expanded[j] = '\0';
 }
-
-
 
 /**
  * @brief Étend les opérateurs en ajoutant des espaces autour d'eux.
@@ -175,9 +175,5 @@ int	ft_determine_token_type(char *token, int *is_cmd, t_token *prev)
 		*is_cmd = 0; // ✅ Désactive `is_cmd` après avoir marqué la commande
 		return (TOKEN_CMD);
 	}
-
 	return (TOKEN_WORD);
 }
-
-
-

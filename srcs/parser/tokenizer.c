@@ -90,10 +90,6 @@ static t_token	*ft_add_token(t_token **token_list, t_token *new_token)
 	return (*token_list);
 }
 
-
-
-
-
 /*
  * brief: Traite un tableau de chaînes pour créer une liste de tokens
  *
@@ -120,7 +116,7 @@ static void	ft_concat_tokens(t_token *prev, char *token, t_minishell *minishell)
 }
 
 static int	ft_process_single_token(t_token **prev, t_token **token_list,
-			char *token, int token_type, t_minishell *minishell)
+		char *token, int token_type, t_minishell *minishell)
 {
 	t_token	*new_token;
 
@@ -134,14 +130,14 @@ static int	ft_process_single_token(t_token **prev, t_token **token_list,
 
 static int	ft_should_concat(t_token *prev, int token_type, int skip_concat)
 {
-	if (prev && prev->type == TOKEN_WORD
-		&& token_type == TOKEN_WORD && !skip_concat)
+	if (prev && prev->type == TOKEN_WORD && token_type == TOKEN_WORD
+		&& !skip_concat)
 		return (1);
 	return (0);
 }
 
 static int	ft_process_token(char **split_input, t_minishell *minishell,
-			t_token **prev, t_token **token_list)
+		t_token **prev, t_token **token_list)
 {
 	static int	is_cmd = 1;
 	int			skip_concat;
@@ -161,8 +157,8 @@ static int	ft_process_token(char **split_input, t_minishell *minishell,
 		}
 		if (ft_should_concat(*prev, token_type, skip_concat))
 			ft_concat_tokens(*prev, split_input[i], minishell);
-		else if (!ft_process_single_token(prev, token_list,
-				split_input[i], token_type, minishell))
+		else if (!ft_process_single_token(prev, token_list, split_input[i],
+				token_type, minishell))
 			return (0);
 		skip_concat = 0;
 		i++;
@@ -170,7 +166,8 @@ static int	ft_process_token(char **split_input, t_minishell *minishell,
 	return (1);
 }
 
-static t_token	*ft_generate_token_list(char **split_input, t_minishell *minishell)
+static t_token	*ft_generate_token_list(char **split_input,
+		t_minishell *minishell)
 {
 	t_token	*token_list;
 	t_token	*prev;
@@ -182,28 +179,22 @@ static t_token	*ft_generate_token_list(char **split_input, t_minishell *minishel
 	return (token_list);
 }
 
-
 int	ft_str_only_spaces(char *str)
 {
 	int	i;
 
 	if (!str || str[0] == '\0')
 		return (1); // Considéré comme vide
-
 	i = 0;
 	while (str[i])
 	{
-		if ((str[i] != ' ' && str[i] != '\t')) // Si ce n'est pas un espace ou un tab
+		if ((str[i] != ' ' && str[i] != '\t'))
+			// Si ce n'est pas un espace ou un tab
 			return (0);
 		i++;
 	}
 	return (1); // Tous les caractères sont des espaces/tabs
 }
-
-
-
-
-
 
 /*
  * brief: Convertit une ligne d'entrée en liste de tokens
