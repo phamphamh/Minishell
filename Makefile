@@ -22,6 +22,7 @@ SRCS = srcs/main.c \
        srcs/signal_handler.c \
        srcs/builtins/builtins.c \
        srcs/builtins/builtins_utils.c \
+       srcs/builtins/builtins_utils2.c \
        srcs/exec/exec.c \
        srcs/exec/pipe_handler.c \
        srcs/exec/redirection.c \

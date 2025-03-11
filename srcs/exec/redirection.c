@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 14:17:33 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 17:27:42 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,37 @@ static int	ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin, int s
 }
 
 /**
+ * @brief Gère l'erreur d'ouverture de fichier d'entrée
+ *
+ * @param file Nom du fichier qui a échoué à l'ouverture
+ * @param saved_stdin Descripteur de fichier d'entrée sauvegardé
+ * @param saved_stdout Descripteur de fichier de sortie sauvegardé
+ * @return int Toujours 0 (échec)
+ */
+static int	ft_handle_input_open_error(char *file, int saved_stdin, int saved_stdout)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(file, 2);
+	ft_putstr_fd(": No such file or directory\n", 2);
+	ft_restore_fds(saved_stdin, saved_stdout);
+	return (0);
+}
+
+/**
+ * @brief Gère la sortie dans le cas d'un pipe
+ *
+ * @param cmd Commande contenant le pipe de sortie
+ */
+static void	ft_handle_pipe_output(t_cmd *cmd)
+{
+	if (cmd->pipe_out != -1)
+	{
+		dup2(cmd->pipe_out, STDOUT_FILENO);
+		close(cmd->pipe_out);
+	}
+}
+
+/**
  * @brief Gère l'ouverture et la redirection de l'entrée
  *
  * @param last_in Redirection d'entrée à traiter
@@ -116,30 +147,20 @@ static int	ft_handle_heredoc(t_redirection *last_heredoc, int saved_stdin, int s
  */
 static int	ft_handle_input(t_cmd *cmd, t_redirection *last_in, int saved_stdin, int saved_stdout)
 {
-    int	fd;
+	int	fd;
 
-    fd = open(last_in->file, O_RDONLY);
-    if (fd == -1)
-    {
-        ft_putstr_fd("minishell: ", 2);
-        ft_putstr_fd(last_in->file, 2);
-        ft_putstr_fd(": No such file or directory\n", 2);
-        ft_restore_fds(saved_stdin, saved_stdout);
-        return (0);
-    }
-    dup2(fd, STDIN_FILENO);
-    close(fd);
+	fd = open(last_in->file, O_RDONLY);
+	if (fd == -1)
+		return (ft_handle_input_open_error(last_in->file, saved_stdin, saved_stdout));
 
-    // Gérer la sortie en cas de pipe
-    if (cmd->pipe_out != -1)
-    {
-        dup2(cmd->pipe_out, STDOUT_FILENO);
-        close(cmd->pipe_out);
-    }
+	dup2(fd, STDIN_FILENO);
+	close(fd);
 
-    return (1);
+	// Gérer la sortie en cas de pipe
+	ft_handle_pipe_output(cmd);
+
+	return (1);
 }
-
 
 /**
  * @brief Gère l'ouverture et la redirection de la sortie
@@ -180,6 +201,66 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out, int saved_stdin
 }
 
 /**
+ * @brief Vérifie si toutes les redirections d'entrée sont valides
+ *
+ * @param redir Liste des redirections
+ * @param saved_stdin Descripteur de fichier d'entrée sauvegardé
+ * @param saved_stdout Descripteur de fichier de sortie sauvegardé
+ * @return int 1 si toutes les redirections sont valides, 0 sinon
+ */
+static int	ft_check_input_redirections(t_redirection *redir, int saved_stdin, int saved_stdout)
+{
+	t_redirection	*current;
+	int				fd;
+
+	current = redir;
+	while (current)
+	{
+		if (current->type == TOKEN_REDIR_IN)
+		{
+			fd = open(current->file, O_RDONLY);
+			if (fd == -1)
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(current->file, 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				ft_restore_fds(saved_stdin, saved_stdout);
+				return (0);
+			}
+			close(fd);
+		}
+		current = current->next;
+	}
+	return (1);
+}
+
+/**
+ * @brief Sauvegarde les descripteurs de fichiers standard
+ *
+ * @param saved_stdout Pointeur vers le descripteur de sortie à sauvegarder
+ * @param saved_stdin Pointeur vers le descripteur d'entrée à sauvegarder
+ * @return int 1 si succès, 0 si échec
+ */
+static int	ft_save_descriptors(int *saved_stdout, int *saved_stdin)
+{
+	*saved_stdout = dup(STDOUT_FILENO);
+	if (*saved_stdout == -1)
+	{
+		ft_putstr_fd("minishell: dup error\n", 2);
+		return (0);
+	}
+
+	*saved_stdin = dup(STDIN_FILENO);
+	if (*saved_stdin == -1)
+	{
+		close(*saved_stdout);
+		ft_putstr_fd("minishell: dup error\n", 2);
+		return (0);
+	}
+	return (1);
+}
+
+/**
  * @brief Gère toutes les redirections d'une commande
  *
  * @param cmd Structure de la commande
@@ -188,90 +269,62 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out, int saved_stdin
  */
 int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
 {
-    int				saved_stdout;
-    int				saved_stdin;
-    t_redirection	*last_out;
-    t_redirection	*last_in;
-    t_redirection	*last_heredoc;
-    t_redirection	*current;
+	int				saved_stdout;
+	int				saved_stdin;
+	t_redirection	*last_out;
+	t_redirection	*last_in;
+	t_redirection	*last_heredoc;
+	int				result;
 
-    // Si pas de redirections, retourner succès
-    if (!redir)
-        return (1);
+	// Si pas de redirections, retourner succès
+	if (!redir)
+		return (1);
 
-    // Sauvegarder les descripteurs standard
-    saved_stdout = dup(STDOUT_FILENO);
-    if (saved_stdout == -1)
-    {
-        ft_putstr_fd("minishell: dup error\n", 2);
-        return (0);
-    }
+	// Sauvegarder les descripteurs standard
+	if (!ft_save_descriptors(&saved_stdout, &saved_stdin))
+		return (0);
 
-    saved_stdin = dup(STDIN_FILENO);
-    if (saved_stdin == -1)
-    {
-        close(saved_stdout);
-        ft_putstr_fd("minishell: dup error\n", 2);
-        return (0);
-    }
+	// Trouver les dernières redirections de chaque type
+	ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
 
-    // Trouver les dernières redirections de chaque type
-    ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
+	// Vérifier toutes les redirections d'entrée pour détecter une erreur
+	if (!ft_check_input_redirections(redir, saved_stdin, saved_stdout))
+		return (0);
 
-    // Vérifier toutes les redirections d'entrée pour détecter une erreur
-    current = redir;
-    while (current)
-    {
-        if (current->type == TOKEN_REDIR_IN)
-        {
-            int fd = open(current->file, O_RDONLY);
-            if (fd == -1)
-            {
-                ft_putstr_fd("minishell: ", 2);
-                ft_putstr_fd(current->file, 2);
-                ft_putstr_fd(": No such file or directory\n", 2);
-                ft_restore_fds(saved_stdin, saved_stdout);
-                return (0);
-            }
-            close(fd);
-        }
-        current = current->next;
-    }
+	// Si tout est valide, appliquer les redirections
+	result = 1; // Supposer le succès par défaut
 
-    // Si tout est valide, appliquer les redirections
-    int result = 1; // Supposer le succès par défaut
+	// Appliquer la redirection d'entrée (heredoc ou fichier)
+	if (last_heredoc)
+	{
+		if (!ft_handle_heredoc(last_heredoc, saved_stdin, saved_stdout))
+			result = 0;
+	}
+	else if (last_in)
+	{
+		if (!ft_handle_input(cmd, last_in, saved_stdin, saved_stdout))
+			result = 0;
+	}
 
-    // Appliquer la redirection d'entrée (heredoc ou fichier)
-    if (last_heredoc)
-    {
-        if (!ft_handle_heredoc(last_heredoc, saved_stdin, saved_stdout))
-            result = 0;
-    }
-    else if (last_in)
-    {
-        if (!ft_handle_input(cmd, last_in, saved_stdin, saved_stdout))
-            result = 0;
-    }
+	// Appliquer la redirection de sortie
+	if (result && last_out)
+	{
+		if (!ft_handle_output(cmd, last_out, saved_stdin, saved_stdout))
+			result = 0;
+	}
 
-    // Appliquer la redirection de sortie
-    if (result && last_out)
-    {
-        if (!ft_handle_output(cmd, last_out, saved_stdin, saved_stdout))
-            result = 0;
-    }
+	// Si erreur, restaurer les descripteurs originaux
+	if (!result)
+	{
+		ft_restore_fds(saved_stdin, saved_stdout);
+		return (0);
+	}
 
-    // Si erreur, restaurer les descripteurs originaux
-    if (!result)
-    {
-        ft_restore_fds(saved_stdin, saved_stdout);
-        return (0);
-    }
+	// Fermer les descripteurs sauvegardés car ils ne sont plus nécessaires
+	close(saved_stdin);
+	close(saved_stdout);
 
-    // Fermer les descripteurs sauvegardés car ils ne sont plus nécessaires
-    close(saved_stdin);
-    close(saved_stdout);
-
-    return (1);
+	return (1);
 }
 
 

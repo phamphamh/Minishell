@@ -6,11 +6,26 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:31:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 15:08:13 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 17:27:42 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/header.h"
+
+/**
+ * @brief Ferme tous les descripteurs de fichiers ouverts
+ */
+void	ft_close_all_fds(void)
+{
+	int	fd;
+
+	fd = 3;
+	while (fd < 1024)
+	{
+		close(fd);
+		fd++;
+	}
+}
 
 /**
  * @brief Nettoie les ressources et quitte proprement le programme
@@ -20,9 +35,10 @@
  */
 void	ft_clean_exit(t_minishell *minishell, int exit_num)
 {
-	int	fd;
 	t_env *current_env;
 	t_env *next_env;
+	t_gc_node *current;
+	t_gc_node *next;
 
 	if (!minishell)
 		exit(exit_num);
@@ -42,14 +58,12 @@ void	ft_clean_exit(t_minishell *minishell, int exit_num)
 		minishell->env = NULL;
 	}
 
-	// Libérer les tokens
+	// Libérer les tokens et les commandes
 	if (minishell->tokens)
 	{
 		ft_gc_remove_list(&minishell->gc_head, minishell->tokens);
 		minishell->tokens = NULL;
 	}
-
-	// Libérer les commandes
 	if (minishell->commands)
 	{
 		ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
@@ -59,9 +73,7 @@ void	ft_clean_exit(t_minishell *minishell, int exit_num)
 	// Nettoyer le garbage collector
 	if (minishell->gc_head)
 	{
-		t_gc_node *current = minishell->gc_head;
-		t_gc_node *next;
-
+		current = minishell->gc_head;
 		while (current)
 		{
 			next = current->next;
@@ -73,13 +85,8 @@ void	ft_clean_exit(t_minishell *minishell, int exit_num)
 		minishell->gc_head = NULL;
 	}
 
-	// Fermer tous les descripteurs de fichiers ouverts (sauf stdin, stdout, stderr)
-	fd = 3;
-	while (fd < 1024)
-	{
-		close(fd);
-		fd++;
-	}
+	// Fermer tous les descripteurs de fichiers
+	ft_close_all_fds();
 
 	// Quitter le programme
 	exit(exit_num);
@@ -186,6 +193,67 @@ t_env	*ft_find_env_var(t_env *env, const char *var)
 }
 
 /**
+ * @brief Recherche une variable d'environnement et la met à jour si elle existe
+ *
+ * @param minishell Structure principale du shell
+ * @param var Variable à rechercher et mettre à jour
+ * @return true si la variable a été trouvée et mise à jour, false sinon
+ */
+bool	ft_update_existing_env_var(t_minishell *minishell, const char *var)
+{
+	t_env	*current;
+	char	*env_name;
+	size_t	name_len;
+	char	*equal_sign;
+
+	equal_sign = ft_strchr(var, '=');
+	if (!equal_sign)
+		return (false);
+
+	name_len = equal_sign - var;
+	env_name = ft_substr(var, 0, name_len);
+	if (!env_name)
+		return (false);
+
+	current = minishell->env;
+	while (current)
+	{
+		if (ft_strncmp(current->var, env_name, name_len) == 0 &&
+			(current->var[name_len] == '=' || current->var[name_len] == '\0'))
+		{
+			free(current->var);
+			current->var = ft_strdup(var);
+			free(env_name);
+			return (true);
+		}
+		current = current->next;
+	}
+	free(env_name);
+	return (false);
+}
+
+/**
+ * @brief Ajoute une nouvelle variable à la fin de la liste d'environnement
+ *
+ * @param minishell Structure principale du shell
+ * @param new_var Nouvelle variable à ajouter
+ */
+static void	ft_append_to_env_list(t_minishell *minishell, t_env *new_var)
+{
+	t_env	*current;
+
+	if (!minishell->env)
+		minishell->env = new_var;
+	else
+	{
+		current = minishell->env;
+		while (current->next)
+			current = current->next;
+		current->next = new_var;
+	}
+}
+
+/**
  * @brief Ajoute une variable d'environnement à la liste
  *
  * @param minishell Structure principale du shell
@@ -194,41 +262,13 @@ t_env	*ft_find_env_var(t_env *env, const char *var)
 void	ft_add_env_var(t_minishell *minishell, const char *var)
 {
 	t_env	*new_var;
-	t_env	*current;
-	char	*env_name;
-	size_t	name_len;
-	char	*equal_sign;
 
 	if (!minishell || !var)
 		return ;
 
-	// Vérifier si la variable existe déjà pour éviter les doublons
-	equal_sign = ft_strchr(var, '=');
-	if (equal_sign)
-	{
-		name_len = equal_sign - var;
-		env_name = ft_substr(var, 0, name_len);
-		if (env_name)
-		{
-			current = minishell->env;
-			while (current)
-			{
-				if (ft_strncmp(current->var, env_name, name_len) == 0 &&
-					(current->var[name_len] == '=' || current->var[name_len] == '\0'))
-				{
-					// La variable existe déjà, mettre à jour sa valeur
-					free(current->var);
-					current->var = ft_strdup(var);
-					free(env_name);
-					return ;
-				}
-				current = current->next;
-			}
-			free(env_name);
-		}
-	}
+	if (ft_update_existing_env_var(minishell, var))
+		return ;
 
-	// La variable n'existe pas, l'ajouter
 	new_var = malloc(sizeof(t_env));
 	if (!new_var)
 		return ;
@@ -241,17 +281,5 @@ void	ft_add_env_var(t_minishell *minishell, const char *var)
 	}
 
 	new_var->next = NULL;
-
-	// Ajouter à la fin de la liste
-	if (!minishell->env)
-	{
-		minishell->env = new_var;
-	}
-	else
-	{
-		current = minishell->env;
-		while (current->next)
-			current = current->next;
-		current->next = new_var;
-	}
+	ft_append_to_env_list(minishell, new_var);
 }

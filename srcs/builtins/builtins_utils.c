@@ -3,23 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:59:09 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/09 13:36:20 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/11 17:32:38 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/header.h"
 
-/**
- * @brief Met à jour une variable d'environnement existante avec une nouvelle valeur
- *
- * @param env Liste des variables d'environnement
- * @param name Nom de la variable à mettre à jour
- * @param new_value Nouvelle valeur
- * @param minishell Structure principale du shell
- */
 void	update_env_var(t_env *env, const char *name, const char *new_value,
 		t_minishell *minishell)
 {
@@ -48,11 +40,6 @@ void	update_env_var(t_env *env, const char *name, const char *new_value,
 	}
 }
 
-/**
- * @brief Met à jour les variables PWD et OLDPWD après un changement de répertoire
- *
- * @param minishell Structure principale du shell
- */
 void	update_pwd_and_oldpwd(t_minishell *minishell)
 {
 	char	cwd[PATH_MAX];
@@ -91,14 +78,6 @@ void	handle_exit_nmb(t_minishell *minishell, int exit_nmb)
 		ft_clean_exit(minishell, exit_nmb);
 }
 
-/**
- * @brief Affiche un message d'erreur formaté sur le descripteur de fichier spécifié
- *
- * @param prefix Préfixe du message
- * @param arg Argument contenant l'erreur
- * @param suffix Suffixe du message
- * @param fd Descripteur de fichier pour l'affichage
- */
 void	ft_error_msg(char *prefix, char *arg, char *suffix, int fd)
 {
 	if (prefix)
@@ -123,19 +102,21 @@ static int	ft_isnum(int c)
 }
 
 /**
- * @brief Vérifie si une chaîne ne contient que des chiffres et éventuellement un signe
+ * @brief Vérifie si une chaîne contient uniquement des chiffres
  *
  * @param str Chaîne à vérifier
- * @return bool true si la chaîne est un nombre, false sinon
+ * @return true si la chaîne ne contient que des chiffres, false sinon
  */
 bool	ft_is_all_nb(char *str)
 {
 	int	i;
 
 	i = 0;
+	if (str[i] == '+' || str[i] == '-')
+		i++;
 	while (str[i])
 	{
-		if (!ft_isnum(str[i]) && str[i] != '-' && str[i] != '+')
+		if (!ft_isnum(str[i]))
 			return (false);
 		i++;
 	}
@@ -143,35 +124,24 @@ bool	ft_is_all_nb(char *str)
 }
 
 /**
- * @brief Vérifie si une commande est un builtin
+ * @brief Vérifie si la commande est un builtin
  *
  * @param value Nom de la commande
- * @return bool true si c'est un builtin, false sinon
+ * @return true si c'est un builtin, false sinon
  */
 bool	ft_is_builtin(char *value)
 {
-	if (!value)
-		return (false);
-	if (!ft_strcmp_trim("exit", value))
-		return (true);
-	else if (!ft_strcmp_trim("echo", value))
-		return (true);
-	else if (!ft_strcmp_trim("pwd", value))
-		return (true);
-	else if (!ft_strcmp_trim("env", value))
-		return (true);
-	else if (!ft_strcmp_trim("cd", value))
-		return (true);
-	else if (!ft_strcmp_trim("unset", value))
-		return (true);
-	else if (!ft_strcmp_trim("export", value))
-		return (true);
-	else
-		return (false);
+	return (ft_strcmp(value, "echo") == 0
+		|| ft_strcmp(value, "cd") == 0
+		|| ft_strcmp(value, "pwd") == 0
+		|| ft_strcmp(value, "export") == 0
+		|| ft_strcmp(value, "unset") == 0
+		|| ft_strcmp(value, "env") == 0
+		|| ft_strcmp(value, "exit") == 0);
 }
 
 /**
- * @brief Affiche toutes les variables d'environnement
+ * @brief Affiche les variables d'environnement au format de la commande env
  *
  * @param env Liste des variables d'environnement
  */
@@ -182,17 +152,16 @@ void	ft_print_env(t_env *env)
 	current = env;
 	while (current)
 	{
-		ft_putendl_fd(current->var, 1);
+		// Afficher uniquement les variables avec une valeur (contenant un '=')
+		if (ft_strchr(current->var, '='))
+		{
+			ft_putstr_fd(current->var, 1);
+			ft_putchar_fd('\n', 1);
+		}
 		current = current->next;
 	}
 }
 
-/**
- * @brief Convertit la liste des variables d'environnement en tableau de chaînes
- *
- * @param env Liste des variables d'environnement
- * @return char** Tableau de variables, NULL en cas d'erreur
- */
 char	**ft_env_to_array(t_minishell *minishell, t_env *env)
 {
 	t_env	*current;
@@ -236,128 +205,91 @@ char	**ft_env_to_array(t_minishell *minishell, t_env *env)
 }
 
 /**
- * @brief Affiche les variables d'environnement au format export
+ * @brief Affiche toutes les variables d'environnement au format d'export
  *
  * @param env Liste des variables d'environnement
  */
 void	ft_print_export_list(t_env *env)
 {
 	t_env	*current;
-	char	*equal_pos;
+	t_env	temp;
 
 	current = env;
 	while (current)
 	{
-		ft_putstr_fd("declare -x ", 1);
-		equal_pos = ft_strchr(current->var, '=');
-		if (equal_pos)
-		{
-			write(1, current->var, equal_pos - current->var + 1);
-			ft_putchar_fd('"', 1);
-			ft_putstr_fd(equal_pos + 1, 1);
-			ft_putchar_fd('"', 1);
-		}
-		else
-			ft_putstr_fd(current->var, 1);
-		ft_putchar_fd('\n', 1);
+		// Créer un t_env temporaire pour l'affichage
+		temp.var = current->var;
+		temp.next = NULL;
+
+		ft_print_export_var(&temp);
+
 		current = current->next;
 	}
 }
 
 /**
- * @brief Gère la commande export pour une variable
+ * @brief Traite l'unset d'une variable spécifique
  *
  * @param minishell Structure principale du shell
- * @param var Variable à exporter
+ * @param var_name Nom de la variable à supprimer
+ * @return int 0 en cas de succès, 1 en cas d'erreur
  */
-int	ft_handle_export_var(t_minishell *minishell, char **args)
+static int	ft_process_unset_var(t_minishell *minishell, char *var_name)
 {
-    int i = 1;
-    int ret = 0;
+	if (!ft_is_valid_identifier(var_name)) // Vérification du nom valide
+	{
+		ft_putstr_fd("minishell: unset: `", 2);
+		ft_putstr_fd(var_name, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+		return (1);
+	}
+	else
+	{
+		t_env *prev = NULL;
+		t_env *current = minishell->env;
 
-    while (args[i])
-    {
-        char *equal_pos = ft_strchr(args[i], '=');
-        if (!ft_is_valid_identifier_before_equal(args[i])) // Vérification du nom valide
-        {
-            ft_putstr_fd("minishell: export: `", 2);
-            ft_putstr_fd(args[i], 2);
-            ft_putstr_fd("': not a valid identifier\n", 2);
-            ret = 1;
-        }
-        else if (equal_pos) // Si c'est une assignation (ex: var=1)
-        {
-            char *var_name = ft_substr(args[i], 0, equal_pos - args[i]);
-            t_env *env_var = ft_find_env_var(minishell->env, var_name);
+		while (current)
+		{
+			if (ft_env_var_match(current->var, var_name)) // Trouve la variable à supprimer
+			{
+				if (prev)
+					prev->next = current->next;
+				else
+					minishell->env = current->next;
 
-            if (env_var)
-            {
-				ft_gc_remove(&minishell->gc_head, env_var->var);
-                free(env_var->var);
-                env_var->var = ft_strdup(args[i]);
-            }
-            else
-                ft_add_env_var(minishell, args[i]);
-
-            free(var_name);
-        }
-        else // Si c'est juste un nom (ex: export var)
-        {
-            if (!ft_find_env_var(minishell->env, args[i]))
-                ft_add_env_var(minishell, args[i]);
-        }
-        i++;
-    }
-    return (ret);
+				ft_gc_remove(&minishell->gc_head, current->var);
+				free(current->var);
+				ft_gc_remove(&minishell->gc_head, current);
+				free(current);
+				break;
+			}
+			prev = current;
+			current = current->next;
+		}
+	}
+	return (0);
 }
-
 
 /**
  * @brief Gère la commande unset pour une variable
  *
  * @param minishell Structure principale du shell
- * @param var_name Nom de la variable à supprimer
+ * @param args Arguments de la commande
+ * @return int Code de retour (0 en cas de succès, 1 en cas d'erreur)
  */
-int	ft_handle_unset_var(t_minishell *minishell, char **args)
+int	ft_handle_unset_cmd(t_minishell *minishell, char **args)
 {
-    int i = 1;
-    int ret = 0;
+	int i = 1;
+	int ret = 0;
+	int current_ret;
 
-    while (args[i])
-    {
-        if (!ft_is_valid_identifier(args[i])) // Vérification du nom valide
-        {
-            ft_putstr_fd("minishell: unset: `", 2);
-            ft_putstr_fd(args[i], 2);
-            ft_putstr_fd("': not a valid identifier\n", 2);
-            ret = 1;
-        }
-        else
-        {
-            t_env *prev = NULL;
-            t_env *current = minishell->env;
-
-            while (current)
-            {
-                if (ft_env_var_match(current->var, args[i])) // Trouve la variable à supprimer
-                {
-                    if (prev)
-                        prev->next = current->next;
-                    else
-                        minishell->env = current->next;
-
-					ft_gc_remove(&minishell->gc_head, current->var);
-                    free(current->var);
-					ft_gc_remove(&minishell->gc_head, current);
-                    free(current);
-                    break;
-                }
-                prev = current;
-                current = current->next;
-            }
-        }
-        i++;
-    }
-    return (ret);
+	while (args[i])
+	{
+		current_ret = ft_process_unset_var(minishell, args[i]);
+		if (current_ret)
+			ret = 1;
+		i++;
+	}
+	return (ret);
 }
 

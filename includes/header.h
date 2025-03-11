@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/11 15:09:56 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 17:27:42 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,8 @@ typedef struct s_expand_env
 	t_minishell				*ms;
 }							t_expand_env;
 
-// structure pour faciliter le split sans devoir passer 5 argument (fuck la norme)
+// structure pour faciliter le split sans devoir passer 5 argument
+// (fuck la norme)
 typedef struct s_split_env
 {
 	char					**tokens;
@@ -127,7 +128,9 @@ typedef struct s_split_env
 	char					quote;
 	t_minishell				*ms;
 }							t_split_env;
-// structure pour faciliter l'expand pour les characteres speciaux sans devoir passer 5 argument
+
+// structure pour faciliter l'expand pour les characteres speciaux sans
+// devoir passer 5 argument
 typedef struct s_expand_state
 {
 	char					*input;
@@ -176,15 +179,17 @@ char						**ft_env_to_array(t_minishell *minishell,
 bool						ft_is_builtin(char *value);
 
 // builtins_utils.c
-int							ft_handle_export_var(t_minishell *minishell,
-								char **var);
-int							ft_handle_unset_var(t_minishell *minishell,
-								char **var_name);
+void						ft_handle_export_var(t_minishell *minishell,
+								char *var);
+void						ft_handle_unset_var(t_minishell *minishell,
+								char *var_name);
 void						ft_print_export_list(t_env *env);
 void						ft_print_export_var(t_env *env_var);
 void						update_env_var(t_env *env, const char *name,
 								const char *new_value, t_minishell *minishell);
 void						update_pwd_and_oldpwd(t_minishell *minishell);
+void						ft_export_error(char *var, t_minishell *minishell);
+void						ft_unset_error(char *var, t_minishell *minishell);
 
 // exec.c
 void						ft_execute_command(t_cmd *cmd,
@@ -198,7 +203,7 @@ void						ft_close_unused_fds(t_cmd *cmd);
 int							ft_create_pipe(t_cmd *cmd);
 void						ft_close_pipes(t_cmd *cmd);
 void						ft_setup_pipes(t_cmd *cmd);
-void                        ft_close_all_pipes(t_cmd *cmd_first);
+void						ft_close_all_pipes(t_cmd *cmd_first);
 
 // redirection.c
 int							ft_handle_redirection(t_cmd *cmd,
