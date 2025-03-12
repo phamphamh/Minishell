@@ -47,8 +47,7 @@ static int	execute_commands(t_minishell *minishell, t_cmd *cmd)
 	if (cmd == NULL)
 		return (0);
 	last_pid = -1;
-	if (ft_is_builtin(cmd->name)
-		&& (cmd->next == NULL && cmd->prev == NULL)
+	if (ft_is_builtin(cmd->name) && (cmd->next == NULL && cmd->prev == NULL)
 		&& cmd->redirs == NULL && !cmd->has_pipe)
 	{
 		if (!ft_handle_redirection(cmd, cmd->redirs))
@@ -59,8 +58,8 @@ static int	execute_commands(t_minishell *minishell, t_cmd *cmd)
 	else
 	{
 		ft_foreach_cmd(cmd, minishell, &last_pid);
-		if (cmd->has_pipe && ft_is_builtin(cmd->name)
-			&& ft_strcmp(cmd->name, "export") == 0)
+		if (cmd->has_pipe && ft_is_builtin(cmd->name) && ft_strcmp(cmd->name,
+				"export") == 0)
 		{
 			return (ft_wait_child_for_pid(minishell, last_pid));
 		}
@@ -109,4 +108,5 @@ void	ft_process_line(char *line, t_minishell *minishell)
 	wait_for_processes(pids, cmd_count, minishell);
 	ft_gc_remove(&minishell->gc_head, pids);
 	free(pids);
+	ft_setup_signals();
 }
