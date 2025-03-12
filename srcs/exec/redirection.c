@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 11:10:41 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:37:24 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,13 +91,15 @@ int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
 		return (0);
 	}
 	ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
+	if (last_heredoc
+		&& !ft_handle_heredoc(cmd, last_heredoc, saved_stdin, saved_stdout))
+		return (0);
 	if (last_in && !ft_handle_input(cmd, last_in, saved_stdin, saved_stdout))
 		return (0);
 	if (last_out && !ft_handle_output(cmd, last_out, saved_stdin, saved_stdout))
 		return (0);
 	close(saved_stdin);
-	close(saved_stdout);
-	return (1);
+	return (close(saved_stdout), 1);
 }
 
 void	ft_restore_fds(int saved_stdin, int saved_stdout)

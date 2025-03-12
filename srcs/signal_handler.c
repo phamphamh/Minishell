@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 10:58:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:43:43 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,19 @@ static void	ft_handle_sigint(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
+}
+
+/**
+ * @brief Gestionnaire pour le signal SIGINT dans un heredoc
+ *
+ * @param sig Numéro du signal reçu
+ */
+static void	ft_handle_heredoc_sigint(int sig)
+{
+	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
+	g_signal_received = 130;
+	exit(130);
 }
 
 /**
@@ -64,6 +77,11 @@ void	ft_ignore_signals(void)
  */
 void	ft_heredoc_signals(void)
 {
-	signal(SIGINT, SIG_DFL);
+	struct sigaction	sa_int;
+
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_handler = ft_handle_heredoc_sigint;
+	sa_int.sa_flags = 0;
+	sigaction(SIGINT, &sa_int, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }
