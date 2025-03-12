@@ -29,7 +29,7 @@ char	**ft_get_paths(t_env *env)
 		current = current->next;
 	}
 	if (!path_value || !*path_value)
-		return (ft_default_paths());
+		return (NULL);
 	return (ft_allocate_paths(path_value));
 }
 
