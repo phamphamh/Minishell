@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 10:58:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:52:27 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,13 @@ void	ft_clean_exit(t_minishell *minishell, int exit_num)
 		fd++;
 	}
 	exit(exit_num);
+}
+
+/**
+ * @brief Réinitialise les gestionnaires de signaux aux comportements par défaut
+ */
+void	ft_reset_signals(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }

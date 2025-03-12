@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 10:58:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:52:33 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,6 @@ void	ft_setup_signals(void)
 }
 
 /**
- * @brief Réinitialise les gestionnaires de signaux aux comportements par défaut
- */
-void	ft_reset_signals(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-}
-
-/**
  * @brief Configure les signaux en mode ignoré
  */
 void	ft_ignore_signals(void)
@@ -60,10 +51,28 @@ void	ft_ignore_signals(void)
 }
 
 /**
+ * @brief Gestionnaire pour le signal SIGINT (Ctrl+C) en mode heredoc
+ *
+ * @param sig Numéro du signal reçu
+ */
+static void	ft_handle_heredoc_sigint(int sig)
+{
+	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
+	g_signal_received = 130;
+	close(0);
+}
+
+/**
  * @brief Gestionnaire de signal spécifique pour le heredoc
  */
 void	ft_heredoc_signals(void)
 {
-	signal(SIGINT, SIG_DFL);
+	struct sigaction	sa_int;
+
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_handler = ft_handle_heredoc_sigint;
+	sa_int.sa_flags = 0;
+	sigaction(SIGINT, &sa_int, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }
