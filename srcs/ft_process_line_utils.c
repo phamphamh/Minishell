@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 12:11:51 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:52:06 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@ void	ft_execute_builtin_command(t_cmd *cmd, t_minishell *minishell)
 {
 	int	saved_stdin;
 	int	saved_stdout;
+	int	has_pipe;
 
+	has_pipe = (cmd->pipe_out != -1 || cmd->pipe_in != -1);
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdin == -1 || saved_stdout == -1)
@@ -25,13 +27,23 @@ void	ft_execute_builtin_command(t_cmd *cmd, t_minishell *minishell)
 		minishell->exit_nb = 1;
 		return ;
 	}
-	ft_setup_pipes(cmd);
+	if (has_pipe)
+		ft_setup_pipe_fds(cmd);
 	if (!ft_handle_redirection(cmd, cmd->redirs))
+	{
 		minishell->exit_nb = 1;
+		ft_restore_fds(saved_stdin, saved_stdout);
+	}
 	else
+	{
 		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
-	ft_restore_fds(saved_stdin, saved_stdout);
-	ft_close_pipes(cmd);
+		if (!has_pipe)
+			ft_restore_fds(saved_stdin, saved_stdout);
+	}
+	if (has_pipe)
+		ft_close_pipes(cmd);
+	close(saved_stdin);
+	close(saved_stdout);
 }
 
 pid_t	ft_fork_and_execute(t_cmd *cmd, t_minishell *minishell)
@@ -47,6 +59,15 @@ pid_t	ft_fork_and_execute(t_cmd *cmd, t_minishell *minishell)
 	}
 	else if (pid == 0)
 		ft_execute_child_process(cmd, minishell);
+	{
+		ft_reset_signals();
+		ft_setup_pipe_fds(cmd);
+		if (!ft_handle_redirection(cmd, cmd->redirs))
+			ft_clean_exit(minishell, 1);
+		ft_close_unused_fds(cmd);
+		ft_execute_child(cmd, minishell);
+		exit(EXIT_FAILURE);
+	}
 	else
 	{
 		ft_ignore_signals();

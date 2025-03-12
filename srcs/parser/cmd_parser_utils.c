@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/12 10:58:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:54:24 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,13 @@ void	ft_set_command_name(t_cmd *cmd, t_minishell *minishell)
 		cmd->name = ft_strdup("heredoc");
 		ft_gc_add(&minishell->gc_head, cmd->name);
 	}
-	else
+	else if (cmd->args && cmd->args[0])
 		cmd->name = cmd->args[0];
+	else
+	{
+		cmd->name = ft_strdup("");
+		ft_gc_add(&minishell->gc_head, cmd->name);
+	}
 }
 
 int	ft_is_operator(char c)

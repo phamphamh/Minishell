@@ -72,7 +72,7 @@ INCLUDES = -I./includes -I./$(LIBFT_DIR)
 
 LIBS = -L$(LIBFT_DIR) -lft -L/usr/local/lib -lreadline
 
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes $(V_FLAG)
+VALGRIND = valgrind --leak-check=full -g -show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes $(V_FLAG)
 VALGRIND_OTHER = valgrind --vgdb=yes
 V_FLAG = --suppressions="valgrind_supp"
 HELLGRIND = valgrind --tool=helgrind -g3

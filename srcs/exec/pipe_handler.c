@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:15:23 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 12:59:36 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/11 21:42:13 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,33 @@ void	ft_close_pipes(t_cmd *cmd)
  *
  * @param cmd Commande pour laquelle configurer les pipes
  */
-void	ft_setup_pipes(t_cmd *cmd)
+void	ft_setup_pipes(t_cmd *cmd_list)
+{
+	t_cmd	*current;
+	int		pipes[2];
+
+	if (!cmd_list)
+		return ;
+
+	current = cmd_list;
+	while (current && current->next)
+	{
+		if (pipe(pipes) == -1)
+		{
+			perror("minishell: pipe");
+			return ;
+		}
+		current->pipe_out = pipes[1];
+		current->next->pipe_in = pipes[0];
+		current = current->next;
+	}
+}
+
+/**
+ * @brief Configure les descripteurs de fichiers pour les pipes d'une commande
+ * @param cmd Commande pour laquelle configurer les descripteurs
+ */
+void	ft_setup_pipe_fds(t_cmd *cmd)
 {
 	if (cmd->pipe_in != -1)
 	{
@@ -75,10 +101,9 @@ void	ft_setup_pipes(t_cmd *cmd)
 		close(cmd->pipe_in);
 		cmd->pipe_in = -1;
 	}
+
 	if (cmd->pipe_out != -1)
 	{
 		dup2(cmd->pipe_out, STDOUT_FILENO);
-		close(cmd->pipe_out);
-		cmd->pipe_out = -1;
 	}
 }

@@ -6,9 +6,10 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 12:02:07 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:54:03 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "../../includes/header.h"
 
@@ -32,6 +33,7 @@ static t_cmd	*ft_init_command(t_minishell *minishell, int argc)
 	cmd->pipe_in = -1;
 	cmd->pipe_out = -1;
 	cmd->has_pipe = false;
+	cmd->heredoc_fd = -1;
 	cmd->next = NULL;
 	cmd->prev = NULL;
 	return (cmd);

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/12 10:58:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:55:17 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,21 @@ t_redirection	*ft_create_redirection(t_token *token, t_token *next,
  *
  * @param redir Structure de redirection
  */
-static void	ft_handle_output_redirection(t_redirection *redir)
+static int	ft_handle_output_redirection(t_redirection *redir)
 {
 	int	fd;
 
 	fd = open(redir->file, O_CREAT | O_WRONLY, 0644);
-	if (fd >= 0)
+	if (fd < 0)
+	{
+		if (access(redir->file, F_OK) == -1)
+			return (0);
+		else if (access(redir->file, W_OK) == -1)
+			return (0);
+	}
+	else
 		close(fd);
+	return (1);
 }
 
 /**
@@ -119,12 +127,14 @@ void	ft_process_redirection(t_token **current, t_cmd *cmd,
 		t_minishell *minishell)
 {
 	t_redirection	*redir;
+	int				success;
 
 	redir = ft_create_redirection(*current, (*current)->next, minishell);
 	if (!redir)
 		return ;
+	success = 1;
 	if (redir->type == TOKEN_REDIR_OUT || redir->type == TOKEN_REDIR_APPEND)
-		ft_handle_output_redirection(redir);
+		success = ft_handle_output_redirection(redir);
 	ft_add_redirection(cmd, redir);
 	if (*current)
 		*current = (*current)->next;

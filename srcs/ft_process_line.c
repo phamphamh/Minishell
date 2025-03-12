@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 13:07:31 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:52:45 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,44 @@ static void	wait_for_processes(pid_t *pids, int cmd_count,
 	}
 }
 
+int	ft_process_command_line(t_cmd *cmd_list, t_minishell *minishell)
+{
+	t_cmd	*current;
+	pid_t	pid;
+	int		status;
+	int		is_last;
+	int		is_builtin;
+
+	if (!cmd_list)
+		return (1);
+	current = cmd_list;
+	while (current)
+	{
+		is_last = (current->next == NULL);
+		is_builtin = ft_is_builtin(current->args[0]);
+		if (is_builtin && !is_in_pipeline(current))
+			ft_execute_builtin_command(current, minishell);
+		else
+		{
+			pid = ft_fork_and_execute(current, minishell);
+			if (pid == -1)
+				return (1);
+			if (is_last)
+				ft_wait_child(pid, &status, minishell, is_last);
+		}
+		current = current->next;
+	}
+	while (waitpid(-1, &status, 0) > 0)
+		;
+	return (0);
+}
+
+// Fonction pour vérifier si une commande fait partie d'un pipeline
+int is_in_pipeline(t_cmd *cmd)
+{
+	return (cmd->pipe_in != -1 || cmd->pipe_out != -1);
+}
+
 void	ft_process_line(char *line, t_minishell *minishell)
 {
 	t_token	*tokens;
@@ -105,6 +143,7 @@ void	ft_process_line(char *line, t_minishell *minishell)
 		return ;
 	setup_pids(&pids, cmd_count, minishell);
 	execute_commands(minishell, cmd);
+	ft_process_command_line(cmd, minishell);
 	wait_for_processes(pids, cmd_count, minishell);
 	ft_gc_remove(&minishell->gc_head, pids);
 	free(pids);

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/12 13:43:42 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:50:08 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ typedef struct s_cmd
 {
 	char					*name;
 	char					**args;
-	t_redirection			*redirs;
+	int						pid;
 	int						pipe_in;
 	int						pipe_out;
 	bool					has_pipe;
@@ -344,45 +344,5 @@ t_env						*ft_find_env_var(t_env *env, const char *var);
 void						ft_add_env_var(t_minishell *minishell,
 								const char *var);
 bool						ft_is_all_nb(char *str);
-
-void						ft_foreach_cmd(t_cmd *cmd, t_minishell *minishell,
-								pid_t *last_pid);
-
-// Déclarations des fonctions d'exécution
-void						ft_execute_child(t_cmd *cmd,
-								t_minishell *minishell);
-void						ft_execute_child_process(t_cmd *cmd,
-								t_minishell *minishell);
-char						*ft_find_executable(char *cmd_name, t_env *env);
-void						ft_setup_pipes(t_cmd *cmd);
-void						ft_close_unused_fds(t_cmd *cmd);
-int							ft_handle_redirection(t_cmd *cmd,
-								t_redirection *redir);
-int							ft_handle_heredoc(t_cmd *cmd, t_redirection *heredoc,
-								int saved_stdin, int saved_stdout);
-int							ft_read_heredoc(int pipe_fd, char *delimiter);
-int							ft_handle_heredoc_eof(char *delimiter, int pipe_fd);
-int							ft_handle_heredoc_child(int *pipe_fds,
-								t_redirection *heredoc);
-int							ft_handle_heredoc_parent(int *pipe_fds, int status,
-								int *saved_fds);
-int							ft_init_heredoc_pipes(int *pipe_fds, int *saved_fds);
-int							ft_handle_fork_error(int *pipe_fds, int *saved_fds);
-void						ft_restore_fds(int saved_stdin, int saved_stdout);
-void						ft_close_pipe_fds(t_cmd *cmd);
-void						ft_process_cmd(t_cmd *cmd, t_minishell *minishell);
-void						ft_wait_for_children(t_minishell *minishell,
-								int child_count);
-void						ft_execute(t_minishell *minishell);
-void						handle_cmd_not_found(t_cmd *cmd,
-								t_minishell *minishell);
-void						handle_is_directory(char *cmd_path,
-								t_minishell *minishell);
-void						handle_permission_denied(char *cmd_path,
-								t_minishell *minishell);
-void						handle_memory_error(char *cmd_path,
-								t_minishell *minishell);
-void						handle_execve_failure(char *cmd_path,
-								t_minishell *minishell);
 
 #endif
