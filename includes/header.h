@@ -236,7 +236,6 @@ void						close_pipe_fds(t_cmd *cmd);
 void						ft_close_all_pipes(t_cmd *cmd_first);
 char						**ft_allocate_paths(char *path_value);
 void						free_paths(char **paths, int i);
-char						**ft_default_paths(void);
 char						**ft_get_paths(t_env *env);
 char						*ft_find_cmd_in_paths(char **paths, char *cmd_name);
 char						*ft_find_executable(char *cmd_name, t_env *env);

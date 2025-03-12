@@ -54,31 +54,3 @@ void	free_paths(char **paths, int i)
 		free(paths[--i]);
 	free(paths);
 }
-
-char	**ft_default_paths(void)
-{
-	char	**paths;
-	int		i;
-
-	paths = malloc(sizeof(char *) * 7);
-	if (!paths)
-		return (NULL);
-	paths[0] = ft_strdup("/usr/local/bin");
-	paths[1] = ft_strdup("/usr/bin");
-	paths[2] = ft_strdup("/bin");
-	paths[3] = ft_strdup("/usr/sbin");
-	paths[4] = ft_strdup("/sbin");
-	paths[5] = ft_strdup(".");
-	paths[6] = NULL;
-	i = 0;
-	while (i < 6)
-	{
-		if (!paths[i])
-		{
-			free_paths(paths, i);
-			return (NULL);
-		}
-		i++;
-	}
-	return (paths);
-}
