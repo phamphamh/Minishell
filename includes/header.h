@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/12 12:04:26 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:11:51 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,8 @@ pid_t						ft_fork_and_execute(t_cmd *cmd,
 								t_minishell *minishell);
 void						ft_wait_child(pid_t pid, int *status,
 								t_minishell *minishell, int last);
+void						ft_handle_child_signal(int status,
+								t_minishell *minishell, int last_cmd);
 int							ft_wait_child_for_pid(t_minishell *minishell,
 								pid_t pid);
 void						ft_process_line(char *line, t_minishell *minishell);

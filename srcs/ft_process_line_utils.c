@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 12:01:32 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:11:51 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,28 +90,12 @@ void	ft_wait_child(pid_t pid, int *status, t_minishell *minishell
 	if (pid <= 0)
 		return ;
 	if (waitpid(pid, status, 0) == -1)
-		return (ft_putstr_fd("minishell: waitpid: erreur\n", 2)
-			, minishell->exit_nb = 1);
-	if (WIFEXITED(*status))
 	{
-		if (last_cmd)
-			minishell->exit_nb = WEXITSTATUS(*status);
+		ft_putstr_fd("minishell: waitpid: erreur\n", 2);
+		minishell->exit_nb = 1;
+		return ;
 	}
-	else if (WIFSIGNALED(*status))
-	{
-		if (WTERMSIG(*status) == SIGINT)
-		{
-			ft_putstr_fd("\n", 1);
-			minishell->exit_nb = 130;
-		}
-		else if (WTERMSIG(*status) == SIGQUIT)
-		{
-			ft_putstr_fd("Quitter (core dumped)\n", 1);
-			minishell->exit_nb = 131;
-		}
-		else
-			minishell->exit_nb = 128 + WTERMSIG(*status);
-	}
+	ft_handle_child_signal(*status, minishell, last_cmd);
 }
 
 void	ft_foreach_cmd(t_cmd *cmd, t_minishell *minishell, pid_t *last_pid)
