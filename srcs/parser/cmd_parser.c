@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/04 15:21:36 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/12 12:02:07 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ static t_cmd	*ft_init_command(t_minishell *minishell, int argc)
 	cmd->redirs = NULL;
 	cmd->pipe_in = -1;
 	cmd->pipe_out = -1;
+	cmd->has_pipe = false;
 	cmd->next = NULL;
+	cmd->prev = NULL;
 	return (cmd);
 }
 
@@ -90,6 +92,9 @@ static t_cmd	*ft_process_pipes(t_cmd *first_cmd, t_token *current_token,
 				ft_gc_remove_cmds(&minishell->gc_head, first_cmd);
 				return (NULL);
 			}
+			current_cmd->has_pipe = true;
+			current_cmd->next->has_pipe = true;
+			current_cmd->next->prev = current_cmd;
 			current_cmd = current_cmd->next;
 		}
 		current_token = current_token->next;

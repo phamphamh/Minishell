@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 18:44:53 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 11:18:59 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,15 @@ int	ft_validate_export_var(t_minishell *minishell, char *var, char **var_name,
 	*equal_pos = ft_strchr(var, '=');
 	if (!*equal_pos)
 	{
+		*var_name = NULL;
 		if (!ft_is_valid_identifier(var))
 		{
 			ft_export_error(var, minishell);
 			return (1);
 		}
+		*var_name = ft_strdup(var);
+		if (!*var_name)
+			return (1);
 		return (0);
 	}
 	*var_name = ft_substr(var, 0, *equal_pos - var);

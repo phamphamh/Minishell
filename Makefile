@@ -38,6 +38,7 @@ SRCS = srcs/main.c \
        srcs/exec/exec_utils.c \
        srcs/exec/exec_utils2.c \
        srcs/exec/exec_utils3.c \
+       srcs/exec/ft_execute_process.c \
        srcs/exec/pipe_handler.c \
        srcs/exec/redirection.c \
        srcs/exec/redirection_utils.c \

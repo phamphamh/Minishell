@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 15:09:56 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:01:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,7 @@ pid_t	ft_fork_and_execute(t_cmd *cmd, t_minishell *minishell)
 		return (-1);
 	}
 	else if (pid == 0)
-	{
-		ft_reset_signals();
-		ft_setup_pipes(cmd);
-		ft_close_unused_fds(cmd);
-		if (!ft_handle_redirection(cmd, cmd->redirs))
-			ft_clean_exit(minishell, 1);
-		ft_execute_child(cmd, minishell);
-		exit(EXIT_FAILURE);
-	}
+		ft_execute_child_process(cmd, minishell);
 	else
 	{
 		ft_ignore_signals();
@@ -63,20 +55,86 @@ pid_t	ft_fork_and_execute(t_cmd *cmd, t_minishell *minishell)
 	return (pid);
 }
 
-void	ft_wait_child(pid_t pid, int *status, t_minishell *minishell, int last)
+int	ft_wait_child_for_pid(t_minishell *minishell, pid_t pid)
 {
-	waitpid(pid, status, 0);
-	if (last)
+	int	status;
+
+	if (pid <= 0)
+		return (1);
+	if (waitpid(pid, &status, 0) == -1)
+		return (ft_putstr_fd("minishell: waitpid: erreur\n", 2)
+			, minishell->exit_nb = 1, 1);
+	if (WIFEXITED(status))
+		minishell->exit_nb = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
 	{
-		if (WIFEXITED(*status))
-			minishell->exit_nb = WEXITSTATUS(*status);
-		else if (WIFSIGNALED(*status))
+		if (WTERMSIG(status) == SIGINT)
 		{
-			minishell->exit_nb = 128 + WTERMSIG(*status);
-			if (WTERMSIG(*status) == SIGINT)
-				ft_putstr_fd("\n", 1);
-			else if (WTERMSIG(*status) == SIGQUIT)
-				ft_putstr_fd("Quit (core dumped)\n", 1);
+			ft_putstr_fd("\n", 1);
+			minishell->exit_nb = 130;
 		}
+		else if (WTERMSIG(status) == SIGQUIT)
+		{
+			ft_putstr_fd("Quitter (core dumped)\n", 1);
+			minishell->exit_nb = 131;
+		}
+		else
+			minishell->exit_nb = 128 + WTERMSIG(status);
+	}
+	return (minishell->exit_nb);
+}
+
+void	ft_wait_child(pid_t pid, int *status, t_minishell *minishell
+		, int last_cmd)
+{
+	if (pid <= 0)
+		return ;
+	if (waitpid(pid, status, 0) == -1)
+		return (ft_putstr_fd("minishell: waitpid: erreur\n", 2)
+			, minishell->exit_nb = 1);
+	if (WIFEXITED(*status))
+	{
+		if (last_cmd)
+			minishell->exit_nb = WEXITSTATUS(*status);
+	}
+	else if (WIFSIGNALED(*status))
+	{
+		if (WTERMSIG(*status) == SIGINT)
+		{
+			ft_putstr_fd("\n", 1);
+			minishell->exit_nb = 130;
+		}
+		else if (WTERMSIG(*status) == SIGQUIT)
+		{
+			ft_putstr_fd("Quitter (core dumped)\n", 1);
+			minishell->exit_nb = 131;
+		}
+		else
+			minishell->exit_nb = 128 + WTERMSIG(*status);
+	}
+}
+
+void	ft_foreach_cmd(t_cmd *cmd, t_minishell *minishell, pid_t *last_pid)
+{
+	t_cmd	*current;
+	int		pipe_fds[2];
+
+	current = cmd;
+	while (current)
+	{
+		if (current->next)
+		{
+			if (pipe(pipe_fds) == -1)
+			{
+				ft_putstr_fd("minishell: pipe error\n", 2);
+				minishell->exit_nb = 1;
+				return ;
+			}
+			current->pipe_out = pipe_fds[1];
+			current->next->pipe_in = pipe_fds[0];
+		}
+		current->has_pipe = (current->pipe_in != -1 || current->pipe_out != -1);
+		*last_pid = ft_fork_and_execute(current, minishell);
+		current = current->next;
 	}
 }
