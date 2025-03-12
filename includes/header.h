@@ -266,6 +266,7 @@ void						ft_update_last_redirections(t_redirection *current,
 								t_redirection **last_out,
 								t_redirection **last_in,
 								t_redirection **last_heredoc);
+int							ft_handle_heredoc(t_redirection *last_heredoc);
 void						ft_find_last_redirections(t_redirection *redir,
 								t_redirection **last_out,
 								t_redirection **last_in,
@@ -273,6 +274,7 @@ void						ft_find_last_redirections(t_redirection *redir,
 int							ft_handle_redirection(t_cmd *cmd,
 								t_redirection *redir);
 void						ft_restore_fds(int saved_stdin, int saved_stdout);
+void						ft_save_fds(int *saved_stdin, int *saved_stdout);
 
 // tokenizer.c
 int							ft_is_operator(char c);

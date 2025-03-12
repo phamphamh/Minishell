@@ -37,3 +37,25 @@ void	ft_find_last_redirections(t_redirection *redir,
 		redir = redir->next;
 	}
 }
+
+void	ft_restore_fds(int saved_stdin, int saved_stdout)
+{
+	if (saved_stdin != -1)
+	{
+		dup2(saved_stdin, STDIN_FILENO);
+		close(saved_stdin);
+	}
+	if (saved_stdout != -1)
+	{
+		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdout);
+	}
+}
+
+void	ft_save_fds(int *saved_stdin, int *saved_stdout)
+{
+	*saved_stdout = dup(STDOUT_FILENO);
+	*saved_stdin = dup(STDIN_FILENO);
+	if (*saved_stdout == -1 || *saved_stdin == -1)
+		ft_putstr_fd("minishell: dup error\n", 2);
+}
