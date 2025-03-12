@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/07 12:48:30 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/12 21:21:12 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,14 @@ static int	process_tokens(const char *s, t_split_env *env)
 /**
  * @brief Découpe une chaîne en tokens en gérant les quotes.
  */
-char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms)
+char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms, bool is_heredoc)
 {
 	t_split_env	env;
 
 	env.token_count = 0;
 	env.delimiter = delimiter;
 	env.ms = ms;
+	env.is_heredoc = is_heredoc;
 	if (!s)
 		return (NULL);
 	env.tokens = malloc(sizeof(char *) * (ft_strlen(s) + 1));

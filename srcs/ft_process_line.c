@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_process_line.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 12:55:05 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 21:21:42 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,74 @@ static void	wait_for_processes(pid_t *pids, int cmd_count,
 			ft_wait_child(pids[i], &status, minishell, i == cmd_count - 1);
 		i++;
 	}
+}
+
+void	ft_print_tokens(t_token *tokens)
+{
+	t_token *current = tokens;
+	printf("🔹 Liste des tokens générés :\n");
+
+	while (current)
+	{
+		printf("Token: \"%s\" | Type: %d\n", current->value, current->type);
+		current = current->next;
+	}
+	printf("🔹 Fin de la liste des tokens\n");
+}
+
+void	ft_print_commands(t_cmd *cmds)
+{
+	t_cmd	*current = cmds;
+	int		cmd_index = 0;
+	int		arg_index;
+	t_redirection *redir;
+
+	printf("\n🔹 Liste des commandes générées :\n");
+
+	while (current)
+	{
+		printf("🔹 Commande %d:\n", cmd_index);
+		printf("   - Nom: %s\n", current->name ? current->name : "(null)");
+
+		// Affichage des arguments
+		printf("   - Arguments: ");
+		if (current->args)
+		{
+			arg_index = 0;
+			while (current->args[arg_index])
+			{
+				printf("\"%s\" ", current->args[arg_index]);
+				arg_index++;
+			}
+		}
+		else
+			printf("(null)");
+		printf("\n");
+
+		// Affichage des redirections
+		printf("   - Redirections:\n");
+		redir = current->redirs;
+		while (redir)
+		{
+			if (redir->type == TOKEN_REDIR_IN)
+				printf("     ⏩ Input  (<) -> %s\n", redir->file);
+			else if (redir->type == TOKEN_REDIR_OUT)
+				printf("     ⏩ Output (>) -> %s\n", redir->file);
+			else if (redir->type == TOKEN_REDIR_APPEND)
+				printf("     ⏩ Append (>>) -> %s\n", redir->file);
+			else if (redir->type == TOKEN_HEREDOC)
+				printf("     ⏩ Here-Doc (<<) -> %s\n", redir->file);
+			redir = redir->next;
+		}
+
+		// Affichage des pipes
+		printf("   - Pipe_in: %d, Pipe_out: %d\n", current->pipe_in, current->pipe_out);
+
+		current = current->next;
+		cmd_index++;
+	}
+
+	printf("🔹 Fin de la liste des commandes\n\n");
 }
 
 void	ft_process_line(char *line, t_minishell *minishell)

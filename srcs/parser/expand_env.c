@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/08 13:51:29 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/12 21:10:13 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,11 +117,13 @@ static void	process_expansion(const char *str, t_expand_env *env,
  * @param ms Structure principale du shell.
  * @return char* Une nouvelle chaîne avec les variables expandées.
  */
-char	*expand_env_vars(const char *str, t_minishell *ms, bool in_quotes)
+char	*expand_env_vars(const char *str, t_minishell *ms, bool in_quotes, bool is_heredoc)
 {
 	int				j;
 	t_expand_env	env;
 
+	if (is_heredoc)
+		return (ft_strdup(str));
 	j = 0;
 	env.res = prepare_result_buffer(str, ms);
 	if (!env.res)
