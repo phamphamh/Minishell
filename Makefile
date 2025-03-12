@@ -130,7 +130,7 @@ runv: $(NAME)
 		echo "Running Valgrind..."; \
 		echo "$$line" | $(VALGRIND) ./$(NAME); \
 		echo "----------------------------------------"; \
-	done < data/test
+	done < tests/test
 	@$(RM) output_minishell.txt output_bash.txt
 
 valgrind: $(NAME)

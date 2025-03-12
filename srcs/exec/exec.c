@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:21:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 11:10:41 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:32:19 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,15 @@ static void	check_executable(char *cmd_path, t_minishell *minishell)
 {
 	struct stat	file_stat;
 
-	if (stat(cmd_path, &file_stat) == 0 && S_ISDIR(file_stat.st_mode))
+	if (stat(cmd_path, &file_stat) == -1)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd_path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(cmd_path);
+		ft_clean_exit(minishell, 127);
+	}
+	if (S_ISDIR(file_stat.st_mode))
 		handle_is_directory(cmd_path, minishell);
 	if (access(cmd_path, X_OK) == -1)
 		handle_permission_denied(cmd_path, minishell);
