@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 11:10:41 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/13 11:12:31 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,7 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out)
 static int	ft_apply_redirections(t_cmd *cmd, t_redirection *last_in,
 		t_redirection *last_out, t_redirection *last_heredoc)
 {
-	if (last_heredoc && !ft_handle_heredoc(last_heredoc))
-		return (0);
+	(void) last_heredoc;
 	if (last_in && !ft_handle_input(cmd, last_in))
 		return (0);
 	if (last_out && !ft_handle_output(cmd, last_out))

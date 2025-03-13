@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_process_line.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 12:55:05 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/13 11:20:18 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,30 +43,62 @@ static void	setup_pids(pid_t **pids, int cmd_count, t_minishell *minishell)
 static int	execute_commands(t_minishell *minishell, t_cmd *cmd)
 {
 	pid_t	last_pid;
+	t_redirection *redir;
+	int		heredoc_fds[1024]; // Table pour stocker les FDs des here-docs
+	int		cmd_count = 0;
+	t_cmd	*tmp = cmd;
 
 	if (cmd == NULL)
 		return (0);
 	last_pid = -1;
-	if (ft_is_builtin(cmd->name) && (cmd->next == NULL && cmd->prev == NULL)
-		&& cmd->redirs == NULL && !cmd->has_pipe)
+
+	// 1. Préparer tous les here-docs AVANT d'exécuter quoi que ce soit
+	while (tmp)
 	{
-		if (!ft_handle_redirection(cmd, cmd->redirs))
-			return (1);
-		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
-		return (minishell->exit_nb);
-	}
-	else
-	{
-		ft_foreach_cmd(cmd, minishell, &last_pid);
-		if (cmd->has_pipe && ft_is_builtin(cmd->name) && ft_strcmp(cmd->name,
-				"export") == 0)
+		redir = tmp->redirs;
+		while (redir)
 		{
-			return (ft_wait_child_for_pid(minishell, last_pid));
+			if (redir->type == TOKEN_HEREDOC)
+			{
+				heredoc_fds[cmd_count] = ft_handle_heredoc(redir);
+				if (heredoc_fds[cmd_count] == -1) // Si erreur dans un here-doc
+					return (1);
+			}
+			redir = redir->next;
 		}
-		return (ft_wait_child_for_pid(minishell, last_pid));
+		cmd_count++;
+		tmp = tmp->next;
 	}
-	return (0);
+
+	// 2. Exécuter les commandes en appliquant les here-docs AVANT chaque exécution
+	tmp = cmd;
+	cmd_count = 0;
+	while (tmp)
+	{
+		if (ft_is_builtin(tmp->name) && !tmp->has_pipe)
+		{
+			if (!ft_handle_redirection(tmp, tmp->redirs))
+				return (1);
+			if (heredoc_fds[cmd_count] != -1) // Appliquer le here-doc si présent
+			{
+				dup2(heredoc_fds[cmd_count], STDIN_FILENO);
+				close(heredoc_fds[cmd_count]);
+			}
+			minishell->exit_nb = ft_execute_builtin(tmp, minishell);
+		}
+		else
+		{
+			ft_foreach_cmd(tmp, minishell, &last_pid);
+		}
+		cmd_count++;
+		tmp = tmp->next;
+	}
+
+	return (ft_wait_child_for_pid(minishell, last_pid));
 }
+
+
+
 
 static void	wait_for_processes(pid_t *pids, int cmd_count,
 		t_minishell *minishell)
