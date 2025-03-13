@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/13 12:36:35 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/13 12:57:25 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,7 +266,7 @@ void						ft_update_last_redirections(t_redirection *current,
 								t_redirection **last_out,
 								t_redirection **last_in,
 								t_redirection **last_heredoc);
-int							ft_handle_heredoc(t_redirection *last_heredoc);
+int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd);
 void						ft_find_last_redirections(t_redirection *redir,
 								t_redirection **last_out,
 								t_redirection **last_in,
