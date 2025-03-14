@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/07 12:48:30 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:27:58 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,23 +78,63 @@ static int	process_tokens(const char *s, t_split_env *env)
 	return (i);
 }
 
+static char	*add_space_after_heredoc(const char *s)
+{
+	char	*modified_input;
+
+	int i, j;
+	// Allouer un buffer plus grand (au cas où on ajoute un espace)
+	modified_input = malloc(ft_strlen(s) * 2);
+	if (!modified_input)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (s[i])
+	{
+		// 🔥 Si `<<` détecté, vérifier s'il est suivi immédiatement d'un mot
+		if (s[i] == '<' && s[i + 1] == '<')
+		{
+			modified_input[j++] = s[i++];
+			modified_input[j++] = s[i++];
+			// Ajouter un espace si `<<` est immédiatement suivi d'un mot
+			if (s[i] && s[i] != ' ')
+				modified_input[j++] = ' ';
+		}
+		else
+			modified_input[j++] = s[i++];
+	}
+	modified_input[j] = '\0';
+	return (modified_input);
+}
+
 /**
  * @brief Découpe une chaîne en tokens en gérant les quotes.
  */
-char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms)
+char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms,
+		bool is_heredoc)
 {
 	t_split_env	env;
+	char		*modified_input;
 
 	env.token_count = 0;
 	env.delimiter = delimiter;
 	env.ms = ms;
+	env.is_heredoc = is_heredoc;
 	if (!s)
 		return (NULL);
 	env.tokens = malloc(sizeof(char *) * (ft_strlen(s) + 1));
+	if (is_heredoc)
+	{
+		modified_input = add_space_after_heredoc(s);
+		if (!modified_input)
+			return (NULL);
+	}
+	else
+		modified_input = ft_strdup(s);
 	if (!env.tokens)
 		return (NULL);
 	ft_gc_add(&ms->gc_head, env.tokens);
-	if (!process_tokens(s, &env))
+	if (!process_tokens(modified_input, &env))
 		return (NULL);
 	env.tokens[env.token_count] = NULL;
 	return (env.tokens);

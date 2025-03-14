@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:35:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/10 19:11:31 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:15:43 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,8 @@ static char	**ft_filter_tokens(char **split_input, t_minishell *minishell)
 	return (filtered_input);
 }
 
-static char	**ft_expand_and_split_input(char *input, t_minishell *minishell)
+static char	**ft_expand_and_split_input(char *input, t_minishell *minishell,
+		bool is_heredoc)
 {
 	char	*expanded_input;
 	char	**split_input;
@@ -102,7 +103,8 @@ static char	**ft_expand_and_split_input(char *input, t_minishell *minishell)
 	expanded_input = ft_expand_operators(input);
 	if (!expanded_input)
 		return (NULL);
-	split_input = ft_split_with_quotes(expanded_input, ' ', minishell);
+	split_input = ft_split_with_quotes(expanded_input, ' ', minishell,
+			is_heredoc);
 	free(expanded_input);
 	return (split_input);
 }
@@ -112,8 +114,13 @@ t_token	*ft_tokenize(char *input, t_minishell *minishell)
 	char	**split_input;
 	char	**filtered_input;
 	t_token	*token_list;
+	bool	is_heredoc;
 
-	split_input = ft_expand_and_split_input(input, minishell);
+	is_heredoc = !ft_strncmp("<<", input, 2);
+	if (is_heredoc)
+		split_input = ft_split_with_quotes(input, ' ', minishell, is_heredoc);
+	else
+		split_input = ft_expand_and_split_input(input, minishell, is_heredoc);
 	if (!split_input)
 		return (NULL);
 	filtered_input = ft_filter_tokens(split_input, minishell);

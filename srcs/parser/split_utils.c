@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/08 13:45:53 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:14:43 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int	process_double_quotes(const char *s, int start, int end,
 		return (-1);
 	strncpy(content, &s[start], len);
 	content[len] = '\0';
-	expanded = expand_env_vars(content, env->ms, true);
+	expanded = expand_env_vars(content, env->ms, true, env->is_heredoc);
 	free(content);
 	if (!expanded)
 		return (-1);
@@ -100,7 +100,7 @@ static int	handle_unquoted_token(const char *s, int i, t_split_env *env)
 		return (-1);
 	strncpy(temp, start, token_len);
 	temp[token_len] = '\0';
-	expanded = expand_env_vars(temp, env->ms, false);
+	expanded = expand_env_vars(temp, env->ms, false, env->is_heredoc);
 	free(temp);
 	if (!expanded)
 		return (-1);

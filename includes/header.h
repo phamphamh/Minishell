@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/14 11:10:56 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:15:58 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ typedef struct s_split_env
 	int						token_count;
 	char					delimiter;
 	char					quote;
+	bool					is_heredoc;
 	t_minishell				*ms;
 }							t_split_env;
 
@@ -332,11 +333,13 @@ void						process_escape_sequence(const char *str, char *res,
 char						*prepare_result_buffer(const char *str,
 								t_minishell *ms);
 char						*expand_env_vars(const char *str,
-								t_minishell *minishell, bool in_quotes);
+								t_minishell *minishell, bool in_quotes,
+								bool is_heredoc);
 
 // split_with_quotes.c
 char						**ft_split_with_quotes(const char *s,
-								char delimiter, t_minishell *minishell);
+								char delimiter, t_minishell *minishell,
+								bool is_heredoc);
 bool						is_quote(char c);
 char						*allocate_token(const char *start, int token_len,
 								char **tokens, int token_count);
