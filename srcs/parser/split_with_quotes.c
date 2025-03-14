@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/14 11:36:12 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:53:21 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,9 +123,9 @@ char	**ft_split_with_quotes(const char *s, char delimiter, t_minishell *ms,
 		modified_input = ft_strdup(s);
 	if (!env.tokens)
 		return (NULL);
+	ft_gc_add(&ms->gc_head, modified_input);
 	ft_gc_add(&ms->gc_head, env.tokens);
 	if (!process_tokens(modified_input, &env))
 		return (NULL);
-	env.tokens[env.token_count] = NULL;
-	return (env.tokens);
+	return (env.tokens[env.token_count] = NULL, env.tokens);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 11:16:07 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:53:58 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,7 @@ static void	ft_execute_heredoc_command(t_cmd *cmd, t_redirection *output_redir,
 		return ;
 	}
 	if (pid == 0)
-	{
-		ft_setup_heredoc_child(heredoc_fd, output_redir);
-		execvp(cmd->args[0], cmd->args);
-		ft_putstr_fd("minishell: command not found\n", 2);
-		ft_heredoc_child_exit(minishell, 127, -1);
-	}
+		ft_exec_heredoc_child(cmd, output_redir, minishell, heredoc_fd);
 	close(heredoc_fd);
 	waitpid(pid, &status, 0);
 }
@@ -105,8 +100,8 @@ int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *cmd,
 		return (-1);
 	if (ft_wait_heredoc(pid, heredoc_pipe) == -1)
 		return (-1);
-	if (cmd->args && cmd->args[0] && cmd->name
-		&& ft_strcmp(cmd->name, "heredoc") != 0)
+	if (cmd->args && cmd->args[0] && cmd->name && ft_strcmp(cmd->name,
+			"heredoc") != 0)
 	{
 		ft_execute_heredoc_command(cmd, output_redir, minishell,
 			heredoc_pipe[0]);

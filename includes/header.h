@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/14 11:15:58 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:54:24 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,6 +273,9 @@ void						ft_setup_pipes(t_cmd *cmd);
 void						ft_close_all_pipes(t_cmd *cmd_first);
 
 // redirection.c
+void						ft_exec_heredoc_child(t_cmd *cmd,
+								t_redirection *output_redir,
+								t_minishell *minishell, int heredoc_fd);
 void						ft_heredoc_child_exit(t_minishell *minishell,
 								int exit_code, int fd_to_close);
 int							ft_wait_heredoc(pid_t pid, int heredoc_pipe[2]);

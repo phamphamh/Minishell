@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:03:15 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/14 11:14:15 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:54:04 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,23 @@ void	ft_setup_heredoc_child(int heredoc_fd, t_redirection *output_redir)
 		close(fd_out);
 	}
 	clean_fds();
+}
+
+void	ft_exec_heredoc_child(t_cmd *cmd, t_redirection *output_redir,
+		t_minishell *minishell, int heredoc_fd)
+{
+	char	*cmd_path;
+	char	**env_array;
+
+	ft_setup_heredoc_child(heredoc_fd, output_redir);
+	cmd_path = ft_find_executable(cmd->args[0], minishell->env);
+	if (!cmd_path)
+	{
+		ft_putstr_fd("minishell: command not found\n", 2);
+		ft_heredoc_child_exit(minishell, 127, -1);
+	}
+	env_array = ft_env_to_array(minishell, minishell->env);
+	execve(cmd_path, cmd->args, env_array);
+	ft_putstr_fd("minishell: execve failed\n", 2);
+	ft_heredoc_child_exit(minishell, 126, -1);
 }
