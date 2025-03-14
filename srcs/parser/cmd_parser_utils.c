@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/14 07:48:57 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:14:50 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  */
 void	ft_set_command_name(t_cmd *cmd, t_minishell *minishell)
 {
-	if (cmd->redirs && cmd->redirs->type == TOKEN_HEREDOC)
+	if (cmd->redirs && cmd->redirs->type == TOKEN_HEREDOC && !cmd->args[0])
 	{
 		cmd->name = ft_strdup("heredoc");
 		ft_gc_add(&minishell->gc_head, cmd->name);

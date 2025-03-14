@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:03:15 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/14 11:10:44 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:14:15 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,19 +58,22 @@ void	ft_setup_heredoc_child(int heredoc_fd, t_redirection *output_redir)
 
 	dup2(heredoc_fd, STDIN_FILENO);
 	close(heredoc_fd);
-	if (output_redir->type == TOKEN_REDIR_OUT)
-		flags = O_CREAT | O_WRONLY | O_TRUNC;
-	else
-		flags = O_CREAT | O_WRONLY | O_APPEND;
-	fd_out = open(output_redir->file, flags, 0644);
-	if (fd_out == -1)
+	if (output_redir)
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(output_redir->file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		ft_heredoc_child_exit(NULL, 1, -1);
+		if (output_redir->type == TOKEN_REDIR_OUT)
+			flags = O_CREAT | O_WRONLY | O_TRUNC;
+		else
+			flags = O_CREAT | O_WRONLY | O_APPEND;
+		fd_out = open(output_redir->file, flags, 0644);
+		if (fd_out == -1)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(output_redir->file, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
+			ft_heredoc_child_exit(NULL, 1, -1);
+		}
+		dup2(fd_out, STDOUT_FILENO);
+		close(fd_out);
 	}
-	dup2(fd_out, STDOUT_FILENO);
-	close(fd_out);
 	clean_fds();
 }

@@ -1,0 +1,1133 @@
+# Tests générés à partir du fichier output.txt
+# Format: Nom du test|Commande
+
+# Catégorie: Général
+\n (touche entrée)|\n (touche entrée)
+[que des tabulations]|[que des tabulations]
+:|:
+!|!
+
+# Catégorie: Tests de redirection
+>|>
+<|<
+> >|> >
+< <|< <
+<>|<>
+> >> >>|> >> >>
+> >> >> >> >> >> >> >>|> >> >> >> >> >> >> >>
+< << <<|< << <<
+< << << << << << << << <|< << << << << << << << <
+> > > >|> > > >
+> > > > > > > >|> > > > > > > >
+> >> > > > > > > >|> >> > > > > > > >
+/|/
+//|//
+/.|/.
+/./../../../../..|/./../../../../..
+///////|///////
+\\|\\
+\\\\|\\\\
+\\\\\\\\|\\\\\\\\
+-|-
+> >|><|> >|><
+&&|&&
+&&&&&|&&&&&
+&&&&&&&&&&&&&&|&&&&&&&&&&&&&&
+;;|;;
+;;;;;|;;;;;
+;;;;;;;;;;;;;;;|;;;;;;;;;;;;;;;
+()|()
+( ( ) )|( ( ) )
+( ( ( ( ) ) ) )|( ( ( ( ) ) ) )
+""|""
+"hola"|"hola"
+'hola'|'hola'
+''|''
+*|*
+*/*|*/*
+*/*|*/*
+.|.
+..|..
+~|~
+ABC=hola|ABC=hola
+4ABC=hola|4ABC=hola
+hola|hola
+hola que tal|hola que tal
+Makefile|Makefile
+echo > <|echo > <
+>echo>|>echo>
+<echo<|<echo<
+> >echo> >|> >echo> >
+whoami | grep $USER > /tmp/bonjour|whoami | grep $USER > /tmp/bonjour
+cat /tmp/bonjour|cat /tmp/bonjour
+whereis ls | cat -e | cat -e > /tmp/bonjour|whereis ls | cat -e | cat -e > /tmp/bonjour
+cat /tmp/bonjour|cat /tmp/bonjour
+> >b echo que tal|> >b echo que tal
+ls || <|ls || <
+ls && <|ls && <
+(ls && pwd) > hola|(ls && pwd) > hola
+cat hola|cat hola
+> hola ls && pwd|> hola ls && pwd
+> hola (ls && pwd)|> hola (ls && pwd)
+(> pwd)|(> pwd)
+ls|ls
+(< pwd)|(< pwd)
+ls|ls
+(< pwd)|(< pwd)
+( ( ( ( ( pwd) ) ) ) )|( ( ( ( ( pwd) ) ) ) )
+() pwd|() pwd
+> pwd (ls)|> pwd (ls)
+(ls && pwd | wc) > hola|(ls && pwd | wc) > hola
+cat hola|cat hola
+(ls && pwd | wc) > hola|(ls && pwd | wc) > hola
+cat hola|cat hola
+(ls && pwd | wc) < hola|(ls && pwd | wc) < hola
+(ls > Docs/hey && pwd) > hola|(ls > Docs/hey && pwd) > hola
+cat hola|cat hola
+cat Docs/hey|cat Docs/hey
+ls > Docs/hey && pwd > hola|ls > Docs/hey && pwd > hola
+cat hola|cat hola
+cat Docs/hey|cat Docs/hey
+echo que tal > > bonjour|echo que tal > > bonjour
+cat bonjour|cat bonjour
+echo que tal > > bonjour|echo que tal > > bonjour
+cat < bonjour|cat < bonjour
+echo que tal > > bonjour|echo que tal > > bonjour
+cat < bonjour|cat < bonjour
+echo hola que tal > /tmp/bonjour|echo hola que tal > /tmp/bonjour
+cat -e /tmp/bonjour|cat -e /tmp/bonjour
+whereis grep > Docs/bonjour|whereis grep > Docs/bonjour
+cat Docs/bonjour|cat Docs/bonjour
+ls -la > Docs/bonjour|ls -la > Docs/bonjour
+cat Docs/bonjour|cat Docs/bonjour
+pwd>bonjour|pwd>bonjour
+cat bonjour|cat bonjour
+pwd >                     bonjour|pwd >                     bonjour
+cat bonjour|cat bonjour
+echo hola < < bonjour|echo hola < < bonjour
+> bonjour echo hola|> bonjour echo hola
+cat bonjour|cat bonjour
+prout hola > bonjour|prout hola > bonjour
+ls|ls
+echo hola > hello > > hello > > hello|echo hola > hello > > hello > > hello
+cat < hello|cat < hello
+echo hola > > hello|echo hola > > hello
+cat < hello|cat < hello
+echo hola > > hello|echo hola > > hello
+cat < hello|cat < hello
+echo hola > > hello|echo hola > > hello
+cat < hello|cat < hello
+echo hola > > hello > > hello > > hello|echo hola > > hello > > hello > > hello
+cat < hello|cat < hello
+echo hey > bonjour|echo hey > bonjour
+echo hola > hello|echo hola > hello
+echo <hello <bonjour|echo <hello <bonjour
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour > hello > bonjour|echo hola > bonjour > hello > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour > hello > bonjour|echo hola > bonjour > hello > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour > hello > > bonjour|echo hola > bonjour > hello > > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > > bonjour > hello > bonjour|echo hola > > bonjour > hello > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > > bonjour > > hello > > bonjour|echo hola > > bonjour > > hello > > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+> bonjour echo hola bonjour|> bonjour echo hola bonjour
+cat bonjour|cat bonjour
+>bonjour echo > hola>bonjour>hola> >bonjour>hola hey >bonjour hola >hola|>bonjour echo > hola>bonjour>hola> >bonjour>hola hey >bonjour hola >hola
+cat bonjour|cat bonjour
+cat hola|cat hola
+echo hello > hola2|echo hello > hola2
+echo bonjour > hola1|echo bonjour > hola1
+echo 2 > >hola1 > hola2|echo 2 > >hola1 > hola2
+ls|ls
+cat hola1|cat hola1
+cat hola2|cat hola2
+> pwd|> pwd
+ls|ls
+< pwd|< pwd
+< Makefile .|< Makefile .
+cat <pwd|cat <pwd
+cat <srcs/pwd|cat <srcs/pwd
+cat <../pwd|cat <../pwd
+cat > >|cat > >
+cat > >>|cat > >>
+cat > > < <|cat > > < <
+cat > > > > > < < > >|cat > > > > > < < > >
+cat < ls|cat < ls
+cat < ls > ls|cat < ls > ls
+cat > ls1 < ls2|cat > ls1 < ls2
+ls|ls
+> >hola|> >hola
+cat hola|cat hola
+cat < bonjour|cat < bonjour
+cat <bonjour|cat <bonjour
+cat<bonjour|cat<bonjour
+cat< bonjour|cat< bonjour
+cat<                     bonjour|cat<                     bonjour
+cat            <         bonjour|cat            <         bonjour
+cat < srcs/bonjour|cat < srcs/bonjour
+cat <srcs/bonjour|cat <srcs/bonjour
+echo que tal > > bonjour|echo que tal > > bonjour
+cat < bonjour|cat < bonjour
+echo que tal > > bonjour|echo que tal > > bonjour
+cat < bonjour|cat < bonjour
+e'c'"h"o hola > bonjour|e'c'"h"o hola > bonjour
+cat 'bo'"n"jour|cat 'bo'"n"jour
+echo hola > bonjour hey|echo hola > bonjour hey
+ls|ls
+cat bonjour|cat bonjour
+cat hey|cat hey
+echo hey > srcs/hello|echo hey > srcs/hello
+>srcs/bonjour >srcs/hello <prout|>srcs/bonjour >srcs/hello <prout
+cat srcs/bonjour srcs/hello|cat srcs/bonjour srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+rm srcs/bonjour srcs/hello|rm srcs/bonjour srcs/hello
+>srcs/bonjour >srcs/hello <prout|>srcs/bonjour >srcs/hello <prout
+ls srcs|ls srcs
+cat srcs/bonjour srcs/hello|cat srcs/bonjour srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+>srcs/bonjour <prout >srcs/hello|>srcs/bonjour <prout >srcs/hello
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+rm srcs/bonjour srcs/hello|rm srcs/bonjour srcs/hello
+>srcs/bonjour <prout >srcs/hello|>srcs/bonjour <prout >srcs/hello
+ls srcs|ls srcs
+cat srcs/bonjour|cat srcs/bonjour
+echo hey > ../hello|echo hey > ../hello
+>../bonjour >../hello <prout|>../bonjour >../hello <prout
+cat ../bonjour ../hello|cat ../bonjour ../hello
+echo hey > ../hello|echo hey > ../hello
+rm ../bonjour ../hello|rm ../bonjour ../hello
+>../bonjour >../hello <prout|>../bonjour >../hello <prout
+ls ..|ls ..
+cat ../bonjour ../hello|cat ../bonjour ../hello
+echo hey > ../hello|echo hey > ../hello
+>../bonjour <prout >../hello|>../bonjour <prout >../hello
+cat ../bonjour|cat ../bonjour
+cat ../hello|cat ../hello
+echo hey > ../hello|echo hey > ../hello
+rm ../bonjour ../hello|rm ../bonjour ../hello
+>../bonjour <prout >../hello|>../bonjour <prout >../hello
+ls ..|ls ..
+cat ../bonjour|cat ../bonjour
+echo hey > srcs/hello|echo hey > srcs/hello
+>srcs/bonjour > >srcs/hello <prout|>srcs/bonjour > >srcs/hello <prout
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+> >srcs/bonjour >srcs/hello <prout|> >srcs/bonjour >srcs/hello <prout
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+> >srcs/bonjour > >srcs/hello <prout|> >srcs/bonjour > >srcs/hello <prout
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+>srcs/bonjour <prout > >srcs/hello|>srcs/bonjour <prout > >srcs/hello
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+> >srcs/bonjour <prout >srcs/hello|> >srcs/bonjour <prout >srcs/hello
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+> >srcs/bonjour <prout > >srcs/hello|> >srcs/bonjour <prout > >srcs/hello
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > srcs/hello|echo hey > srcs/hello
+<prout > >srcs/bonjour > >srcs/hello|<prout > >srcs/bonjour > >srcs/hello
+cat srcs/bonjour|cat srcs/bonjour
+cat srcs/hello|cat srcs/hello
+echo hey > hello|echo hey > hello
+<bonjour >hello|<bonjour >hello
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+>bonjour >hello < prout|>bonjour >hello < prout
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+>bonjour >hello < prout|>bonjour >hello < prout
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+>bonjour <prout hello|>bonjour <prout hello
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+rm bonjour hello|rm bonjour hello
+>bonjour <prout hello|>bonjour <prout hello
+cat bonjour|cat bonjour
+rm bonjour > bonjour|rm bonjour > bonjour
+ls -l bonjour|ls -l bonjour
+>$HOLA|>$HOLA
+ls|ls
+>"$HOLA"|>"$HOLA"
+ls|ls
+>$"HOLA"|>$"HOLA"
+ls|ls
+>$HOLA>hey|>$HOLA>hey
+ls|ls
+>hey>$HOLA|>hey>$HOLA
+ls|ls
+>hey>$HOLA>hey>hey|>hey>$HOLA>hey>hey
+ls|ls
+<a cat <b <c|<a cat <b <c
+<a cat <b <c|<a cat <b <c
+cat a|cat a
+cat b|cat b
+cat c|cat c
+>a ls >b > >c >d|>a ls >b > >c >d
+cat a|cat a
+cat b|cat b
+cat c|cat c
+cat d|cat d
+>a ls >b > >c >d|>a ls >b > >c >d
+cat a|cat a
+cat b|cat b
+cat c|cat c
+cat d|cat d
+ls -la > dir/bonjour|ls -la > dir/bonjour
+cat dir/bonjour|cat dir/bonjour
+<a|<a
+cat a|cat a
+>d cat <a > >e|>d cat <a > >e
+cat a|cat a
+cat d|cat d
+cat e|cat e
+< a > b cat > hey > > d|< a > b cat > hey > > d
+cat d|cat d
+ls|ls
+cat < < hola|cat < < hola
+cat < < 'hola'|cat < < 'hola'
+cat < < "hola"|cat < < "hola"
+cat < < ho"la"|cat < < ho"la"
+cat < < $HOME|cat < < $HOME
+cat < < hola > bonjour|cat < < hola > bonjour
+cat bonjour|cat bonjour
+< < hola|< < hola
+< <hola|< <hola
+cat < <|cat < <
+cat < < prout < < lol < < koala|cat < < prout < < lol < < koala
+prout < < lol < < cat < < koala|prout < < lol < < cat < < koala
+< < $hola|< < $hola
+< < $"hola"$"b"|< < $"hola"$"b"
+< < $"$hola"$$"b"|< < $"$hola"$$"b"
+< < ho$la$"$a"$$"b"|< < ho$la$"$a"$$"b"
+echo hola < << < bonjour|echo hola < << < bonjour
+
+# Catégorie: Tests avec pipes
+|||
+| hola|| hola
+| | ||| | |
+|||||
+|||||||||||
+|||||||||||||||||||||||||||
+echo "         " | cat -e|echo "         " | cat -e
+echo $? | echo $? | echo $?|echo $? | echo $? | echo $?
+echo " $ " | cat -e|echo " $ " | cat -e
+|echo|||echo|
+echo "hola     " | cat -e|echo "hola     " | cat -e
+env | grep PWD|env | grep PWD
+pwd|pwd
+pwd|pwd
+unset PWD|unset PWD
+env | grep PWD|env | grep PWD
+env | grep OLDPWD|env | grep OLDPWD
+unset 9HOLA|unset 9HOLA
+unset HOLA9|unset HOLA9
+unset HOL?A|unset HOL?A
+unset HOLA HOL?A|unset HOLA HOL?A
+unset HOL?A HOLA|unset HOL?A HOLA
+unset HOL?A HOL.A|unset HOL?A HOL.A
+unset HOLA=|unset HOLA=
+unset HOL\\\\A|unset HOL\\\\A
+unset HOL;A|unset HOL;A
+unset HOL.A|unset HOL.A
+unset HOL+A|unset HOL+A
+unset HOL=A|unset HOL=A
+unset HOL{A|unset HOL{A
+unset HOL}A|unset HOL}A
+unset HOL-A|unset HOL-A
+unset -HOLA|unset -HOLA
+unset _HOLA|unset _HOLA
+unset HOL_A|unset HOL_A
+unset HOLA_|unset HOLA_
+unset HOL*A|unset HOL*A
+unset HOL#A|unset HOL#A
+unset $HOLA|unset $HOLA
+unset $PWD|unset $PWD
+unset HOL@|unset HOL@
+unset HOL!A|unset HOL!A
+unset HOL^A|unset HOL^A
+unset HOL$?A|unset HOL$?A
+unset HOL\~A|unset HOL\~A
+unset "" HOLA|unset "" HOLA
+env | grep HOLA|env | grep HOLA
+unset PATH|unset PATH
+env | grep SHLVL|env | grep SHLVL
+./minishell|./minishell
+env | grep SHLVL|env | grep SHLVL
+exit|exit
+env | grep SHLVL|env | grep SHLVL
+touch hola|touch hola
+./hola|./hola
+env|"wc" -l|env|"wc" -l
+env|"wc "-l|env|"wc "-l
+expr 1 + 1|expr 1 + 1
+expr $? + $?|expr $? + $?
+env -i ./minishell|env -i ./minishell
+env|env
+env -i ./minishell|env -i ./minishell
+cat | cat | cat | ls|cat | cat | cat | ls
+ls | exit|ls | exit
+ls | exit 42|ls | exit 42
+exit | ls|exit | ls
+exit | cat -e bonjour|exit | cat -e bonjour
+cat -e bonjour | exit|cat -e bonjour | exit
+echo hola | echo que tal|echo hola | echo que tal
+pwd | echo hola|pwd | echo hola
+env | echo hola|env | echo hola
+echo oui | echo non | echo hola | grep oui|echo oui | echo non | echo hola | grep oui
+echo oui | echo non | echo hola | grep hola|echo oui | echo non | echo hola | grep hola
+ifconfig | grep ":"|ifconfig | grep ":"
+ifconfig | grep hola|ifconfig | grep hola
+whoami | grep $USER|whoami | grep $USER
+whoami | cat -e | cat -e > /tmp/bonjour|whoami | cat -e | cat -e > /tmp/bonjour
+cat /tmp/bonjour|cat /tmp/bonjour
+ls | hola|ls | hola
+ls | ls hola|ls | ls hola
+ls | ls | hola|ls | ls | hola
+ls | hola | ls|ls | hola | ls
+ls | ls | hola | rev|ls | ls | hola | rev
+ls | ls | echo hola | rev|ls | ls | echo hola | rev
+ls -la | grep "."|ls -la | grep "."
+ls -la | grep "'.'"|ls -la | grep "'.'"
+ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls
+|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls||ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls|ls
+echo hola | cat|echo hola | cat
+echo hola |cat|echo hola |cat
+echo hola || cat|echo hola || cat
+ech|o hola | cat|ech|o hola | cat
+cat Makefile | cat -e | cat -e|cat Makefile | cat -e | cat -e
+cat Makefile | grep srcs | cat -e|cat Makefile | grep srcs | cat -e
+cat Makefile | grep srcs | grep srcs | cat -e|cat Makefile | grep srcs | grep srcs | cat -e
+unset HOLA | cat -e|unset HOLA | cat -e
+env | grep PROUT|env | grep PROUT
+sleep 3 | sleep 3|sleep 3 | sleep 3
+time sleep 3 | sleep 3|time sleep 3 | sleep 3
+sleep 3 | exit|sleep 3 | exit
+exit | sleep 3|exit | sleep 3
+cat a | <b cat | cat > c | cat|cat a | <b cat | cat > c | cat
+pwd && ls|pwd && ls
+pwd || ls|pwd || ls
+echo bonjour || echo hola|echo bonjour || echo hola
+pwd || ls && echo hola|pwd || ls && echo hola
+pwd && ls || echo hola|pwd && ls || echo hola
+pwd || ls || echo hola|pwd || ls || echo hola
+ls || export ""|ls || export ""
+ls || ;|ls || ;
+; || ls|; || ls
+ls && ;|ls && ;
+; && ls|; && ls
+cat | echo || ls|cat | echo || ls
+cat | echo && ls|cat | echo && ls
+ls || cat | echo|ls || cat | echo
+ls && cat | echo|ls && cat | echo
+(ls||pwd)&&(ls||pwd)|(ls||pwd)&&(ls||pwd)
+(lss||pwd)&&(lss||pwd)|(lss||pwd)&&(lss||pwd)
+(lss&&pwd)&&(lss&&pwd)|(lss&&pwd)&&(lss&&pwd)
+(ls && pwd | wc) > hola|(ls && pwd | wc) > hola
+(ls && pwd | wc) > > hola|(ls && pwd | wc) > > hola
+(pwd | wc) < hola|(pwd | wc) < hola
+(ls -z || pwd | wc) < hola|(ls -z || pwd | wc) < hola
+(pwd | wc) < hola|(pwd | wc) < hola
+(ls && pwd | wc) < hola|(ls && pwd | wc) < hola
+(ls -z || pwd | wc) < hola|(ls -z || pwd | wc) < hola
+(ls -z || pwd && ls)|(ls -z || pwd && ls)
+ls || (cat Makefile|grep srcs) && (pwd|wc)|ls || (cat Makefile|grep srcs) && (pwd|wc)
+ls -z && (ls) && (pwd)|ls -z && (ls) && (pwd)
+ls -z || cd ../../..&&pwd|ls -z || cd ../../..&&pwd
+pwd|pwd
+ls -z || (cd ../../..&&pwd)|ls -z || (cd ../../..&&pwd)
+pwd|pwd
+> bonjour | echo hola|> bonjour | echo hola
+cat bonjour|cat bonjour
+<bonjour cat | wc > bonjour|<bonjour cat | wc > bonjour
+cat bonjour|cat bonjour
+rm -f bonjour|rm -f bonjour
+cat < < hola | rev|cat < < hola | rev
+
+# Catégorie: Commande echo
+echo|echo
+echo Hola Que Tal|echo Hola Que Tal
+echo         Hola|echo         Hola
+echo    Hola     Que    Tal|echo    Hola     Que    Tal
+echo      \n hola|echo      \n hola
+echo           | cat -e|echo           | cat -e
+""''echo hola""'''' que""'' tal""''|""''echo hola""'''' que""'' tal""''
+echo -p|echo -p
+echo $|echo $
+echo $?|echo $?
+echo $?$|echo $?$
+echo $:$= | cat -e|echo $:$= | cat -e
+echo ' $ ' | cat -e|echo ' $ ' | cat -e
+echo $HOME|echo $HOME
+echo \$HOME|echo \$HOME
+echo my shit terminal is [$TERM]|echo my shit terminal is [$TERM]
+echo my shit terminal is [$TERM4|echo my shit terminal is [$TERM4
+echo my shit terminal is [$TERM4]|echo my shit terminal is [$TERM4]
+echo $UID|echo $UID
+echo $HOME9|echo $HOME9
+echo $9HOME|echo $9HOME
+echo $HOME%|echo $HOME%
+echo $UID$HOME|echo $UID$HOME
+echo Le path de mon HOME est $HOME|echo Le path de mon HOME est $HOME
+echo $USER$var\$USER$USER\$USERtest$USER|echo $USER$var\$USER$USER\$USERtest$USER
+echo $hola*|echo $hola*
+echo | ||echo | |
+EechoE|EechoE
+.echo.|.echo.
+echo *|echo *
+echo '*'|echo '*'
+echo D*|echo D*
+echo *Z|echo *Z
+echo *t hola|echo *t hola
+echo *t|echo *t
+echo $*|echo $*
+echo hola*hola *|echo hola*hola *
+echo $hola*|echo $hola*
+echo $HOME*|echo $HOME*
+echo $""|echo $""
+echo "$"""|echo "$"""
+echo '$'''|echo '$'''
+echo $"HOME"|echo $"HOME"
+echo $''HOME|echo $''HOME
+echo $""HOME|echo $""HOME
+echo "$HO"ME|echo "$HO"ME
+echo '$HO'ME|echo '$HO'ME
+echo "$HO""ME"|echo "$HO""ME"
+echo '$HO''ME'|echo '$HO''ME'
+echo "'$HO''ME'"|echo "'$HO''ME'"
+echo ""$HOME|echo ""$HOME
+echo "" $HOME|echo "" $HOME
+echo ''$HOME|echo ''$HOME
+echo '' $HOME|echo '' $HOME
+echo $"HO""ME"|echo $"HO""ME"
+echo $'HO''ME'|echo $'HO''ME'
+echo $'HOME'|echo $'HOME'
+echo "$"HOME|echo "$"HOME
+echo $=HOME|echo $=HOME
+echo $"HOLA"|echo $"HOLA"
+echo $'HOLA'|echo $'HOLA'
+echo $DONTEXIST Hola|echo $DONTEXIST Hola
+echo "hola"|echo "hola"
+echo 'hola'|echo 'hola'
+echo ''hola''|echo ''hola''
+echo ''h'o'la''|echo ''h'o'la''
+echo "''h'o'la''"|echo "''h'o'la''"
+echo "'"h'o'la"'"|echo "'"h'o'la"'"
+echo"'hola'"|echo"'hola'"
+echo "'hola'"|echo "'hola'"
+echo '"hola"'|echo '"hola"'
+echo '''ho"''''l"a'''|echo '''ho"''''l"a'''
+echo hola""""""""""""|echo hola""""""""""""
+echo hola"''''''''''"|echo hola"''''''''''"
+echo hola''''''''''''|echo hola''''''''''''
+echo hola'""""""""""'|echo hola'""""""""""'
+e"cho hola"|e"cho hola"
+e'cho hola'|e'cho hola'
+echo ""hola|echo ""hola
+echo "" hola|echo "" hola
+echo ""             hola|echo ""             hola
+echo ""hola|echo ""hola
+echo "" hola|echo "" hola
+echo hola""bonjour|echo hola""bonjour
+"e"'c'ho 'b'"o"nj"o"'u'r|"e"'c'ho 'b'"o"nj"o"'u'r
+""e"'c'ho 'b'"o"nj"o"'u'r"|""e"'c'ho 'b'"o"nj"o"'u'r"
+echo "$DONTEXIST"Makefile|echo "$DONTEXIST"Makefile
+echo "$DONTEXIST""Makefile"|echo "$DONTEXIST""Makefile"
+echo "$DONTEXIST" "Makefile"|echo "$DONTEXIST" "Makefile"
+$?|$?
+$?$?|$?$?
+?$HOME|?$HOME
+$|$
+$HOME|$HOME
+$HOMEdskjhfkdshfsd|$HOMEdskjhfkdshfsd
+"$HOMEdskjhfkdshfsd"|"$HOMEdskjhfkdshfsd"
+'$HOMEdskjhfkdshfsd'|'$HOMEdskjhfkdshfsd'
+$DONTEXIST|$DONTEXIST
+$LESS$VAR|$LESS$VAR
+env|env
+env hola|env hola
+env hola que tal|env hola que tal
+env env|env env
+env env env env env|env env env env env
+env ls|env ls
+env ./Makefile|env ./Makefile
+echo $HOLA|echo $HOLA
+echo $HOLA|echo $HOLA
+echo $HOLA et $BYE|echo $HOLA et $BYE
+echo $HOLA et $BYE|echo $HOLA et $BYE
+echo $HOLA | cat -e|echo $HOLA | cat -e
+echo $HOLA|echo $HOLA
+echo $HOLA|echo $HOLA
+echo " $HOLA " | cat -e|echo " $HOLA " | cat -e
+echo $HOLA|echo $HOLA
+echo $HOLA$HOLA$HOLA=hey$HOLA|echo $HOLA$HOLA$HOLA=hey$HOLA
+echo $HOLA | cat -e|echo $HOLA | cat -e
+echo """$HOLA""" | cat -e|echo """$HOLA""" | cat -e
+echo wesh"$HOLA" | cat -e|echo wesh"$HOLA" | cat -e
+echo wesh""$HOLA.|echo wesh""$HOLA.
+echo wesh$""HOLA.|echo wesh$""HOLA.
+echo wesh$"HOLA HOLA".|echo wesh$"HOLA HOLA".
+echo $HOLA|echo $HOLA
+echo $HOLA|echo $HOLA
+echo $HOLA|echo $HOLA
+echo $HOLA|echo $HOLA
+echo "$A'$B"'$C"$D'$E'"$F'"'$G'$H"|echo "$A'$B"'$C"$D'$E'"$F'"'$G'$H"
+echo $PATH|echo $PATH
+unset PATH|unset PATH
+ls|ls
+unset ""|unset ""
+unset INEXISTANT|unset INEXISTANT
+unset PWD|unset PWD
+echo $PATH|echo $PATH
+unset PATH|unset PATH
+cat Makefile|cat Makefile
+unset =|unset =
+unset ======|unset ======
+unset ++++++|unset ++++++
+unset _______|unset _______
+unset export|unset export
+unset echo|unset echo
+unset pwd|unset pwd
+unset cd|unset cd
+unset unset|unset unset
+unset sudo|unset sudo
+echo $PWD|echo $PWD
+echo $OLDPWD|echo $OLDPWD
+mkdir a|mkdir a
+mkdir a/b|mkdir a/b
+echo $PWD|echo $PWD
+echo $OLDPWD|echo $OLDPWD
+mkdir a|mkdir a
+echo $PWD|echo $PWD
+echo $OLDPWD|echo $OLDPWD
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo | echo|echo | echo
+echo oui | cat -e|echo oui | cat -e
+echo oui | echo non | echo hola | grep non|echo oui | echo non | echo hola | grep non
+echo hola | cat -e | cat -e | cat -e|echo hola | cat -e | cat -e | cat -e
+echo test.c | cat -e| cat -e| cat -e| cat -e| cat -e| cat -e| cat -e| cat -e|cat -e|cat -e|cat -e|echo test.c | cat -e| cat -e| cat -e| cat -e| cat -e| cat -e| cat -e| cat -e|cat -e|cat -e|cat -e
+echo hola | cat | cat | cat | cat | cat | grep hola|echo hola | cat | cat | cat | cat | cat | grep hola
+echo hola| cat|echo hola| cat
+echo hola|cat|echo hola|cat
+echo hola ||| cat|echo hola ||| cat
+echo hola > a|echo hola > a
+echo hola || echo bonjour|echo hola || echo bonjour
+echo hola && echo bonjour|echo hola && echo bonjour
+echo bonjour && echo hola|echo bonjour && echo hola
+pwd && ls && echo hola|pwd && ls && echo hola
+echo hey&&(ls && pwd | wc) > hola|echo hey&&(ls && pwd | wc) > hola
+cat hola|cat hola
+echo hey > hola|echo hey > hola
+echo hey > hola|echo hey > hola
+echo hey > hola|echo hey > hola
+echo hola > bonjour|echo hola > bonjour
+cat bonjour|cat bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+rm bonjour|rm bonjour
+echo hola que tal > bonjour|echo hola que tal > bonjour
+cat bonjour|cat bonjour
+echo bonjour > $HOLA|echo bonjour > $HOLA
+echo $HOLA|echo $HOLA
+echo hola > > bonjour|echo hola > > bonjour
+echo hola > >> bonjour|echo hola > >> bonjour
+echo hola > hello > > hello > > hello|echo hola > hello > > hello > > hello
+ls|ls
+cat hello|cat hello
+echo hola > > hello|echo hola > > hello
+echo hola > hello > > hello > > hello|echo hola > hello > > hello > > hello
+echo hola > hello > > hello > > hello|echo hola > hello > > hello > > hello
+echo hola > > hello > > hello > hello|echo hola > > hello > > hello > hello
+echo hola > > hello > > hello > hello|echo hola > > hello > > hello > hello
+echo hola > > hello > > hello > hello|echo hola > > hello > > hello > hello
+echo hola > hello|echo hola > hello
+echo hola > > hello|echo hola > > hello
+echo hola > hello|echo hola > hello
+echo <bonjour <hello|echo <bonjour <hello
+echo hey > bonjour|echo hey > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour > hello > bonjour|echo hola > bonjour > hello > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour > > hello > bonjour|echo hola > bonjour > > hello > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour > hello > > bonjour|echo hola > bonjour > hello > > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > > bonjour > hello > bonjour|echo hola > > bonjour > hello > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+echo hola > bonjour|echo hola > bonjour
+echo hola > > bonjour > > hello > > bonjour|echo hola > > bonjour > > hello > > bonjour
+cat bonjour|cat bonjour
+cat hello|cat hello
+echo hey > hello|echo hey > hello
+echo bonjour > hola1|echo bonjour > hola1
+echo 2 >hola1 > > hola2|echo 2 >hola1 > > hola2
+ls|ls
+cat hola1|cat hola1
+cat hola2|cat hola2
+echo hello > hola2|echo hello > hola2
+echo hola > bonjour|echo hola > bonjour
+echo hola >bonjour|echo hola >bonjour
+echo hola>bonjour|echo hola>bonjour
+echo hola> bonjour|echo hola> bonjour
+echo hola               >bonjour|echo hola               >bonjour
+echo hola          >     bonjour|echo hola          >     bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola >srcs/bonjour|echo hola >srcs/bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+rm bonjour|rm bonjour
+echo hola > bonjour\ 1|echo hola > bonjour\ 1
+ls|ls
+cat bonjour\ 1|cat bonjour\ 1
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > ../bonjour|echo hola > ../bonjour
+echo hola > ../bonjour|echo hola > ../bonjour
+echo hola > ../bonjour|echo hola > ../bonjour
+echo hola > ../bonjour|echo hola > ../bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > srcs/bonjour|echo hola > srcs/bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo hola > bonjour|echo hola > bonjour
+echo $PROUT$B$C > /tmp/a > /tmp/b > /tmp/c|echo $PROUT$B$C > /tmp/a > /tmp/b > /tmp/c
+cat /tmp/a|cat /tmp/a
+cat /tmp/b|cat /tmp/b
+cat /tmp/c|cat /tmp/c
+echo hola > a > b > c|echo hola > a > b > c
+cat a|cat a
+cat b|cat b
+cat c|cat c
+mkdir dir|mkdir dir
+echo hola < << bonjour|echo hola < << bonjour
+echo hola < << << bonjour|echo hola < << << bonjour
+ls *|ls *
+ls *.*|ls *.*
+ls *.hola|ls *.hola
+cat M*le|cat M*le
+cat M*ee|cat M*ee
+cat Make*file|cat Make*file
+
+# Catégorie: Export de variables
+export HOLA=bonjour|export HOLA=bonjour
+env|env
+export       HOLA=bonjour|export       HOLA=bonjour
+env|env
+export|export
+export Hola|export Hola
+export|export
+export Hola9hey|export Hola9hey
+export|export
+export $DONTEXIST|export $DONTEXIST
+export | grep "HOME"|export | grep "HOME"
+export ""|export ""
+export =|export =
+export %|export %
+export $?|export $?
+export ?=2|export ?=2
+export 9HOLA=|export 9HOLA=
+export HOLA9=bonjour|export HOLA9=bonjour
+env|env
+export _HOLA=bonjour|export _HOLA=bonjour
+env|env
+export ___HOLA=bonjour|export ___HOLA=bonjour
+env|env
+export _HO_LA_=bonjour|export _HO_LA_=bonjour
+env|env
+export HOL@=bonjour|export HOL@=bonjour
+export HOL\~A=bonjour|export HOL\~A=bonjour
+export -HOLA=bonjour|export -HOLA=bonjour
+export --HOLA=bonjour|export --HOLA=bonjour
+export HOLA-=bonjour|export HOLA-=bonjour
+export HO-LA=bonjour|export HO-LA=bonjour
+export HOL.A=bonjour|export HOL.A=bonjour
+export HOL\\\$A=bonjour|export HOL\\\$A=bonjour
+export HO\\\\LA=bonjour|export HO\\\\LA=bonjour
+export HOL}A=bonjour|export HOL}A=bonjour
+export HOL{A=bonjour|export HOL{A=bonjour
+export HO*LA=bonjour|export HO*LA=bonjour
+export HO#LA=bonjour|export HO#LA=bonjour
+export HO@LA=bonjour|export HO@LA=bonjour
+export HO!LA=bonjour|export HO!LA=bonjour
+export HO$?LA=bonjour|export HO$?LA=bonjour
+env|env
+export +HOLA=bonjour|export +HOLA=bonjour
+export HOL+A=bonjour|export HOL+A=bonjour
+export HOLA+=bonjour|export HOLA+=bonjour
+env|env
+export HOLA=bonjour|export HOLA=bonjour
+export HOLA+=bonjour|export HOLA+=bonjour
+env|env
+exportHOLA=bonjour|exportHOLA=bonjour
+env|env
+export HOLA =bonjour|export HOLA =bonjour
+export HOLA = bonjour|export HOLA = bonjour
+export HOLA=bon jour|export HOLA=bon jour
+env|env
+export HOLA= bonjour|export HOLA= bonjour
+env|env
+export HOLA=bonsoir|export HOLA=bonsoir
+export HOLA=bonretour|export HOLA=bonretour
+export HOLA=bonjour|export HOLA=bonjour
+env|env
+export HOLA=$HOME|export HOLA=$HOME
+env|env
+export HOLA=bonjour$HOME|export HOLA=bonjour$HOME
+env|env
+export HOLA=$HOMEbonjour|export HOLA=$HOMEbonjour
+env|env
+export HOLA=bon$jour|export HOLA=bon$jour
+env|env
+export HOLA=bon\jour|export HOLA=bon\jour
+env|env
+export HOLA=bon\\jour|export HOLA=bon\\jour
+env|env
+export HOLA=bon(jour|export HOLA=bon(jour
+export HOLA=bon()jour|export HOLA=bon()jour
+export HOLA=bon&jour|export HOLA=bon&jour
+export HOLA=bon@jour|export HOLA=bon@jour
+env|env
+export HOLA=bon;jour|export HOLA=bon;jour
+env|env
+export HOLA=bon!jour|export HOLA=bon!jour
+export HOLA=bon"jour"|export HOLA=bon"jour"
+env|env
+export HOLA$USER=bonjour|export HOLA$USER=bonjour
+env|env
+export HOLA=bonjour=casse-toi|export HOLA=bonjour=casse-toi
+export "HOLA=bonjour"=casse-toi|export "HOLA=bonjour"=casse-toi
+export HOLA=bonjour|export HOLA=bonjour
+export BYE=casse-toi|export BYE=casse-toi
+export HOLA=bonjour BYE=casse-toi|export HOLA=bonjour BYE=casse-toi
+export $HOLA=bonjour|export $HOLA=bonjour
+env|env
+export HOLA="bonjour      "|export HOLA="bonjour      "
+export HOLA="bonjour   "/|export HOLA="bonjour   "/
+export HOLA='"'|export HOLA='"'
+export HOLA=at|export HOLA=at
+c$HOLA Makefile|c$HOLA Makefile
+export "" HOLA=bonjour|export "" HOLA=bonjour
+env|env
+export HOLA="cat Makefile | grep NAME"|export HOLA="cat Makefile | grep NAME"
+export HOLA=hey|export HOLA=hey
+export HOLA="  bonjour  hey  "|export HOLA="  bonjour  hey  "
+export HOLA="  bonjour  hey  "|export HOLA="  bonjour  hey  "
+export HOLA="  bonjour  hey  "|export HOLA="  bonjour  hey  "
+export HOLA="  bonjour  hey  "|export HOLA="  bonjour  hey  "
+export HOLA="  bonjour  hey  "|export HOLA="  bonjour  hey  "
+export HOLA="  bonjour  hey  "|export HOLA="  bonjour  hey  "
+export HOLA=bonjour|export HOLA=bonjour
+export HOLA=" hola et $HOLA"|export HOLA=" hola et $HOLA"
+export HOLA=bonjour|export HOLA=bonjour
+export HOLA=' hola et $HOLA'|export HOLA=' hola et $HOLA'
+export HOLA=bonjour|export HOLA=bonjour
+export HOLA=" hola et $HOLA"$HOLA|export HOLA=" hola et $HOLA"$HOLA
+export HOLA="ls        -l    - a"|export HOLA="ls        -l    - a"
+export HOLA="s -la"|export HOLA="s -la"
+l$HOLA|l$HOLA
+export HOLA="s -la"|export HOLA="s -la"
+l"$HOLA"|l"$HOLA"
+export HOLA="s -la"|export HOLA="s -la"
+l'$HOLA'|l'$HOLA'
+export HOLA="l"|export HOLA="l"
+$HOLAs|$HOLAs
+export HOLA="l"|export HOLA="l"
+"$HOLA"s|"$HOLA"s
+export HOL=A=bonjour|export HOL=A=bonjour
+env|env
+export HOLA="l"|export HOLA="l"
+'$HOLA's|'$HOLA's
+export HOL=A=""|export HOL=A=""
+env|env
+export TE+S=T|export TE+S=T
+env|env
+export ""=""|export ""=""
+export ''=''|export ''=''
+export "="="="|export "="="="
+export '='='='|export '='='='
+export HOLA=p|export HOLA=p
+export BYE=w|export BYE=w
+$HOLA"BYE"d|$HOLA"BYE"d
+export HOLA=p|export HOLA=p
+export BYE=w|export BYE=w
+"$HOLA"'$BYE'd|"$HOLA"'$BYE'd
+export HOLA=p|export HOLA=p
+export BYE=w|export BYE=w
+"$HOLA""$BYE"d|"$HOLA""$BYE"d
+export HOLA=p|export HOLA=p
+export BYE=w|export BYE=w
+$"HOLA"$"BYE"d|$"HOLA"$"BYE"d
+export HOLA=p|export HOLA=p
+export BYE=w|export BYE=w
+$'HOLA'$'BYE'd|$'HOLA'$'BYE'd
+"echo $HOLA" hey|"echo $HOLA" hey
+export A=1 B=2 C=3 D=4 E=5 F=6 G=7 H=8|export A=1 B=2 C=3 D=4 E=5 F=6 G=7 H=8
+export HOLA=bonjour|export HOLA=bonjour
+env|env
+unset HOLA|unset HOLA
+env|env
+export HOLA=bonjour|export HOLA=bonjour
+env|env
+unset HOLA|unset HOLA
+unset HOLA|unset HOLA
+env|env
+unset PATH|unset PATH
+export hola | unset hola | echo $?|export hola | unset hola | echo $?
+/bin/echo|/bin/echo
+/bin/echo Hola Que Tal|/bin/echo Hola Que Tal
+/bin/env|/bin/env
+/bin/cd Desktop|/bin/cd Desktop
+history|history
+[touche du haut]|[touche du haut]
+pwd|pwd
+pwd hola|pwd hola
+pwd ./hola|pwd ./hola
+pwd hola que tal|pwd hola que tal
+pwd -p|pwd -p
+pwd --p|pwd --p
+pwd ---p|pwd ---p
+pwd -- p|pwd -- p
+pwd pwd pwd|pwd pwd pwd
+pwd ls|pwd ls
+pwd ls env|pwd ls env
+export HOME=|export HOME=
+export HOME|export HOME
+export CDPATH=/|export CDPATH=/
+export CDPATH=/|export CDPATH=/
+export CDPATH=./|export CDPATH=./
+export CDPATH=./|export CDPATH=./
+export|export
+env -i ./minishell|env -i ./minishell
+export HOLA=bonjour | cat -e | cat -e|export HOLA=bonjour | cat -e | cat -e
+export HOLA | echo hola|export HOLA | echo hola
+export | echo hola|export | echo hola
+export "" || ls|export "" || ls
+ls && export ""|ls && export ""
+export "" && ls|export "" && ls
+export "" && unset ""|export "" && unset ""
+(ls)|(ls)
+( ( ls ) )|( ( ls ) )
+( ( ) ls )|( ( ) ls )
+ls && (ls)|ls && (ls)
+(ls && pwd)|(ls && pwd)
+( ( ls&&pwd ) )|( ( ls&&pwd ) )
+( ( ls ) &&pwd )|( ( ls ) &&pwd )
+(ls && ( ( pwd ) ) )|(ls && ( ( pwd ) ) )
+export HOLA=hey|export HOLA=hey
+export HOLA="bonjour hello"|export HOLA="bonjour hello"
+export HOLA="bonjour hello"|export HOLA="bonjour hello"
+export HOLA="bonjour hello"|export HOLA="bonjour hello"
+export HOLA="bonjour hello"|export HOLA="bonjour hello"
+export HOLA="bonjour hello"|export HOLA="bonjour hello"
+export HOLA="bonjour hello"|export HOLA="bonjour hello"
+export A=hey|export A=hey
+export A B=Hola D E C="Que Tal"|export A B=Hola D E C="Que Tal"
+
+# Catégorie: Navigation dans les répertoires
+cd $PWD|cd $PWD
+pwd|pwd
+unset OLDPWD|unset OLDPWD
+cd|cd
+cd .|cd .
+cd ./|cd ./
+cd ./././.|cd ./././.
+cd ././././|cd ././././
+cd ..|cd ..
+cd ../|cd ../
+cd ../..|cd ../..
+cd ../.|cd ../.
+cd .././././.|cd .././././.
+cd srcs|cd srcs
+cd srcs objs|cd srcs objs
+cd 'srcs'|cd 'srcs'
+cd "srcs"|cd "srcs"
+cd '/etc'|cd '/etc'
+cd /e'tc'|cd /e'tc'
+cd /e"tc"|cd /e"tc"
+cd sr|cd sr
+cd Makefile|cd Makefile
+cd ../minishell|cd ../minishell
+cd ../../../../../../..|cd ../../../../../../..
+cd .././../.././../bin/ls|cd .././../.././../bin/ls
+cd /|cd /
+cd '/'|cd '/'
+cd //|cd //
+pwd|pwd
+cd '//'|cd '//'
+pwd|pwd
+cd ///|cd ///
+pwd|pwd
+cd ////////|cd ////////
+pwd|pwd
+cd '////////'|cd '////////'
+pwd|pwd
+cd /minishell|cd /minishell
+cd /|cd /
+cd ..|cd ..
+cd _|cd _
+cd -|cd -
+cd --|cd --
+cd ---|cd ---
+cd $HOME|cd $HOME
+cd $HOME $HOME|cd $HOME $HOME
+cd $HOME/42_works|cd $HOME/42_works
+cd "$PWD/srcs"|cd "$PWD/srcs"
+cd '$PWD/srcs'|cd '$PWD/srcs'
+unset HOME|unset HOME
+cd $HOME|cd $HOME
+unset HOME|unset HOME
+cd|cd
+unset HOME|unset HOME
+cd|cd
+cd minishell Docs crashtest.c|cd minishell Docs crashtest.c
+cd / | echo $?|cd / | echo $?
+pwd|pwd
+cd ~|cd ~
+cd ~/|cd ~/
+cd ~/ | echo $?|cd ~/ | echo $?
+pwd|pwd
+cd *|cd *
+cd *|cd *
+cd *|cd *
+mkdir a|mkdir a
+mkdir a/b|mkdir a/b
+cd a/b|cd a/b
+rm -r ../../a|rm -r ../../a
+cd ..|cd ..
+mkdir a|mkdir a
+mkdir a/b|mkdir a/b
+cd a/b|cd a/b
+rm -r ../../a|rm -r ../../a
+pwd|pwd
+mkdir a|mkdir a
+mkdir a/b|mkdir a/b
+cd a/b|cd a/b
+rm -r ../../a|rm -r ../../a
+cd a/b|cd a/b
+rm -r ../../a|rm -r ../../a
+cd|cd
+cd a|cd a
+rm -r ../a|rm -r ../a
+cd $HOME/..|cd $HOME/..
+cd home/vietdu91|cd home/vietdu91
+cd .|cd .
+cd ..|cd ..
+chmod 000 minishell|chmod 000 minishell
+./minishell|./minishell
+ls hola|ls hola
+./Makefile|./Makefile
+./minishell|./minishell
+cd|cd
+env -i ./minishell|env -i ./minishell
+cd ~|cd ~
+exit|exit
+exit exit|exit exit
+exit hola|exit hola
+exit hola que tal|exit hola que tal
+exit 42|exit 42
+exit 000042|exit 000042
+exit 666|exit 666
+exit 666 666|exit 666 666
+exit -666 666|exit -666 666
+exit hola 666|exit hola 666
+exit 666 666 666 666|exit 666 666 666 666
+exit 666 hola 666|exit 666 hola 666
+exit hola 666 666|exit hola 666 666
+exit 259|exit 259
+exit -4|exit -4
+exit -42|exit -42
+exit -0000042|exit -0000042
+exit -259|exit -259
+exit -666|exit -666
+exit +666|exit +666
+exit 0|exit 0
+exit +0|exit +0
+exit -0|exit -0
+exit +42|exit +42
+exit -69 -96|exit -69 -96
+exit --666|exit --666
+exit ++++666|exit ++++666
+exit ++++++0|exit ++++++0
+exit ------0|exit ------0
+exit "666"|exit "666"
+exit '666'|exit '666'
+exit '-666'|exit '-666'
+exit '+666'|exit '+666'
+exit '----666'|exit '----666'
+exit '++++666'|exit '++++666'
+exit '6'66|exit '6'66
+exit '2'66'32'|exit '2'66'32'
+exit "'666'"|exit "'666'"
+exit '"666"'|exit '"666"'
+exit '666'"666"666|exit '666'"666"666
+exit +'666'"666"666|exit +'666'"666"666
+exit -'666'"666"666|exit -'666'"666"666
+exit 9223372036854775807|exit 9223372036854775807
+exit 9223372036854775808|exit 9223372036854775808
+exit -9223372036854775808|exit -9223372036854775808
+exit -9223372036854775809|exit -9223372036854775809
+cd .. | echo "hola"|cd .. | echo "hola"
+cd / | echo "hola"|cd / | echo "hola"
+cd .. | pwd|cd .. | pwd
+cd ../.. && pwd && pwd|cd ../.. && pwd && pwd
+(cd ../.. && pwd) && pwd|(cd ../.. && pwd) && pwd
+

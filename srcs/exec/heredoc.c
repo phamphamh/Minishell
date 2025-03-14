@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 11:10:38 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:16:07 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,8 @@ int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *cmd,
 		return (-1);
 	if (ft_wait_heredoc(pid, heredoc_pipe) == -1)
 		return (-1);
-	if (cmd->args && cmd->args[0] && output_redir)
+	if (cmd->args && cmd->args[0] && cmd->name
+		&& ft_strcmp(cmd->name, "heredoc") != 0)
 	{
 		ft_execute_heredoc_command(cmd, output_redir, minishell,
 			heredoc_pipe[0]);

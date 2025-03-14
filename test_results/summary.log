@@ -1,0 +1,114 @@
+RÉSUMÉ DES TESTS MINISHELL
+Date: Fri Mar 14 10:23:01 AM CET 2025
+
+[ECHO] Test 1: echo simple - ÉCHOUÉ
+[ECHO] Test 2: echo avec plusieurs arguments - ÉCHOUÉ
+[ECHO] Test 3: echo avec option -n - ÉCHOUÉ
+[ECHO] Test 4: echo avec guillemets - ÉCHOUÉ
+[ECHO] Test 5: echo avec apostrophes - ÉCHOUÉ
+[ECHO] Test 6: echo avec guillemets et variables - ÉCHOUÉ
+[ECHO] Test 7: echo avec apostrophes et variables - ÉCHOUÉ
+[ECHO] Test 8: echo vide - ÉCHOUÉ
+[ECHO] Test 9: echo avec espaces - ÉCHOUÉ
+[ECHO] Test 10: echo avec tabulations - ÉCHOUÉ
+[ENV_VARS] Test 11: Afficher la variable HOME - ÉCHOUÉ
+[ENV_VARS] Test 12: Variable non définie - ÉCHOUÉ
+[ENV_VARS] Test 13: Variable avec paramètres supplémentaires - ÉCHOUÉ
+[ENV_VARS] Test 14: Variable avec échappement - ÉCHOUÉ
+[ENV_VARS] Test 15: Variable dans guillemets doubles - ÉCHOUÉ
+[ENV_VARS] Test 16: Variable dans guillemets simples - ÉCHOUÉ
+[ENV_VARS] Test 17: Exporter une variable - ÉCHOUÉ
+[ENV_VARS] Test 18: Supprimer une variable - ÉCHOUÉ
+[REDIR] Test 19: Redirection de sortie simple - ÉCHOUÉ
+[REDIR] Test 20: Redirection de sortie avec append - ÉCHOUÉ
+[REDIR] Test 21: Redirection d'entrée - ÉCHOUÉ
+[REDIR] Test 22: Redirection d'entrée et sortie - ÉCHOUÉ
+[REDIR] Test 23: Heredoc simple - ÉCHOUÉ
+[REDIR] Test 24: Heredoc avec variable - ÉCHOUÉ
+[REDIR] Test 25: Heredoc avec guillemets - ÉCHOUÉ
+[PIPES] Test 26: Pipe simple - ÉCHOUÉ
+[PIPES] Test 27: Pipe multiple - ÉCHOUÉ
+[PIPES] Test 28: Pipe avec grep - ÉCHOUÉ
+[PIPES] Test 29: Pipe avec wc - ÉCHOUÉ
+[PIPES] Test 30: Pipe avec redirection - ÉCHOUÉ
+[BUILTINS] Test 31: CD simple - ÉCHOUÉ
+[BUILTINS] Test 32: CD avec chemin relatif - ÉCHOUÉ
+[BUILTINS] Test 33: PWD - ÉCHOUÉ
+[BUILTINS] Test 34: Export sans argument - ÉCHOUÉ
+[BUILTINS] Test 35: Export avec assignation - ÉCHOUÉ
+[BUILTINS] Test 36: Unset - ÉCHOUÉ
+[BUILTINS] Test 37: Exit avec code - ÉCHOUÉ
+[BUILTINS] Test 38: Exit sans argument - ÉCHOUÉ
+[SYNTAX] Test 39: Guillemets non fermés - ÉCHOUÉ
+[SYNTAX] Test 40: Pipe vide - ÉCHOUÉ
+[SYNTAX] Test 41: Double pipe - ÉCHOUÉ
+[SYNTAX] Test 42: Commande non trouvée - ÉCHOUÉ
+[SYNTAX] Test 43: Redirection vers fichier inexistant - ÉCHOUÉ
+[SYNTAX] Test 44: Permission refusée - ÉCHOUÉ
+[SPECIAL_CHAR] Test 45: Guillemets dans guillemets - ÉCHOUÉ
+[SPECIAL_CHAR] Test 46: Apostrophes dans guillemets - ÉCHOUÉ
+[SPECIAL_CHAR] Test 47: Caractère d'échappement - ÉCHOUÉ
+[SPECIAL_CHAR] Test 48: Astérisque avec wildcard - ÉCHOUÉ
+[SPECIAL_CHAR] Test 49: Question avec wildcard - ÉCHOUÉ
+[SPECIAL_CHAR] Test 50: Caractère $ - ÉCHOUÉ
+[SPECIAL_CHAR] Test 51: Caractère ? - ÉCHOUÉ
+[COMPLEX] Test 52: Commande multiple avec pipes - ÉCHOUÉ
+[COMPLEX] Test 53: Redirection multiple - ÉCHOUÉ
+[COMPLEX] Test 54: Utilisation PATH relatif - ÉCHOUÉ
+[COMPLEX] Test 55: Commande avec options multiples - ÉCHOUÉ
+[COMPLEX] Test 56: Export avec valeur complexe - ÉCHOUÉ
+[ADDITIONAL] Test 57: \n (touche entrée) - ÉCHOUÉ
+[ADDITIONAL] Test 58: [que des tabulations] - ÉCHOUÉ
+[ADDITIONAL] Test 59: : - ÉCHOUÉ
+[ADDITIONAL] Test 60: ! - ÉCHOUÉ
+[ADDITIONAL] Test 61: > - ÉCHOUÉ
+[ADDITIONAL] Test 62: < - ÉCHOUÉ
+[ADDITIONAL] Test 63: > > - ÉCHOUÉ
+[ADDITIONAL] Test 64: < < - ÉCHOUÉ
+[ADDITIONAL] Test 65: <> - ÉCHOUÉ
+[ADDITIONAL] Test 66: > >> >> - ÉCHOUÉ
+[ADDITIONAL] Test 67: > >> >> >> >> >> >> >> - ÉCHOUÉ
+[ADDITIONAL] Test 68: < << << - ÉCHOUÉ
+[ADDITIONAL] Test 69: < << << << << << << << < - ÉCHOUÉ
+[ADDITIONAL] Test 70: > > > > - ÉCHOUÉ
+[ADDITIONAL] Test 71: > > > > > > > > - ÉCHOUÉ
+[ADDITIONAL] Test 72: > >> > > > > > > > - ÉCHOUÉ
+[ADDITIONAL] Test 73: / - ÉCHOUÉ
+[ADDITIONAL] Test 74: // - ÉCHOUÉ
+[ADDITIONAL] Test 75: /. - ÉCHOUÉ
+[ADDITIONAL] Test 76: /./../../../../.. - ÉCHOUÉ
+[ADDITIONAL] Test 77: /////// - ÉCHOUÉ
+[ADDITIONAL] Test 78: \\ - ÉCHOUÉ
+[ADDITIONAL] Test 79: \\\\ - ÉCHOUÉ
+[ADDITIONAL] Test 80: \\\\\\\\ - ÉCHOUÉ
+[ADDITIONAL] Test 81: - - ÉCHOUÉ
+[ADDITIONAL] Test 82: > > - ÉCHOUÉ
+[ADDITIONAL] Test 83: && - ÉCHOUÉ
+[ADDITIONAL] Test 84: &&&&& - ÉCHOUÉ
+[ADDITIONAL] Test 85: &&&&&&&&&&&&&& - ÉCHOUÉ
+[ADDITIONAL] Test 86: ;; - ÉCHOUÉ
+[ADDITIONAL] Test 87: ;;;;; - ÉCHOUÉ
+[ADDITIONAL] Test 88: ;;;;;;;;;;;;;;; - ÉCHOUÉ
+[ADDITIONAL] Test 89: () - ÉCHOUÉ
+[ADDITIONAL] Test 90: ( ( ) ) - ÉCHOUÉ
+[ADDITIONAL] Test 91: ( ( ( ( ) ) ) ) - ÉCHOUÉ
+[ADDITIONAL] Test 92: "" - ÉCHOUÉ
+[ADDITIONAL] Test 93: "hola" - ÉCHOUÉ
+[ADDITIONAL] Test 94: 'hola' - ÉCHOUÉ
+[ADDITIONAL] Test 95: '' - ÉCHOUÉ
+[ADDITIONAL] Test 96: * - ÉCHOUÉ
+[ADDITIONAL] Test 97: */* - ÉCHOUÉ
+[ADDITIONAL] Test 98: */* - ÉCHOUÉ
+[ADDITIONAL] Test 99: . - ÉCHOUÉ
+[ADDITIONAL] Test 100: .. - ÉCHOUÉ
+[ADDITIONAL] Test 101: ~ - ÉCHOUÉ
+[ADDITIONAL] Test 102: ABC=hola - ÉCHOUÉ
+[ADDITIONAL] Test 103: 4ABC=hola - ÉCHOUÉ
+[ADDITIONAL] Test 104: hola - ÉCHOUÉ
+[ADDITIONAL] Test 105: hola que tal - ÉCHOUÉ
+[ADDITIONAL] Test 106: Makefile - ÉCHOUÉ
+[ADDITIONAL] Test 107: echo > < - ÉCHOUÉ
+[ADDITIONAL] Test 108: >echo> - ÉCHOUÉ
+[ADDITIONAL] Test 109: <echo< - ÉCHOUÉ
+[ADDITIONAL] Test 110: > >echo> > - ÉCHOUÉ
+[ADDITIONAL] Test 111: whoami  - ÉCHOUÉ
