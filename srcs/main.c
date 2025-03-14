@@ -6,14 +6,11 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 10:07:29 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 12:17:31 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/header.h"
-
-// Initialisation de la variable globale pour les signaux
-int			g_signal_received = 0;
 
 /**
  * @brief Initialise l'environnement et le garbage collector
@@ -44,9 +41,19 @@ static bool	has_path_variable(t_env *env)
 
 void	ft_initialize(t_minishell *minishell, char **envp)
 {
+	t_env	*env_current;
+
 	set_default_values(minishell);
 	minishell->env = ft_env_to_list(envp, minishell);
 	check_env_initialization(minishell, envp);
+	env_current = minishell->env;
+	while (env_current)
+	{
+		ft_gc_add(&minishell->gc_head, env_current);
+		if (env_current->var)
+			ft_gc_add(&minishell->gc_head, env_current->var);
+		env_current = env_current->next;
+	}
 	if (!has_path_variable(minishell->env))
 		set_default_path(minishell);
 }

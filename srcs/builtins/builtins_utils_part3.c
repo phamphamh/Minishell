@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils_part3.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 12:08:39 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 12:13:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	update_env_var(t_env *env, const char *name, const char *new_value,
 			free(temp);
 			if (!new_var)
 				return ;
+			ft_gc_remove(&minishell->gc_head, current->var);
 			free(current->var);
 			current->var = new_var;
 			ft_gc_add(&minishell->gc_head, new_var);
