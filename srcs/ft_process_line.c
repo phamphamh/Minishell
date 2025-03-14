@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 10:07:29 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:25:15 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static int	execute_commands(t_minishell *minishell, t_cmd *cmd)
 	if (cmd == NULL)
 		return (0);
 	last_pid = -1;
-	if (ft_is_builtin(cmd->name) && !cmd->has_pipe)
+	if (cmd->name && ft_is_builtin(cmd->name) && !cmd->has_pipe)
 	{
 		if (!ft_handle_redirection(cmd, cmd->redirs, true, minishell))
 			return (1);

@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 11:58:33 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 10:07:29 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:26:14 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	ft_execute_child_process(t_cmd *cmd, t_minishell *minishell)
 
 	ft_setup_child_env(cmd, minishell);
 	ft_check_grep_argument(cmd, minishell);
-	if (ft_is_builtin(cmd->name))
+	if (cmd->name && ft_is_builtin(cmd->name))
 	{
 		exit_code = ft_execute_builtin(cmd, minishell);
 		ft_clean_exit(minishell, exit_code);
