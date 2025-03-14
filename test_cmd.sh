@@ -1,1 +1,0 @@
-cat <missing | cat; echo $?

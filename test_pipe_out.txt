@@ -1,4 +1,0 @@
->_Ceci_est_un_test
->_avec_des_espaces
->_qui_seront_remplacés
->_eof

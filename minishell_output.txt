@@ -1,5 +1,0 @@
-> Texte de test
-> dans minishell
-> eof
-Texte de test
-dans minishell

@@ -1,4 +1,0 @@
-> Contenu du heredoc qui devrait être
-> écrit dans le fichier test_pipe_redirect.txt
-> via le pipe et la redirection
-> eof
