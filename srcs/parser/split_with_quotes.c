@@ -6,19 +6,11 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 20:47:50 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/14 11:27:58 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:36:12 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/header.h"
-
-/**
- * @brief Vérifie si un caractère est une quote.
- */
-bool	is_quote(char c)
-{
-	return (c == '\'' || c == '"');
-}
 
 /**
  * @brief Passe les caractères entre quotes.
@@ -81,9 +73,9 @@ static int	process_tokens(const char *s, t_split_env *env)
 static char	*add_space_after_heredoc(const char *s)
 {
 	char	*modified_input;
+	int		i;
+	int		j;
 
-	int i, j;
-	// Allouer un buffer plus grand (au cas où on ajoute un espace)
 	modified_input = malloc(ft_strlen(s) * 2);
 	if (!modified_input)
 		return (NULL);
@@ -91,12 +83,10 @@ static char	*add_space_after_heredoc(const char *s)
 	j = 0;
 	while (s[i])
 	{
-		// 🔥 Si `<<` détecté, vérifier s'il est suivi immédiatement d'un mot
 		if (s[i] == '<' && s[i + 1] == '<')
 		{
 			modified_input[j++] = s[i++];
 			modified_input[j++] = s[i++];
-			// Ajouter un espace si `<<` est immédiatement suivi d'un mot
 			if (s[i] && s[i] != ' ')
 				modified_input[j++] = ' ';
 		}

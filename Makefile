@@ -56,6 +56,7 @@ SRCS = srcs/main.c \
        srcs/parser/cmd_parser.c \
        srcs/parser/cmd_parser_utils.c \
        srcs/parser/parser_utils.c \
+       srcs/parser/parser_utils2.c \
        srcs/parser/split_with_quotes.c \
        srcs/parser/split_utils.c \
        srcs/parser/check_syntax_utils.c \
