@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_process_line.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/13 13:28:40 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 09:53:10 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,18 @@ static void	setup_pids(pid_t **pids, int cmd_count, t_minishell *minishell)
 
 void	ft_print_commands(t_cmd *cmds)
 {
-	t_cmd	*current = cmds;
-	int		cmd_index = 0;
+	t_cmd	*current;
+	int		cmd_index;
 	int		arg_index;
 	t_redirection *redir;
 
+	current = cmds;
+	cmd_index = 0;
 	printf("\n🔹 Liste des commandes générées :\n");
-
 	while (current)
 	{
 		printf("🔹 Commande %d:\n", cmd_index);
 		printf("   - Nom: %s\n", current->name ? current->name : "(null)");
-
-		// Affichage des arguments
 		printf("   - Arguments: ");
 		if (current->args)
 		{
@@ -68,89 +67,46 @@ void	ft_print_commands(t_cmd *cmds)
 		else
 			printf("(null)");
 		printf("\n");
-
-		// Affichage des redirections
 		printf("   - Redirections:\n");
 		redir = current->redirs;
 		while (redir)
 		{
-			if (redir->type == TOKEN_REDIR_IN)
+			if (redir->type == TOKEN_REDIR_IN && redir->file)
 				printf("     ⏩ Input  (<) -> %s\n", redir->file);
-			else if (redir->type == TOKEN_REDIR_OUT)
+			else if (redir->type == TOKEN_REDIR_OUT && redir->file)
 				printf("     ⏩ Output (>) -> %s\n", redir->file);
-			else if (redir->type == TOKEN_REDIR_APPEND)
+			else if (redir->type == TOKEN_REDIR_APPEND && redir->file)
 				printf("     ⏩ Append (>>) -> %s\n", redir->file);
-			else if (redir->type == TOKEN_HEREDOC)
+			else if (redir->type == TOKEN_HEREDOC && redir->file)
 				printf("     ⏩ Here-Doc (<<) -> %s\n", redir->file);
 			redir = redir->next;
 		}
-
-		// Affichage des pipes
 		printf("   - Pipe_in: %d, Pipe_out: %d\n", current->pipe_in, current->pipe_out);
-
 		current = current->next;
 		cmd_index++;
 	}
-
 	printf("🔹 Fin de la liste des commandes\n\n");
 }
 
 static int	execute_commands(t_minishell *minishell, t_cmd *cmd)
 {
 	pid_t	last_pid;
-	t_cmd	*cmds;
-	t_redirection *redir;
-	int		heredoc_fd = -1;
 
 	if (cmd == NULL)
 		return (0);
 	last_pid = -1;
 
-	// 1. Préparer tous les here-docs AVANT d'exécuter quoi que ce soit
-	cmds = cmd;
-	redir = cmd->redirs;
-
-	while (cmds)
-	{
-		redir = cmds->redirs;
-		while (redir)
-		{
-			if (redir->type == TOKEN_HEREDOC)
-			{
-				heredoc_fd = ft_handle_heredoc(redir, cmds);
-				if (heredoc_fd == -1)
-					return (1);
-				printf("✅ Pipe_in après heredoc: %d\n", cmds->next ? cmds->next->pipe_in : -1);
-
-				// Appliquer le here-doc à la commande suivante si elle existe
-				if (cmds->next)
-					cmds->next->pipe_in = heredoc_fd;
-			}
-			redir = redir->next;
-		}
-		cmds = cmds->next;
-	}
-
-	// 2. Exécuter la commande principale
+	// Exécuter la commande principale
 	if (ft_is_builtin(cmd->name) && !cmd->has_pipe)
 	{
-		if (!ft_handle_redirection(cmd, cmd->redirs))
+		if (!ft_handle_redirection(cmd, cmd->redirs, true, minishell))
 			return (1);
-		if (heredoc_fd != -1) // Appliquer le here-doc si présent
-		{
-			dup2(heredoc_fd, STDIN_FILENO);
-			close(heredoc_fd); // Fermeture immédiate après duplication
-		}
 		minishell->exit_nb = ft_execute_builtin(cmd, minishell);
 	}
 	else
 	{
 		ft_foreach_cmd(cmd, minishell, &last_pid);
 	}
-
-	// 3. Attendre la fin des processus et fermer les descripteurs inutiles
-	if (heredoc_fd != -1)
-		close(heredoc_fd);
 
 	return (ft_wait_child_for_pid(minishell, last_pid));
 }

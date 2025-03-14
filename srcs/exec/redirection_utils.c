@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirection.c                                      :+:      :+:    :+:   */
+/*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 19:05:11 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 09:38:28 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	ft_update_last_redirections(t_redirection *current,
 		t_redirection **last_out, t_redirection **last_in,
 		t_redirection **last_heredoc)
 {
+	if (!current)
+		return ;
 	if (current->type == TOKEN_REDIR_OUT || current->type == TOKEN_REDIR_APPEND)
 		*last_out = current;
 	else if (current->type == TOKEN_REDIR_IN)
@@ -42,12 +44,14 @@ void	ft_restore_fds(int saved_stdin, int saved_stdout)
 {
 	if (saved_stdin != -1)
 	{
-		dup2(saved_stdin, STDIN_FILENO);
+		if (dup2(saved_stdin, STDIN_FILENO) == -1)
+			ft_putstr_fd("minishell: dup2 error\n", 2);
 		close(saved_stdin);
 	}
 	if (saved_stdout != -1)
 	{
-		dup2(saved_stdout, STDOUT_FILENO);
+		if (dup2(saved_stdout, STDOUT_FILENO) == -1)
+			ft_putstr_fd("minishell: dup2 error\n", 2);
 		close(saved_stdout);
 	}
 }

@@ -1,0 +1,2 @@
+cat test_simple.txt
+exit

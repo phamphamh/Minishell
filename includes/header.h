@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/13 12:57:25 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 09:52:48 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ typedef struct s_minishell
 	t_token					*tokens;
 	t_cmd					*commands;
 	int						exit_nb;
+	bool					env_cleaned;  // Indique si l'environnement a déjà été nettoyé
 }							t_minishell;
 
 // structure pour faciliter l'expand d'env sans devoir passer 5 argument
@@ -266,13 +267,15 @@ void						ft_update_last_redirections(t_redirection *current,
 								t_redirection **last_out,
 								t_redirection **last_in,
 								t_redirection **last_heredoc);
-int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd);
+int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd, t_minishell *minishell);
 void						ft_find_last_redirections(t_redirection *redir,
 								t_redirection **last_out,
 								t_redirection **last_in,
 								t_redirection **last_heredoc);
 int							ft_handle_redirection(t_cmd *cmd,
-								t_redirection *redir);
+								t_redirection *redir,
+								bool restore_after,
+								t_minishell *minishell);
 void						ft_restore_fds(int saved_stdin, int saved_stdout);
 void						ft_save_fds(int *saved_stdin, int *saved_stdout);
 

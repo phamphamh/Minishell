@@ -1,0 +1,7 @@
+> Ce texte devrait apparaître dans le fichier
+> sans les signes > du prompt
+> et sans autre artefact
+> fin
+Ce texte devrait apparaître dans le fichier
+sans les signes > du prompt
+et sans autre artefact

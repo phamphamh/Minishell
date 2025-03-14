@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/13 11:12:31 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 09:52:20 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,34 +66,90 @@ static int	ft_handle_output(t_cmd *cmd, t_redirection *last_out)
 }
 
 static int	ft_apply_redirections(t_cmd *cmd, t_redirection *last_in,
-		t_redirection *last_out, t_redirection *last_heredoc)
+		t_redirection *last_out, t_redirection *last_heredoc, t_minishell *minishell)
 {
-	(void) last_heredoc;
-	if (last_in && !ft_handle_input(cmd, last_in))
-		return (0);
+	int	heredoc_fd;
+	int	stdin_fd;
+
+	heredoc_fd = -1;
+	stdin_fd = -1;
+	if (last_heredoc)
+	{
+		heredoc_fd = ft_handle_heredoc(last_heredoc, cmd, minishell);
+		if (heredoc_fd == -1 && last_out)
+			return (1);
+		if (heredoc_fd == -1)
+			return (0);
+		stdin_fd = dup(STDIN_FILENO);
+		if (stdin_fd == -1)
+			return (ft_putstr_fd("minishell: dup error\n", 2), close(heredoc_fd), 0);
+		if (dup2(heredoc_fd, STDIN_FILENO) == -1)
+			return (ft_putstr_fd("minishell: dup2 error\n", 2),
+				close(heredoc_fd), close(stdin_fd), 0);
+		close(heredoc_fd);
+	}
+	if (last_in)
+	{
+		if (stdin_fd != -1)
+		{
+			if (dup2(stdin_fd, STDIN_FILENO) == -1)
+				return (ft_putstr_fd("minishell: dup2 error\n", 2),
+					close(stdin_fd), 0);
+			close(stdin_fd);
+			stdin_fd = -1;
+		}
+		if (!ft_handle_input(cmd, last_in))
+			return (0);
+	}
 	if (last_out && !ft_handle_output(cmd, last_out))
+	{
+		if (stdin_fd != -1)
+		{
+			if (dup2(stdin_fd, STDIN_FILENO) == -1)
+				ft_putstr_fd("minishell: dup2 error\n", 2);
+			close(stdin_fd);
+		}
 		return (0);
+	}
+	if (stdin_fd != -1)
+		close(stdin_fd);
 	return (1);
 }
 
-int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir)
+int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir, bool restore_after, t_minishell *minishell)
 {
 	int				saved_stdout;
 	int				saved_stdin;
 	t_redirection	*last_out;
 	t_redirection	*last_in;
 	t_redirection	*last_heredoc;
+	int				result;
 
 	if (!redir)
 		return (1);
+	saved_stdout = -1;
+	saved_stdin = -1;
 	ft_save_fds(&saved_stdin, &saved_stdout);
+	if (saved_stdin == -1 || saved_stdout == -1)
+		return (0);
 	ft_find_last_redirections(redir, &last_out, &last_in, &last_heredoc);
-	if (!ft_apply_redirections(cmd, last_in, last_out, last_heredoc))
+	result = ft_apply_redirections(cmd, last_in, last_out, last_heredoc, minishell);
+	if (!result)
 	{
-		ft_restore_fds(saved_stdin, saved_stdout);
+		// Toujours fermer les descripteurs sauvegardés en cas d'erreur
+		close(saved_stdin);
+		close(saved_stdout);
 		return (0);
 	}
-	close(saved_stdin);
-	close(saved_stdout);
+
+	// Si restore_after est vrai, restaurer les descripteurs originaux
+	// Sinon, simplement fermer les descripteurs sauvegardés
+	if (restore_after)
+		ft_restore_fds(saved_stdin, saved_stdout);
+	else
+	{
+		close(saved_stdin);
+		close(saved_stdout);
+	}
 	return (1);
 }

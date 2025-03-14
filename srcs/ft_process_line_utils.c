@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_process_line_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/13 11:13:40 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 09:53:20 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ft_execute_builtin_command(t_cmd *cmd, t_minishell *minishell)
 		return ;
 	}
 	ft_setup_pipes(cmd);
-	if (!ft_handle_redirection(cmd, cmd->redirs))
+	if (!ft_handle_redirection(cmd, cmd->redirs, true, minishell))
 		minishell->exit_nb = 1;
 	else
 		minishell->exit_nb = ft_execute_builtin(cmd, minishell);

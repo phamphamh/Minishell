@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:33:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/11 15:09:56 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 09:45:27 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ static void	set_default_values(t_minishell *minishell)
 	minishell->tokens = NULL;
 	minishell->commands = NULL;
 	minishell->exit_nb = 0;
+	minishell->env_cleaned = false;
 }
 
 static bool	has_path_variable(t_env *env)
@@ -98,5 +99,9 @@ int	main(int argc, char **argv, char **envp)
 		ft_process_line(line, &minishell);
 		free(line);
 	}
-	return (ft_clean_exit(&minishell, minishell.exit_nb), 0);
+
+	// Nettoyage final et sortie propre
+	ft_clean_exit(&minishell, minishell.exit_nb);
+
+	return (minishell.exit_nb);
 }

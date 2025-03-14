@@ -1,0 +1,4 @@
+Première partie du heredoc
+avec redirection append
+Deuxième partie du heredoc
+avec redirection append (>>)

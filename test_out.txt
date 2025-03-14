@@ -1,0 +1,2 @@
+Ceci est un test de heredoc
+avec redirection de sortie (>)

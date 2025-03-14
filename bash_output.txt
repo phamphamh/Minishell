@@ -1,0 +1,2 @@
+Texte de test
+dans bash

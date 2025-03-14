@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:29:45 by tcousin           #+#    #+#             */
-/*   Updated: 2025/03/12 10:58:10 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 09:18:32 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,12 @@ t_redirection	*ft_create_redirection(t_token *token, t_token *next,
 {
 	t_redirection	*redir;
 
-	if (!next)
+	if (!next || !token)
 		return (NULL);
 	redir = malloc(sizeof(t_redirection));
 	if (!redir)
 		return (NULL);
+	ft_memset(redir, 0, sizeof(t_redirection));
 	ft_gc_add(&minishell->gc_head, redir);
 	redir->type = token->type;
 	redir->file = ft_strdup(next->value);
