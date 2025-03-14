@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/07 13:21:45 by tcousin          #+#    #+#              */
-/*   Updated: 2025/03/11 15:05:48 by tcousin         ###   ########.fr        */
+/*   Created: 2025/02/07 13:21:45 by tcousin           #+#    #+#             */
+/*   Updated: 2025/03/14 13:32:24 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ void	handle_cmd_not_found(t_cmd *cmd, t_minishell *minishell)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->name, 2);
 		ft_putstr_fd(": command not found\n", 2);
+		ft_clean_exit(minishell, 127);
 	}
-	ft_clean_exit(minishell, 127);
+	ft_clean_exit(minishell, 0);
 }
