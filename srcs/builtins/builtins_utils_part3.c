@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils_part3.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:23:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/12 11:18:59 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 12:08:39 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,11 @@
  */
 bool	ft_is_builtin(char *value)
 {
-	return (ft_strcmp(value, "echo") == 0 || ft_strcmp(value, "cd") == 0
-		|| ft_strcmp(value, "pwd") == 0 || ft_strcmp(value, "export") == 0
-		|| ft_strcmp(value, "unset") == 0 || ft_strcmp(value, "env") == 0
-		|| ft_strcmp(value, "exit") == 0);
+	return (ft_strcmp_trim(value, "echo") == 0 || ft_strcmp_trim(value,
+			"cd") == 0 || ft_strcmp_trim(value, "pwd") == 0
+		|| ft_strcmp_trim(value, "export") == 0 || ft_strcmp_trim(value,
+			"unset") == 0 || ft_strcmp_trim(value, "env") == 0
+		|| ft_strcmp_trim(value, "exit") == 0);
 }
 
 /**

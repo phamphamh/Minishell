@@ -24,13 +24,13 @@ static int	ft_exec_builtin_child(t_cmd *cmd, t_minishell *minishell)
 	int	ret;
 
 	ret = 0;
-	if (ft_strcmp(cmd->name, "cd") == 0)
+	if (ft_strcmp_trim(cmd->name, "cd") == 0)
 		ret = ft_cd(cmd, minishell);
-	else if (ft_strcmp(cmd->name, "echo") == 0)
+	else if (ft_strcmp_trim(cmd->name, "echo") == 0)
 		ret = ft_echo(cmd);
-	else if (ft_strcmp(cmd->name, "pwd") == 0)
+	else if (ft_strcmp_trim(cmd->name, "pwd") == 0)
 		ret = ft_pwd(minishell);
-	else if (ft_strcmp(cmd->name, "export") == 0)
+	else if (ft_strcmp_trim(cmd->name, "export") == 0)
 	{
 		if (!cmd->args[1])
 			ft_print_export_list(minishell->env);
@@ -42,32 +42,30 @@ static int	ft_exec_builtin_child(t_cmd *cmd, t_minishell *minishell)
 
 int	ft_exec_builtin_child2(t_cmd *cmd, t_minishell *minishell, int ret)
 {
-	if (ft_strcmp(cmd->name, "unset") == 0)
+	if (ft_strcmp_trim(cmd->name, "unset") == 0)
 	{
 		if (cmd->args[1])
 			ret = ft_handle_unset_var(minishell, cmd->args);
 	}
-	else if (ft_strcmp(cmd->name, "env") == 0)
+	else if (ft_strcmp_trim(cmd->name, "env") == 0)
 	{
 		ft_print_env(minishell->env);
 		ret = 0;
 	}
-	else if (ft_strcmp(cmd->name, "exit") == 0)
+	else if (ft_strcmp_trim(cmd->name, "exit") == 0)
 		ret = ft_exit(cmd, minishell);
 	return (ret);
 }
 
 int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 {
-	int		ret;
 	pid_t	pid;
 	int		status;
 
-	if (cmd->pipe_out != -1 || cmd->pipe_in != -1
-		|| (cmd->redirs && cmd->name && ft_strcmp(cmd->name, "cd") != 0
-			&& ft_strcmp(cmd->name, "exit") != 0
-			&& ft_strcmp(cmd->name, "unset")
-			!= 0 && ft_strcmp(cmd->name, "export") != 0))
+	if (cmd->pipe_out != -1 || cmd->pipe_in != -1 || (cmd->redirs && cmd->name
+			&& ft_strcmp_trim(cmd->name, "cd") != 0 && ft_strcmp_trim(cmd->name,
+				"exit") != 0 && ft_strcmp(cmd->name, "unset") != 0
+			&& ft_strcmp_trim(cmd->name, "export") != 0))
 	{
 		pid = fork();
 		if (pid == -1)
