@@ -63,24 +63,25 @@ int	ft_execute_builtin(t_cmd *cmd, t_minishell *minishell)
 	pid_t	pid;
 	int		status;
 
-	if (cmd->pipe_out != -1 || cmd->pipe_in != -1)
+	if (cmd->pipe_out != -1 || cmd->pipe_in != -1
+		|| (cmd->redirs && cmd->name && ft_strcmp(cmd->name, "cd") != 0
+			&& ft_strcmp(cmd->name, "exit") != 0
+			&& ft_strcmp(cmd->name, "unset")
+			!= 0 && ft_strcmp(cmd->name, "export") != 0))
 	{
 		pid = fork();
 		if (pid == -1)
-		{
-			ft_putstr_fd("minishell: fork error\n", 2);
-			return (1);
-		}
+			return (ft_putstr_fd("minishell: fork error\n", 2), 1);
 		if (pid == 0)
 		{
-			ret = ft_exec_builtin_child(cmd, minishell);
-			exit(ret);
+			if (cmd->redirs)
+				ft_handle_redirection(cmd, cmd->redirs, false, minishell);
+			exit(ft_exec_builtin_child(cmd, minishell));
 		}
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 		return (1);
 	}
-	ret = ft_exec_builtin_child(cmd, minishell);
-	return (ret);
+	return (ft_exec_builtin_child(cmd, minishell));
 }
