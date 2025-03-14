@@ -13,18 +13,15 @@
 #include "../../includes/header.h"
 
 // Fonction pour gérer proprement la sortie des processus enfants here-doc
-static void ft_heredoc_child_exit(t_minishell *minishell, int exit_code, int fd_to_close)
+static void	ft_heredoc_child_exit(t_minishell *minishell, int exit_code,
+		int fd_to_close)
 {
 	if (fd_to_close >= 0)
 		close(fd_to_close);
-
-	// Si minishell est NULL, utiliser exit() directement
 	if (!minishell)
 		exit(exit_code);
-
-	// Sinon utiliser ft_clean_exit pour nettoyer proprement
 	ft_clean_exit(minishell, exit_code);
-	exit(exit_code); // Ne devrait jamais être atteint
+	exit(exit_code);
 }
 
 static int	ft_read_heredoc(t_redirection *last_heredoc, int pipe_fd)
@@ -43,16 +40,17 @@ static int	ft_read_heredoc(t_redirection *last_heredoc, int pipe_fd)
 		{
 			if (isatty(STDIN_FILENO))
 			{
-				ft_putstr_fd("minishell: warning: here-document EOF (wanted `", 2);
+				ft_putstr_fd("minishell: warning: here-document EOF (wanted `",
+					2);
 				ft_putstr_fd(last_heredoc->file, 2);
 				ft_putstr_fd("')\n", 2);
 			}
-			break;
+			break ;
 		}
 		if (!ft_strcmp_trim(line, last_heredoc->file))
 		{
 			free(line);
-			break;
+			break ;
 		}
 		write(pipe_fd, line, ft_strlen(line));
 		write(pipe_fd, "\n", 1);
@@ -61,14 +59,19 @@ static int	ft_read_heredoc(t_redirection *last_heredoc, int pipe_fd)
 	return (1);
 }
 
-int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd, t_minishell *minishell)
+int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd,
+		t_minishell *minishell)
 {
-	int		heredoc_pipe[2];
-	pid_t	pid;
-	int		status;
-	bool	has_command;
-	t_redirection *redir;
-	t_redirection *output_redir;
+	int				heredoc_pipe[2];
+	pid_t			pid;
+	int				status;
+	bool			has_command;
+	t_redirection	*redir;
+	t_redirection	*output_redir;
+	int				fd;
+	pid_t			cmd_pid;
+	int				fd_out;
+	int				flags;
 
 	if (!last_heredoc || !heredoc_cmd)
 		return (-1);
@@ -85,17 +88,16 @@ int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd, t_minishe
 		return (ft_putstr_fd("minishell: pipe error\n", 2), -1);
 	pid = fork();
 	if (pid == -1)
-		return (ft_putstr_fd("minishell: fork error\n", 2), close(heredoc_pipe[0]), close(heredoc_pipe[1]), -1);
+		return (ft_putstr_fd("minishell: fork error\n", 2),
+			close(heredoc_pipe[0]), close(heredoc_pipe[1]), -1);
 	if (pid == 0)
 	{
 		close(heredoc_pipe[0]);
 		ft_heredoc_signals();
 		// Fermer tous les FDs sauf ceux dont on a besoin
-		int fd;
 		for (fd = 3; fd < 1024; fd++)
 			if (fd != heredoc_pipe[1])
 				close(fd);
-
 		if (!ft_read_heredoc(last_heredoc, heredoc_pipe[1]))
 		{
 			close(heredoc_pipe[1]);
@@ -113,16 +115,12 @@ int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd, t_minishe
 	}
 	if (has_command && output_redir)
 	{
-		pid_t cmd_pid;
-
 		cmd_pid = fork();
 		if (cmd_pid == -1)
-			return (ft_putstr_fd("minishell: fork error\n", 2), close(heredoc_pipe[0]), -1);
+			return (ft_putstr_fd("minishell: fork error\n", 2),
+				close(heredoc_pipe[0]), -1);
 		if (cmd_pid == 0)
 		{
-			int	fd_out;
-			int	flags;
-
 			dup2(heredoc_pipe[0], STDIN_FILENO);
 			close(heredoc_pipe[0]);
 			if (output_redir->type == TOKEN_REDIR_OUT)
@@ -139,13 +137,11 @@ int	ft_handle_heredoc(t_redirection *last_heredoc, t_cmd *heredoc_cmd, t_minishe
 			}
 			dup2(fd_out, STDOUT_FILENO);
 			close(fd_out);
-
 			// Fermer tous les descripteurs de fichier inutiles (3-1023)
-			int fd;
 			for (fd = 3; fd < 1024; fd++)
-				if (fd != STDIN_FILENO && fd != STDOUT_FILENO && fd != STDERR_FILENO)
+				if (fd != STDIN_FILENO && fd != STDOUT_FILENO
+					&& fd != STDERR_FILENO)
 					close(fd);
-
 			execvp(heredoc_cmd->args[0], heredoc_cmd->args);
 			ft_putstr_fd("minishell: command not found\n", 2);
 			ft_heredoc_child_exit(minishell, 127, -1);

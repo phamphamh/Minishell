@@ -44,6 +44,7 @@ SRCS = srcs/main.c \
        srcs/exec/redirection.c \
        srcs/exec/heredoc.c \
        srcs/exec/redirection_utils.c \
+       srcs/exec/redirection_utils2.c \
        srcs/parser/tokenizer.c \
        srcs/parser/tokenizer_utils.c \
        srcs/parser/tokenizer_utils2.c \

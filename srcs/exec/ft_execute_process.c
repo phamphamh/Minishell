@@ -12,36 +12,28 @@
 
 #include "../../includes/header.h"
 
-void	ft_execute_child_process(t_cmd *cmd, t_minishell *minishell)
+static void	ft_close_fds(t_cmd *cmd)
 {
-	int	exit_code;
-	int fd;
+	int	fd;
 
-	ft_reset_signals();
-	ft_setup_pipes(cmd);
-	ft_close_unused_fds(cmd);
-
-	// Gérer les redirections
-	if (!ft_handle_redirection(cmd, cmd->redirs, false, minishell))
-	{
-		// Si une erreur se produit, fermer tous les descripteurs
-		for (fd = 3; fd < 1024; fd++)
-			close(fd);
-		ft_clean_exit(minishell, 1);
-	}
-
-	// Fermer tous les descripteurs de fichiers inutiles après les redirections
-	for (fd = 3; fd < 1024; fd++)
+	fd = 3;
+	while (fd < 1024)
 	{
 		if (fd != STDIN_FILENO && fd != STDOUT_FILENO && fd != STDERR_FILENO)
 		{
-			// Vérifier si c'est un pipe qu'on utilise
 			if (cmd->pipe_in == fd || cmd->pipe_out == fd)
-				continue;
+			{
+				fd++;
+				continue ;
+			}
 			close(fd);
 		}
+		fd++;
 	}
+}
 
+static void	ft_check_grep_argument(t_cmd *cmd, t_minishell *minishell)
+{
 	if (cmd->name && ft_strcmp(cmd->name, "grep") == 0)
 	{
 		if (!cmd->args[1])
@@ -50,6 +42,27 @@ void	ft_execute_child_process(t_cmd *cmd, t_minishell *minishell)
 			ft_clean_exit(minishell, 1);
 		}
 	}
+}
+
+static void	ft_setup_child_env(t_cmd *cmd, t_minishell *minishell)
+{
+	ft_reset_signals();
+	ft_setup_pipes(cmd);
+	ft_close_unused_fds(cmd);
+	if (!ft_handle_redirection(cmd, cmd->redirs, false, minishell))
+	{
+		ft_close_fds(cmd);
+		ft_clean_exit(minishell, 1);
+	}
+	ft_close_fds(cmd);
+}
+
+void	ft_execute_child_process(t_cmd *cmd, t_minishell *minishell)
+{
+	int	exit_code;
+
+	ft_setup_child_env(cmd, minishell);
+	ft_check_grep_argument(cmd, minishell);
 	if (ft_is_builtin(cmd->name))
 	{
 		exit_code = ft_execute_builtin(cmd, minishell);
@@ -57,7 +70,5 @@ void	ft_execute_child_process(t_cmd *cmd, t_minishell *minishell)
 	}
 	else
 		ft_execute_child(cmd, minishell);
-
-	// En cas d'échec de l'exécution
 	exit(EXIT_FAILURE);
 }

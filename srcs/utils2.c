@@ -19,9 +19,8 @@ void	free_env_list(t_minishell *minishell)
 
 	if (!minishell || !minishell->env)
 		return ;
-	// Éviter de libérer une liste déjà nettoyée
 	if (minishell->env_cleaned)
-		return;
+		return ;
 	current = minishell->env;
 	while (current)
 	{
@@ -57,8 +56,7 @@ void	free_gc_list(t_minishell *minishell)
 // Fonction pour libérer les structures restantes qui ne seraient pas dans le GC
 void	free_remaining_structures(t_minishell *minishell)
 {
-	(void)minishell; // Éviter le warning "unused parameter"
-	// Nettoyage de l'historique Readline qui peut causer des "still reachable"
+	(void)minishell;
 	rl_clear_history();
 }
 
@@ -68,35 +66,19 @@ void	ft_clean_exit(t_minishell *minishell, int exit_num)
 
 	if (!minishell)
 		exit(exit_num);
-
-	// S'assurer que l'environnement n'est pas encore nettoyé
 	minishell->env_cleaned = false;
-
-	// Nettoyer d'abord les structures complexes
 	if (minishell->tokens)
 		ft_gc_remove_list(&minishell->gc_head, minishell->tokens);
-
 	if (minishell->commands)
 		ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
-
-	// Nettoyer l'environnement
 	ft_gc_remove_env(&minishell->gc_head, minishell->env);
-	// Marquer que l'environnement a été nettoyé
 	minishell->env_cleaned = true;
-	free_env_list(minishell);  // Sera ignoré car env_cleaned est true
-
-	// Libérer les autres structures qui pourraient ne pas être dans le GC
+	free_env_list(minishell);
 	free_remaining_structures(minishell);
-
-	// Libérer tout ce qui reste dans le GC
 	free_gc_list(minishell);
-
-	// Assurons-nous de fermer tous les descripteurs de fichiers
-	// y compris ceux qui pourraient avoir été dupliqués avec dup
-	for (fd = 3; fd < 1024; fd++)
-	{
+	fd = 2;
+	while (++fd < 1024)
 		close(fd);
-	}
 	exit(exit_num);
 }
 

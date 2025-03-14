@@ -99,9 +99,5 @@ int	main(int argc, char **argv, char **envp)
 		ft_process_line(line, &minishell);
 		free(line);
 	}
-
-	// Nettoyage final et sortie propre
-	ft_clean_exit(&minishell, minishell.exit_nb);
-
-	return (minishell.exit_nb);
+	return (ft_clean_exit(&minishell, minishell.exit_nb), minishell.exit_nb);
 }
