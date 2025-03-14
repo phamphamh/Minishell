@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 14:34:29 by jspitz            #+#    #+#             */
-/*   Updated: 2025/03/14 10:39:44 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:10:56 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,12 +272,25 @@ void						ft_setup_pipes(t_cmd *cmd);
 void						ft_close_all_pipes(t_cmd *cmd_first);
 
 // redirection.c
+void						ft_heredoc_child_exit(t_minishell *minishell,
+								int exit_code, int fd_to_close);
+int							ft_wait_heredoc(pid_t pid, int heredoc_pipe[2]);
+t_redirection				*ft_get_output_redir(t_redirection *redir);
 int							ft_apply_redirections(t_cmd *cmd,
 								t_redir_info *struct_redir);
+int							ft_setup_input_redirection(t_cmd *cmd,
+								t_redir_info *redir);
+int							ft_setup_output_redirection(t_cmd *cmd,
+								t_redir_info *redir);
+
 void						ft_update_last_redirections(t_redirection *current,
 								t_redirection **last_out,
 								t_redirection **last_in,
 								t_redirection **last_heredoc);
+int							ft_read_heredoc(t_redirection *last_heredoc,
+								int pipe_fd);
+void						ft_setup_heredoc_child(int heredoc_fd,
+								t_redirection *output_redir);
 int							ft_handle_heredoc(t_redirection *last_heredoc,
 								t_cmd *heredoc_cmd, t_minishell *minishell);
 void						ft_find_last_redirections(t_redirection *redir,

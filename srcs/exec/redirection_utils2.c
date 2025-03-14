@@ -6,7 +6,7 @@
 /*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:17:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 10:41:19 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 10:44:44 by tcousin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ static int	ft_process_redirections(t_cmd *cmd, t_redirection *redir,
 int	ft_handle_redirection(t_cmd *cmd, t_redirection *redir, bool restore_after,
 		t_minishell *minishell)
 {
-	int saved_stdout;
-	int saved_stdin;
-	int result;
+	int	saved_stdout;
+	int	saved_stdin;
+	int	result;
 
 	if (!redir)
 		return (1);
