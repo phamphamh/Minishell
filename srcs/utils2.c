@@ -6,7 +6,7 @@
 /*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:19:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/14 10:07:29 by yboumanz         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:19:48 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ void	ft_clean_exit(t_minishell *minishell, int exit_num)
 	if (minishell->commands)
 		ft_gc_remove_cmds(&minishell->gc_head, minishell->commands);
 	ft_gc_remove_env(&minishell->gc_head, minishell->env);
-	minishell->env_cleaned = true;
 	free_env_list(minishell);
 	free_remaining_structures(minishell);
 	free_gc_list(minishell);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   garbage_collector.c                                :+:      :+:    :+:   */
+/*   garbage_collector_utils.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tcousin <tcousin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yboumanz <yboumanz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 13:25:45 by yboumanz          #+#    #+#             */
-/*   Updated: 2025/03/02 12:56:22 by tcousin          ###   ########.fr       */
+/*   Updated: 2025/03/14 11:19:59 by yboumanz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,10 @@ void	ft_gc_remove_env(t_gc_node **gc_head, t_env *env)
 	while (cur)
 	{
 		next = cur->next;
-		ft_gc_remove(gc_head, cur->var);
-		free(cur->var);
-		ft_gc_remove(gc_head, cur);
-		free(cur);
+		if (ft_gc_remove(gc_head, cur->var))
+			free(cur->var);
+		if (ft_gc_remove(gc_head, cur))
+			free(cur);
 		cur = next;
 	}
 }
