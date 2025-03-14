@@ -1,0 +1,7 @@
+**.o
+**.a
+minishell
+.vscode
+.cursor/rules
+minishell_tester
+./.vscode
